@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.overflow-product-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.product-card {
+    scroll-snap-align: start;
+    min-width: 100%;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.vertical-checkbox-group .ant-checkbox-group-item {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.filter-section {
+margin-bottom: 20px;
+}
