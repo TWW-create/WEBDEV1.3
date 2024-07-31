@@ -1,20 +1,20 @@
 import { Outlet } from "react-router-dom"
-import Navbar from "../../Components/Navbar"
 import Footer from "../../Components/Footer"
+import Navbar from "./Components/Navbar"
 
-const HomeWrapper = () => {
+const Blog = () => {
   return (
     <div>
         <div className="bg-white text-center py-2">
             <p className="text-xs font-medium">Discover: New Fashions with BARA</p>
         </div>
         <Navbar />
-        <div className="pb-28">
-          {<Outlet />}
+        <div className="pb-28 bg-[#D9D9D9]">
+          <Outlet />
         </div>
         <Footer />
     </div>
   )
 }
 
-export default HomeWrapper
+export default Blog

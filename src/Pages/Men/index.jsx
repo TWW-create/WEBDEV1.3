@@ -159,14 +159,13 @@ const Men = () => {
     },
   ];
 
-const params = useParams();
+// const params = useParams();
 
-console.log(params);
     
   return (
     <div>
       <div className="w-full">
-        <img src={banner} alt="men banner" className="object-cover" />
+        <img src={banner} alt="men banner" className="object-cover object-center w-full" />
       </div>
       <div className="container mx-auto px-4">
         <Tabs defaultActiveKey="1" items={items} />

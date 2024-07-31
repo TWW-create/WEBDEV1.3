@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { GoSearch } from 'react-icons/go';
 import { LuUser2 } from 'react-icons/lu';
 import { RiShoppingBag3Line } from 'react-icons/ri';
 import { FaRegHeart } from 'react-icons/fa';
-import { Dropdown, Menu } from 'antd';
-import logo from '../assets/images/logo.png';
+import { useEffect, useState } from 'react';
+import logo from '../assets/images/logo.png'; // Make sure the path to your logo image is correct
+import DropdownMenu from './DropdownMenu'; // Import the DropdownMenu component
+import { Link } from 'react-router-dom';
 import Authentication from '../Pages/Authentication';
 
 const menItems = [
@@ -79,23 +79,45 @@ const accessoriesItems = [
     }
 ];
 
-const generateMenu = (items) => (
-    <Menu>
-        {items.map((item) => (
-            <Menu.SubMenu key={item.title} title={item.title}>
-                {item.links.map((link) => (
-                    <Menu.Item key={link.href}>
-                        <Link to={`/${item.parent}/${link.href}`}>{link.text}</Link>
-                    </Menu.Item>
-                ))}
-            </Menu.SubMenu>
-        ))}
-    </Menu>
-);
-
-const Navbar = () => {
+const NavbarCopy = () => {
     const [scrolled, setScrolled] = useState(false);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [activeDropdown, setActiveDropdown] = useState('');
+    const [dropdownTimeout, setDropdownTimeout] = useState(null);
+    const [onDropdown, setOnDropdown] = useState(false);
     const [open, setOpen] = useState(false);
+
+    const handleDropdownVisible = (active) => {
+        if (dropdownTimeout) {
+            clearTimeout(dropdownTimeout);
+            setDropdownTimeout(null);
+        }
+        setDropdownVisible(true);
+        setActiveDropdown(active);
+    };
+
+    const handleMouseLeave = () => {
+        const timeout = setTimeout(() => {
+            if (!onDropdown) {
+                setDropdownVisible(false);
+                setActiveDropdown('');
+            }
+        }, 500);
+        setDropdownTimeout(timeout);
+    };
+
+    const handleDropdownMouseEnter = () => {
+        if (dropdownTimeout) {
+            clearTimeout(dropdownTimeout);
+            setDropdownTimeout(null);
+        }
+        setOnDropdown(true);
+    };
+
+    const handleDropdownMouseLeave = () => {
+        setOnDropdown(false);
+        setDropdownVisible(false);
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -110,26 +132,41 @@ const Navbar = () => {
         };
     }, []);
 
+    let dropdownItems;
+    if (activeDropdown === 'men') {
+        dropdownItems = menItems;
+    } else if (activeDropdown === 'women') {
+        dropdownItems = womenItems;
+    } else if (activeDropdown === 'accessories') {
+        dropdownItems = accessoriesItems;
+    }
+
     return (
         <div className='relative'>
             <nav className={`flex justify-between items-center py-5 px-12 top-0 ${scrolled ? 'fixed bg-white shadow-md bg-opacity-100 w-full z-50' : 'static'}`}>
                 <div className="flex gap-10 items-center">
                     <Link to={'/'}><img src={logo} alt="logo" className='w-20 object-cover object-center' /></Link>
                     <ul className="hidden lg:flex space-x-8 text-sm font-bold">
-                        <li>
-                            <Dropdown overlay={generateMenu(menItems)} trigger={['hover']}>
-                                <Link to={'/men/all'}>Men</Link>
-                            </Dropdown>
+                        <li
+                            onMouseEnter={() => handleDropdownVisible('men')}
+                            onMouseLeave={handleMouseLeave}
+                            className="relative"
+                        >
+                            <Link to={'/men/all'}>Men</Link>
                         </li>
-                        <li>
-                            <Dropdown overlay={generateMenu(womenItems)} trigger={['hover']}>
-                                <Link to={'/women/all'}>Women</Link>
-                            </Dropdown>
+                        <li
+                            onMouseEnter={() => handleDropdownVisible('women')}
+                            onMouseLeave={handleMouseLeave}
+                            className="relative"
+                        >
+                            <Link to={'/women/all'}>Women</Link>
                         </li>
-                        <li>
-                            <Dropdown overlay={generateMenu(accessoriesItems)} trigger={['hover']}>
-                                <Link to={'/accessories/all'}>Accessories</Link>
-                            </Dropdown>
+                        <li
+                            onMouseEnter={() => handleDropdownVisible('accessories')}
+                            onMouseLeave={handleMouseLeave}
+                            className="relative"
+                        >
+                            <Link to={'/accessories/all'}>Accessories</Link>
                         </li>
                         <li><Link to={'/sales'}>Sales</Link></li>
                     </ul>
@@ -141,9 +178,22 @@ const Navbar = () => {
                     <Link to={'/cart'}><RiShoppingBag3Line /></Link>
                 </div>
             </nav>
-            <Authentication open={open} setOpen={setOpen} />
+            {dropdownVisible && (
+                <div
+                    className='fixed w-full z-50 bg-white shadow-md'
+                    style={{ top: `${scrolled ? '4.5rem' : '6.5rem'}`}}
+                    onMouseEnter={handleDropdownMouseEnter}
+                    onMouseLeave={handleDropdownMouseLeave}
+                >
+                    <DropdownMenu items={dropdownItems} isVisible={dropdownVisible} />
+                </div>
+            )}
+            <Authentication
+                open={open}
+                setOpen={setOpen}
+            />
         </div>
     );
 };
 
-export default Navbar;
+export default NavbarCopy;
