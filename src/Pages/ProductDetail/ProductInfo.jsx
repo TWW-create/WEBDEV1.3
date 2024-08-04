@@ -27,7 +27,7 @@ const ProductInfo = () => {
   };
 
   return (
-    <div className="px-10 xl:px-20 pt-12 flex gap-9 flex-col lg:flex-row h-[90vh]">
+    <div className="px-6 lg:px-10 xl:px-20 pt-12 flex gap-9 flex-col lg:flex-row lg:h-[90vh]">
       <div className="w-full flex-grow">
         <div className="flex flex-col gap-4 mb-3 md:mb-0">
           {images && (
@@ -43,7 +43,7 @@ const ProductInfo = () => {
                 key={index}
                 src={image}
                 alt="/"
-                className={`w-20 h-20 object-cover rounded-md cursor-pointer border hover:border-solid border-primary/70 ${
+                className={`w-16 lg:w-20 h-16 lg:h-20 object-cover rounded-md cursor-pointer border hover:border-solid border-primary/70 ${
                   selectedImageIndex === index && "border-2 border-solid !border-black p-1"
                 }`}
                 onClick={() => setSelectedImageIndex(index)}
@@ -52,7 +52,7 @@ const ProductInfo = () => {
           </div>
         </div>
       </div>
-      <div className="w-[300px] xl:w-[500px] shrink-0 mt-10 lg:mt-0 overflow-y-scroll scrollbar-hide">
+      <div className="lg:w-[300px] xl:w-[500px] shrink-0 mt-10 lg:mt-0 overflow-y-scroll scrollbar-hide">
         <h1 className="text-2xl font-bold mb-2">Product Title</h1>
         <p className="text-xl text-gray-700 mb-4">$99.99</p>
         <div className="mb-4 flex justify-between items-center">

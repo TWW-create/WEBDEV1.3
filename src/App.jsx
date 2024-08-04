@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Accessories, Blog, Cart, Favorites, Home, HomeWrapper, MainBlog, Men, ProductDetail, Sales, Women } from "./Pages";
+import { Accessories, Blog, Cart, Favorites, Home, HomeWrapper, MainBlog, Men, ProductDetail, Profile, Sales, Women } from "./Pages";
 
 
 function App() {
@@ -17,6 +17,9 @@ function App() {
             <Route path='/cart' element={<Cart />} />
             <Route path='/favorites' element={<Favorites />} />
             <Route path='/products/:id' element={<ProductDetail />} />
+            <Route path='profile' element={<Profile />}>
+              <Route path='favorites' element={<Favorites />} />
+            </Route>
           </Route>
           <Route path='/blog' element={<Blog />}>
             <Route index element={<MainBlog />} />

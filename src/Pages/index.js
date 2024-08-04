@@ -7,8 +7,9 @@ import Sales from "./Sales";
 import Cart from "./Cart";
 import Blog from "./Blog";
 import MainBlog from "./Blog/MainBlog";
-import Favorites from "./Favorites";
 import ProductDetail from "./ProductDetail";
+import Favorites from "./Profile/Favorites.jsx";
+import Profile from "./Profile";
 
 
-export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail}
+export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile}

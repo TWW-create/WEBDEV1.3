@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { GoSearch } from 'react-icons/go';
 import { LuUser2 } from 'react-icons/lu';
 import { RiShoppingBag3Line } from 'react-icons/ri';
-import { FaRegHeart } from 'react-icons/fa';
 import { Dropdown, Menu } from 'antd';
 import logo from '../assets/images/logo.png';
 import Authentication from '../Pages/Authentication';
@@ -137,7 +136,7 @@ const Navbar = () => {
                 <div className="hidden lg:flex items-center space-x-4">
                     <GoSearch />
                     <div onClick={() => setOpen(true)} className='cursor-pointer'><LuUser2 /></div>
-                    <FaRegHeart />
+                    {/* <FaRegHeart /> */}
                     <Link to={'/cart'}><RiShoppingBag3Line /></Link>
                 </div>
             </nav>

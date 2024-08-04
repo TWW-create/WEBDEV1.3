@@ -1,9 +1,11 @@
 import ProductInfo from "./ProductInfo"
+import RecommendedItems from "./RecommendedItems"
 
 const ProductDetail = () => {
   return (
     <div>
-        <ProductInfo />
+      <ProductInfo />
+      <RecommendedItems />
     </div>
   )
 }
