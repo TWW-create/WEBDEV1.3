@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 
 const catOptions = ['Jackets', 'Longsleeves', 'Shirts', 'Sweaters', 'T-Shirts']
 const colorOptions = ['Beige', 'Black', 'Blue', 'Brown', 'Green', 'Grey', 'Multi']
+const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL',]
+const creatorOptions = ['BARA Designs', 'D&G', 'Willston Design', 'TD Design',]
 const sortOptions = [{label:'Newest arrival', value:'newest'}, {label:'Price ascending', value:'asc'}, {label:'Price descending', value:'desc'}, {label:'Best Seller', value:'best'}]
 const Filters = ({ filters, setFilters, setShowFilters, showFilters}) => {
 
@@ -77,6 +79,30 @@ const Filters = ({ filters, setFilters, setShowFilters, showFilters}) => {
                         <Radio key={i} value={option.value} className='font-medium'>{option.label}</Radio>
                         ))}
                     </Radio.Group>
+                </div>
+                <div className="filter-section">
+                    <h3 className='font-bold text-lg pb-3'>Sizes</h3>
+                    <Checkbox.Group
+                    className="flex flex-col gap-3"
+                    value={filters.sizes}
+                    onChange={(values) => setFilters({ ...filters, sizes: values })}
+                    >
+                        {sizeOptions.map((color, index) => (
+                            <Checkbox key={index} value={color} className='font-medium'>{color}</Checkbox>
+                        ))}
+                    </Checkbox.Group>
+                </div>
+                <div className="filter-section">
+                    <h3 className='font-bold text-lg pb-3'>Creator</h3>
+                    <Checkbox.Group
+                    className="flex flex-col gap-3"
+                    value={filters.creator}
+                    onChange={(values) => setFilters({ ...filters, creator: values })}
+                    >
+                        {creatorOptions.map((color, index) => (
+                            <Checkbox key={index} value={color} className='font-medium'>{color}</Checkbox>
+                        ))}
+                    </Checkbox.Group>
                 </div>
             </div>
         </div>

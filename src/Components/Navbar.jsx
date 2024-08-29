@@ -116,13 +116,13 @@ const Navbar = () => {
                     <Link to={'/'}><img src={logo} alt="logo" className='w-20 object-cover object-center' /></Link>
                     <ul className="hidden lg:flex space-x-8 text-sm font-bold">
                         <li>
-                            <Dropdown overlay={generateMenu(menItems)} trigger={['hover']}>
-                                <Link to={'/men/all'}>Men</Link>
+                            <Dropdown overlay={generateMenu(womenItems)} trigger={['hover']}>
+                                <Link to={'/women/all'}>Women</Link>
                             </Dropdown>
                         </li>
                         <li>
-                            <Dropdown overlay={generateMenu(womenItems)} trigger={['hover']}>
-                                <Link to={'/women/all'}>Women</Link>
+                            <Dropdown overlay={generateMenu(menItems)} trigger={['hover']}>
+                                <Link to={'/men/all'}>Men</Link>
                             </Dropdown>
                         </li>
                         <li>
