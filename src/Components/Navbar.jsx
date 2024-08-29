@@ -131,6 +131,7 @@ const Navbar = () => {
                             </Dropdown>
                         </li>
                         <li><Link to={'/sales'}>Sales</Link></li>
+                        <li><Link to={'/blog'}>Blog</Link></li>
                     </ul>
                 </div>
                 <div className="hidden lg:flex items-center space-x-4">
