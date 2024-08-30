@@ -8,7 +8,7 @@ const ArticleCard = ({article}) => {
         </div>
         <div className="mt-4 flex justify-between items-center">
             <p className="text-sm lg:text-base">{article.name}</p>
-            <Button ghost className="rounded-2xl !text-black !border-[#000000]">Read More</Button>
+            <Button ghost className="rounded-2xl !text-black !border-[#000000]">Explore</Button>
         </div>
     </div>
   )
