@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import logo from '../../assets/images/logo.png';
-import { Button, DatePicker, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 
 const Register = () => {
   return (
@@ -29,9 +29,6 @@ const Register = () => {
             </Form.Item>
             <Form.Item>
                 <Input className="rounded-2xl bg-[#F5F5F5] !border-none text-sm !p-2 !h-auto" placeholder="Country" />
-            </Form.Item>
-            <Form.Item>
-                <DatePicker className="rounded-2xl bg-[#F5F5F5] !border-none text-sm !p-2 !h-auto !w-full" placeholder="Date of Birth" />
             </Form.Item>
             <Button htmlType="submit" block type="primary" className="rounded-2xl !shadow-none">Join Us</Button>
         </Form>
