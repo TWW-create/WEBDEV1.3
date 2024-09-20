@@ -20,10 +20,10 @@ function App() {
             <Route path='profile' element={<Profile />}>
               <Route path='favorites' element={<Favorites />} />
             </Route>
+            <Route path="/blog" element={<MainBlog />} />
           </Route>
-          <Route path='/blog' element={<Blog />}>
-            <Route index element={<MainBlog />} />
-          </Route>
+          {/* <Route path='/blog' element={<Blog />}>
+          </Route> */}
         </Routes>
       </BrowserRouter>
     </>

@@ -65,9 +65,11 @@ const Cart = () => {
           <div>
             <p className="text-xl font-bold">Shopping cart</p>
           </div>
-          <div className="grid gap-5 grid-cols-1 md:grid-cols-2">
+          <div className="grid gap-5 grid-cols-1">
             {cartItems.map(item => (
-              <CartItem key={item.id} item={item} />
+              <div key={item.id} className='border-b last:border-none'>
+                <CartItem item={item} />
+              </div>
             ))}
           </div>
         </div>

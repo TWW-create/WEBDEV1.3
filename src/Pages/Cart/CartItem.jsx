@@ -2,8 +2,8 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 import image from '../../assets/images/shirt1.png';
 const CartItem = () => {
   return (
-    <div>
-        <div className='flex gap-1 pt-10'>
+    <div className='py-8 flex justify-between items-center'>
+        <div className='flex gap-1'>
             <img src={image} alt="product-image" className='w-28 h-32 object-contain object-center' />
             <div>
                 <p className='text-lg font-semibold'>Mid Blue Rahul Monogram Denim Shirt</p>

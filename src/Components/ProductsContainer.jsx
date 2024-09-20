@@ -2,6 +2,7 @@ import { useState } from "react"
 import ProductCard from "./ProductCard"
 import Filters from "./Filters";
 import { IoFilter } from "react-icons/io5";
+import NewFilters from "./NewFilters";
 
 
 const ProductsContainer = ({products}) => {
@@ -16,21 +17,24 @@ const ProductsContainer = ({products}) => {
     
     return (
         <div className="container mx-auto relative">
-          <div className="flex items-center justify-between mb-3 mt-12">
+          <div className="flex items-center justify-between mb-3 mt-6">
             <p>All</p>
-            <div className="flex items-center gap-1 cursor-pointer" onClick={() => setShowFilters(!showFilters)}>
+            {/* <div className="flex items-center gap-1 cursor-pointer" onClick={() => setShowFilters(!showFilters)}>
                 <IoFilter />
                 <p>Filters</p>
-            </div>
+            </div> */}
+          </div>
+          <div className="mb-5">
+            <NewFilters />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}
           </div>
-          {showFilters && (
+          {/* {showFilters && (
             <Filters filters={filters} setFilters={setFilters} setShowFilters={setShowFilters} showFilters={showFilters} />
-          )}
+          )} */}
         </div>
       );
 }
