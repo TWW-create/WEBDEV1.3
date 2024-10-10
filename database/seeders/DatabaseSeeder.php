@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Call the AdminUserSeeder
+        $this->call(AdminUserSeeder::class);
+        
         // Create Categories
         $categories = Category::factory(5)->create()->each(function ($category) {
             // Ensure the category is uniquely created

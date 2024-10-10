@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
+use App\Notifications\VerifyEmail;
+use Illuminate\Auth\Events\Verified;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'verifyEmail']]);
     }
+    
 
     /**
      * @OA\Post(
@@ -50,6 +53,7 @@ class AuthController extends Controller
             'last_name' => 'required|string|',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed|min:6',
+            'is_admin' => 'boolean',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -59,10 +63,44 @@ class AuthController extends Controller
             ['password' => bcrypt($request->password)]
         ));
 
+        $user->notify(new VerifyEmail);
+
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user,
         ], 201);
+    }    
+
+    public function verifyEmail(Request $request)
+    {
+        $user = User::find($request->route('id'));
+
+        if (!hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            return response()->json(['message' => 'Invalid verification link'], 400);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 400);
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return response()->json(['message' => 'Email verified successfully']);
+    }
+
+    public function resendVerificationEmail(Request $request)
+    {
+        $user = auth()->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 400);
+        }
+
+        $user->notify(new VerifyEmail);
+
+        return response()->json(['message' => 'Verification email resent']);
     }
 
     public function login(Request $request)

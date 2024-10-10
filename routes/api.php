@@ -14,17 +14,22 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+// Public routes
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+// Protected routes
 Route::middleware('auth:api')->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/auth/profile', [AuthController::class, 'profile']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])
+        ->middleware('throttle:6,1')
+        ->name('verification.resend');
+
     Route::apiResource('address_infos', AddressInfoController::class);
     Route::apiResource('banners', BannerController::class);
     Route::apiResource('categories', CategoryController::class);
@@ -38,15 +43,9 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('views', ViewController::class);
 });
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth',
-
-], function () {
-    Route::middleware(['throttle:register'])->post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/profile', [AuthController::class, 'profile']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-
+// Admin routes
+Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/users', [AdminController::class, 'getAllUsers']);
+    Route::post('/make-admin/{id}', [AdminController::class, 'makeAdmin']);
 });
