@@ -59,7 +59,7 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::apiResource('/banners', BannerController::class);
     Route::get('/newsletter/subscribers', [NewsletterController::class, 'index']);
     Route::post('/blogs', [BlogController::class, 'store']);
-    Route::put('/blogs/{id}', [BlogController::class, 'update']);
+    Route::patch('/blogs/{id}', [BlogController::class, 'update']);
     Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
     Route::delete('/blogs/media/{id}', [BlogController::class, 'deleteMedia']);
 });

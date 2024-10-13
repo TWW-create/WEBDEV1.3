@@ -57,3 +57,4 @@ php artisan make:model Blog -m
 
 //issues
 banner update not working
+blog update not working
