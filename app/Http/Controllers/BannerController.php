@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 
 class BannerController extends Controller
@@ -25,15 +26,30 @@ class BannerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'content' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:1000',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:40960',
             'location' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'is_active' => 'boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $banner = Banner::create($validator->validated());
+        $imagePath = $request->file('image')->store('banners', 'public');
+
+        $banner = Banner::create([
+            'title' => $request->title,
+            'content' => $request->content,
+            'image_path' => $imagePath,
+            'location' => $request->location,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'is_active' => $request->is_active ?? true,
+        ]);
 
         return response()->json($banner, 201);
     }
@@ -48,32 +64,46 @@ class BannerController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
+    { 
         $validator = Validator::make($request->all(), [
-            'content' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
+            'title' => 'sometimes|string|max:255',
+            'content' => 'sometimes|string|max:1000',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:40960',
+            'location' => 'sometimes|string|max:255',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after:start_date',
+            'is_active' => 'sometimes|boolean',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
         $banner = Banner::findOrFail($id);
-        $banner->update($request->all());
-
-        return response()->json($banner, 200);
-    }
+    
+        if ($request->hasFile('image')) {
+            Storage::disk('public')->delete($banner->image_path);
+            $imagePath = $request->file('image')->store('banners', 'public');
+            $banner->image_path = $imagePath;
+        }
+    
+        $banner->fill($request->except('image'));
+        $banner->save(); 
+        return response()->json(['message' => 'Banner updated successfully', 'data' => $banner], 200);
+    }    
 
     public function destroy($id)
     {
         $banner = Banner::find($id);
-
-        if (! $banner) {
+    
+        if (!$banner) {
             return response()->json(['message' => self::BANNER_NOT_FOUND_ERROR], 404);
         }
-
+    
+        Storage::disk('public')->delete($banner->image_path);
         $banner->delete();
-
-        return response()->json(null, 204);
+    
+        return response()->json(['message' => 'Banner successfully deleted'], 200);
     }
+    
 }

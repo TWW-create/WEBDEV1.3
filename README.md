@@ -11,14 +11,49 @@ lint with
 
 -php artisan key:generate
 
--php artisan jwt:secret
+-- php artisan jwt:secret
 
--php artisan migrate --seed
+-- php artisan migrate --seed
 
--php artisan serve
+-- php artisan serve
+-- php artisan storage:link
 
 //for DB reloading--
+```sh
 php artisan migrate:fresh --seed
+```
 
 //trobleshoot app--
+```sh
 php artisan optimize
+```
+
+----- file upload limit 40mb
+
+// to increase file upload limit
+In your PHP.ini file, increase these values:
+```sh
+upload_max_filesize = 10M
+post_max_size = 10M
+```
+
+// In your Laravel application, you can also adjust the validation rule in BannerController.php:
+```sh
+'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240', // Allows up to 10MB
+```
+
+// create model and migration
+```sh
+php artisan make:model Blog -m
+```
+
+```sh
+
+```
+
+```sh
+
+```
+
+//issues
+banner update not working

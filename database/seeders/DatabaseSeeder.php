@@ -72,7 +72,6 @@ class DatabaseSeeder extends Seeder
             View::factory(5)->create(['product_id' => $product->id]);
         });
 
-        // Create Banners
-        Banner::factory(3)->create();
+        
     }
 }
