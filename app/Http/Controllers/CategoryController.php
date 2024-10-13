@@ -6,6 +6,7 @@ use App\Models\Category;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Validator;
+use App\Models\ProductType;
 
 class CategoryController extends Controller
 {
@@ -14,14 +15,35 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('subCategories', 'products')->get();
-
+        $categories = Category::with(['subCategories.productTypes', 'products'])->get();
+    
+        $formattedCategories = $categories->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'sub_categories' => $category->subCategories->map(function ($subCategory) {
+                    return [
+                        'id' => $subCategory->id,
+                        'name' => $subCategory->name,
+                        'product_types' => $subCategory->productTypes->map(function ($productType) {
+                            return [
+                                'id' => $productType->id,
+                                'name' => $productType->name,
+                            ];
+                        }),
+                    ];
+                }),
+                'products_count' => $category->products->count(),
+            ];
+        });
+    
         return response()->json([
-            'message' => 'All categories retrieved',
-            'data' => $categories,
-            'count' => count($categories),
+            'message' => 'All categories retrieved with sub-categories and product types',
+            'data' => $formattedCategories,
+            'count' => count($formattedCategories),
         ], 200);
     }
+    
 
     /**
      * Store a newly created resource in storage.

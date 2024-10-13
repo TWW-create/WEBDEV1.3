@@ -6,36 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::disableForeignKeyConstraints();
-
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->longText('name');
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->bigInteger('qty');
+            $table->integer('qty');
             $table->decimal('price', 8, 2);
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            $table->foreignId('subcategory_id')->nullable()->constrained('sub_categories')->onDelete('set null');
-            $table->longText('featured_image')->nullable();
-            $table->bigInteger('rank')->default(0);
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('sub_category_id')->constrained('sub_categories')->onDelete('cascade');
+            $table->foreignId('product_type_id')->constrained()->onDelete('cascade');
+            $table->string('featured_image')->nullable();
+            $table->integer('rank')->default(0);
             $table->string('status')->default('available');
             $table->timestamps();
-            $table->index(['category_id', 'subcategory_id']);
+            $table->index(['category_id', 'subcategory_id', 'product_type_id']);
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('product');
+        Schema::dropIfExists('products');
     }
 };

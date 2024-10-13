@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\MenuController;
 
 
 // Public routes
@@ -28,6 +30,11 @@ use App\Http\Controllers\BlogController;
     Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe']);
     Route::get('/blogs', [BlogController::class, 'index']);
     Route::get('/blogs/{id}', [BlogController::class, 'show']);
+    Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/{id}', [ProductController::class, 'show']);
+    // Route::apiResource('products', ProductController::class);
+    Route::get('menu', [MenuController::class, 'index']);
+    
     
 
 // Protected routes
@@ -44,7 +51,8 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('orders', OrderController::class);
     Route::apiResource('order_items', OrderItemController::class);
     Route::apiResource('products', ProductController::class);
-    Route::apiResource('sub_categories', SubCategoryController::class);
+    Route::apiResource('subcategories', SubCategoryController::class);
+    Route::apiResource('product-types', ProductTypeController::class);
     Route::apiResource('tags', TagController::class);
     Route::apiResource('transactions', TransactionController::class);
     Route::apiResource('users', UserController::class);
@@ -62,4 +70,7 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::patch('/blogs/{id}', [BlogController::class, 'update']);
     Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
     Route::delete('/blogs/media/{id}', [BlogController::class, 'deleteMedia']);
+    Route::post('products', [ProductController::class, 'store']);
+    Route::put('products/{id}', [ProductController::class, 'update']);
+    Route::delete('products/{id}', [ProductController::class, 'destroy']);
 });

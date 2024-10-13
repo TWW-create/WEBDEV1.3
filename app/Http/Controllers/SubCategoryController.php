@@ -10,14 +10,40 @@ class SubCategoryController extends Controller
 {
     public function index()
     {
-        $subcategories = SubCategory::with('category', 'products')->get();
-
+        $subcategories = SubCategory::with(['category', 'productTypes', 'products'])->get();
+    
+        $formattedSubcategories = $subcategories->map(function ($subcategory) {
+            return [
+                'id' => $subcategory->id,
+                'name' => $subcategory->name,
+                'category' => [
+                    'id' => $subcategory->category->id,
+                    'name' => $subcategory->category->name,
+                ],
+                'product_types' => $subcategory->productTypes->map(function ($productType) {
+                    return [
+                        'id' => $productType->id,
+                        'name' => $productType->name,
+                    ];
+                }),
+                'products' => $subcategory->products->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'price' => $product->price,
+                        'featured_image' => $product->featured_image,
+                    ];
+                }),
+            ];
+        });
+    
         return response()->json([
-            'message' => 'All subcategories retrieved',
-            'data' => $subcategories,
-            'count' => count($subcategories),
+            'message' => 'All subcategories retrieved with product types and products',
+            'data' => $formattedSubcategories,
+            'count' => count($formattedSubcategories),
         ], 200);
     }
+    
 
     public function store(Request $request)
     {

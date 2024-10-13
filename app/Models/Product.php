@@ -10,17 +10,22 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'description', 'qty', 'price', 'category_id', 'subcategory_id', 'featured_image', 'rank', 'status',
+        'name', 'description', 'qty', 'price', 'category_id', 'sub_category_id', 'product_type_id', 'featured_image', 'rank', 'status',
     ];
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
     public function subCategory()
     {
-        return $this->belongsTo(SubCategory::class, 'subcategory_id');
+        return $this->belongsTo(SubCategory::class, 'sub_category_id');
+    }
+
+    public function productType()
+    {
+        return $this->belongsTo(ProductType::class);
     }
 
     public function tags()
@@ -28,8 +33,8 @@ class Product extends Model
         return $this->belongsToMany(Tag::class, 'product_tags');
     }
 
-    public function views()
+    public function images()
     {
-        return $this->hasMany(View::class);
+        return $this->hasMany(ProductImage::class);
     }
 }

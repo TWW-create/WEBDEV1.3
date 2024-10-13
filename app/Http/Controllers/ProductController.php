@@ -3,37 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Auth;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category', 'subCategory', 'tags', 'views')->get();
-
-        return response()->json([
-            'message' => 'All products retrieved',
-            'data' => $products,
-            'count' => count($products),
-        ], 200);
+        $products = Product::with(['category', 'subCategory', 'productType', 'tags', 'images'])->paginate(15);
+        return response()->json($products);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255', // As description is nullable
-            'qty' => 'required|integer|min:1',
+            'description' => 'nullable|string',
+            'qty' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'category_id' => 'required|integer|exists:categories,id', // Ensure the category exists
-            'subcategory_id' => 'nullable|integer|exists:sub_categories,id', // Check if subcategory exists if provided
-            'featured_image' => 'nullable|string', // Assuming a URL or a path
-            'rank' => 'integer',
-            'status' => 'string|in:available,out of stock,discontinued',
+            'category_id' => 'required|exists:categories,id',
+            'sub_category_id' => [
+                'required',
+                'exists:sub_categories,id',
+                Rule::exists('sub_categories', 'id')->where(function ($query) use ($request) {
+                    return $query->where('category_id', $request->category_id);
+                }),
+            ],
+            'product_type_id' => [
+                'required',
+                'exists:product_types,id',
+                Rule::exists('product_types', 'id')->where(function ($query) use ($request) {
+                    return $query->where('sub_category_id', $request->sub_category_id);
+                }),
+            ],
+            'featured_image' => 'nullable|image|max:2048',
+            'images.*' => 'nullable|image|max:2048',
         ]);
+        
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -41,52 +50,99 @@ class ProductController extends Controller
 
         $product = Product::create($validator->validated());
 
-        return response()->json($product, 201);
+        if ($request->hasFile('featured_image')) {
+            $product->featured_image = $request->file('featured_image')->store('products', 'public');
+            $product->save();
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $image->store('products', 'public'),
+                ]);
+            }
+        }
+
+        if ($request->has('tags')) {
+            $product->tags()->sync($request->tags);
+        }
+
+        return response()->json([
+            'message' => 'Product created successfully',
+            'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'images']),
+        ], 201);
     }
 
     public function show($id)
     {
-        try {
-            return Product::with('category', 'subCategory', 'tags', 'views')->findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
+        $product = Product::with(['category', 'subCategory', 'productType', 'tags', 'images'])->findOrFail($id);
+        return response()->json($product);
     }
 
     public function update(Request $request, $id)
     {
+        $product = Product::findOrFail($id);
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255', // As description is nullable
-            'qty' => 'required|integer|min:1',
+            'description' => 'nullable|string',
+            'qty' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'category_id' => 'required|integer|exists:categories,id', // Ensure the category exists
-            'subcategory_id' => 'nullable|integer|exists:sub_categories,id', // Check if subcategory exists if provided
-            'featured_image' => 'nullable|string', // Assuming a URL or a path
-            'rank' => 'integer',
-            'status' => 'string|in:available,out of stock,discontinued',
+            'category_id' => 'required|exists:categories,id',
+            'sub_category_id' => [
+                'required',
+                'exists:sub_categories,id',
+                Rule::exists('sub_categories', 'id')->where(function ($query) use ($request) {
+                    return $query->where('category_id', $request->category_id);
+                }),
+            ],
+            'product_type_id' => [
+                'required',
+                'exists:product_types,id',
+                Rule::exists('product_types', 'id')->where(function ($query) use ($request) {
+                    return $query->where('sub_category_id', $request->subcategory_id);
+                }),
+            ],
+            'featured_image' => 'nullable|image|max:2048',
+            'images.*' => 'nullable|image|max:2048',
         ]);
-
+        
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $product = Product::findOrFail($id);
-        $product->update($request->all());
+        $product->update($validator->validated());
 
-        return response()->json($product, 200);
+        if ($request->hasFile('featured_image')) {
+            $product->featured_image = $request->file('featured_image')->store('products', 'public');
+            $product->save();
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $image->store('products', 'public'),
+                ]);
+            }
+        }
+
+        if ($request->has('tags')) {
+            $product->tags()->sync($request->tags);
+        }
+
+        return response()->json([
+            'message' => 'Product updated successfully',
+            'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'images']),
+        ]);
     }
 
     public function destroy($id)
     {
-        $product = Product::find($id);
-
-        if (! $product || $product->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
-
+        $product = Product::findOrFail($id);
         $product->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Product deleted successfully']);
     }
 }
