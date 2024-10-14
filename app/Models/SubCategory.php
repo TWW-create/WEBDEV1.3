@@ -22,7 +22,7 @@ class SubCategory extends Model
     }
     public function productTypes()
     {
-        return $this->hasMany(ProductType::class, 'subcategory_id');
+        return $this->hasMany(ProductType::class, 'sub_category_id');
     }
     
 }
