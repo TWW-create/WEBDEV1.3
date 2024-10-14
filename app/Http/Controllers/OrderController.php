@@ -11,16 +11,17 @@ use Validator;
 class OrderController extends Controller
 {
     // TODO: for Admin only
-    // public function index()
-    // {
-    //     $orders = Order::with('orderItems', 'transactions')->get();
+    public function adminAllOrders()
+    {
+        $orders = Order::with('orderItems', 'transactions')->get();
 
-    //     return response()->json([
-    //         'message' => 'All orders retrieved',
-    //         'data' => $orders,
-    //         'count' => count($orders),
-    //     ], 200);
-    // }
+        return response()->json([
+            'message' => 'All orders retrieved',
+            'data' => $orders,
+            'count' => $orders->count(),
+        ], 200);
+    }
+    
     public function index()
     {
         // Get the authenticated user's ID

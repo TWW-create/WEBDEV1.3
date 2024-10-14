@@ -121,6 +121,8 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::put('product-types/{id}', [ProductTypeController::class, 'update']);
     Route::delete('product-types/{id}', [ProductTypeController::class, 'destroy']);
 
+    Route::get('/all-orders', [OrderController::class, 'adminAllOrders']);
+
     Route::post('tags', [TagController::class, 'store']);
     Route::put('tags/{id}', [TagController::class, 'update']);
     Route::delete('tags/{id}', [TagController::class, 'destroy']);
