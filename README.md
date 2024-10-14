@@ -4,6 +4,7 @@ lint with
 ```
 
 -git clone --single-branch --branch master https://github.com/GoodnewsPerfect/bara.git
+-git clone --single-branch --branch BAW-3-backend https://github.com/TWW-create/baraweb.git
 
 -Copy the example environment file to create your own .env file in the project folder: cp .env.example .env 
 

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('rank')->default(0);
             $table->string('status')->default('available');
             $table->timestamps();
-            $table->index(['category_id', 'subcategory_id', 'product_type_id']);
+            $table->index(['category_id', 'sub_category_id', 'product_type_id']);
         });
     }
 

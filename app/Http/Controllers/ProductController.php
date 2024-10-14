@@ -101,7 +101,7 @@ class ProductController extends Controller
                 'required',
                 'exists:product_types,id',
                 Rule::exists('product_types', 'id')->where(function ($query) use ($request) {
-                    return $query->where('sub_category_id', $request->subcategory_id);
+                    return $query->where('sub_category_id', $request->sub_category_id);
                 }),
             ],
             'featured_image' => 'nullable|image|max:2048',
