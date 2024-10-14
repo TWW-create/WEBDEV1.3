@@ -57,11 +57,11 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.resend');
 
-    Route::get('address_infos', [AddressInfoController::class, 'index']);
-    Route::post('address_infos', [AddressInfoController::class, 'store']);
-    Route::get('address_infos/{id}', [AddressInfoController::class, 'show']);
-    Route::put('address_infos/{id}', [AddressInfoController::class, 'update']);
-    Route::delete('address_infos/{id}', [AddressInfoController::class, 'destroy']);
+    Route::get('address-infos', [AddressInfoController::class, 'index']);
+    Route::post('address-infos', [AddressInfoController::class, 'store']);
+    Route::get('address-infos/{id}', [AddressInfoController::class, 'show']);
+    Route::put('address-infos/{id}', [AddressInfoController::class, 'update']);
+    Route::delete('address-infos/{id}', [AddressInfoController::class, 'destroy']);
 
     Route::get('orders', [OrderController::class, 'index']);
     Route::post('orders', [OrderController::class, 'store']);
@@ -69,11 +69,11 @@ Route::middleware('auth:api')->group(function () {
     Route::put('orders/{id}', [OrderController::class, 'update']);
     Route::delete('orders/{id}', [OrderController::class, 'destroy']);
 
-    Route::get('order_items', [OrderItemController::class, 'index']);
-    Route::post('order_items', [OrderItemController::class, 'store']);
-    Route::get('order_items/{id}', [OrderItemController::class, 'show']);
-    Route::put('order_items/{id}', [OrderItemController::class, 'update']);
-    Route::delete('order_items/{id}', [OrderItemController::class, 'destroy']);
+    Route::get('order-items', [OrderItemController::class, 'index']);
+    Route::post('order-items', [OrderItemController::class, 'store']);
+    Route::get('order-items/{id}', [OrderItemController::class, 'show']);
+    Route::put('order-items/{id}', [OrderItemController::class, 'update']);
+    Route::delete('order-items/{id}', [OrderItemController::class, 'destroy']);
 
     Route::get('transactions', [TransactionController::class, 'index']);
     Route::post('transactions', [TransactionController::class, 'store']);
