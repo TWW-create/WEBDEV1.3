@@ -21,6 +21,9 @@ use App\Http\Controllers\MenuController;
 
 
 // Public routes
+Route::get('/', function () {
+    return 'bara web test';
+});
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
