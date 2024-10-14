@@ -35,9 +35,16 @@ Route::get('/', function () {
     Route::get('/blogs/{id}', [BlogController::class, 'show']);
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{id}', [ProductController::class, 'show']);
-    // Route::apiResource('products', ProductController::class);
     Route::get('menu', [MenuController::class, 'index']);
-    
+
+    Route::apiResource('address_infos', AddressInfoController::class);
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('orders', OrderController::class);
+    Route::apiResource('order_items', OrderItemController::class);
+    Route::apiResource('subcategories', SubCategoryController::class);
+    Route::apiResource('product-types', ProductTypeController::class);
+    Route::apiResource('tags', TagController::class);
+      
     
 
 // Protected routes
@@ -49,14 +56,6 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.resend');
 
-    Route::apiResource('address_infos', AddressInfoController::class);
-    Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('orders', OrderController::class);
-    Route::apiResource('order_items', OrderItemController::class);
-    Route::apiResource('products', ProductController::class);
-    Route::apiResource('subcategories', SubCategoryController::class);
-    Route::apiResource('product-types', ProductTypeController::class);
-    Route::apiResource('tags', TagController::class);
     Route::apiResource('transactions', TransactionController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('views', ViewController::class);
