@@ -19,7 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*', 'https://baraweb.waltanforte.com'],
+    'allowed_origins' => [
+        'https://baraweb.waltanforte.com',  // Production frontend
+        'http://localhost:5173',  // Local development frontend
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +32,5 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
-
+    'supports_credentials' => false,  // Set to true if you're using cookies for authentication
 ];
