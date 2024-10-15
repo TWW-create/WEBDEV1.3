@@ -47,9 +47,9 @@ post_max_size = 10M
 ```sh
 php artisan make:model Blog -m
 ```
-
+// clear config cache
 ```sh
-
+php artisan config:clear
 ```
 
 ```sh
