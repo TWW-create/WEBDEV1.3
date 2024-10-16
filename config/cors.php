@@ -19,10 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'https://baraweb.waltanforte.com',  // Production frontend
-        'http://localhost:5173',  // Local development frontend
-    ],
+    'allowed_origins' => ['https://baraweb.waltanforte.com','http://localhost:5173'],
 
     'allowed_origins_patterns' => [],
 
