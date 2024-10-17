@@ -16,7 +16,10 @@ class BannerController extends Controller
     public function index()
     {
         try {
-            $banners = Banner::all();
+            $banners = Banner::all()->map(function ($banner) {
+                $banner->image_url = Storage::url($banner->image_path);
+                return $banner;
+            });
             return response()->json([
                 'message' => 'All banners retrieved successfully',
                 'data' => $banners,
@@ -57,6 +60,8 @@ class BannerController extends Controller
                 'is_active' => $request->is_active ?? true,
             ]);
 
+            $banner->image_url = Storage::url($banner->image_path);
+
             return response()->json([
                 'message' => 'Banner created successfully',
                 'data' => $banner
@@ -71,6 +76,7 @@ class BannerController extends Controller
     {
         try {
             $banner = Banner::findOrFail($id);
+            $banner->image_url = Storage::url($banner->image_path);
             return response()->json([
                 'message' => 'Banner retrieved successfully',
                 'data' => $banner
@@ -110,7 +116,8 @@ class BannerController extends Controller
             }
         
             $banner->fill($request->except('image'));
-            $banner->save(); 
+            $banner->save();
+            $banner->image_url = Storage::url($banner->image_path);
             return response()->json([
                 'message' => 'Banner updated successfully',
                 'data' => $banner
