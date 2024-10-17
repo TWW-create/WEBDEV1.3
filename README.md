@@ -59,3 +59,4 @@ php artisan config:clear
 //issues
 banner update not working
 blog update not working
+

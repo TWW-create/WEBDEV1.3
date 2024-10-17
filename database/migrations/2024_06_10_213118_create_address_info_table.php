@@ -6,34 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
         Schema::create('address_infos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('address_1');
             $table->text('address_2')->nullable();
             $table->string('country');
             $table->string('state_province');
             $table->string('city');
             $table->string('zipcode');
+            $table->text('delivery_address');
+            $table->string('contact_number');
             $table->timestamps();
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('address_info');
+        Schema::dropIfExists('address_infos');
     }
 };

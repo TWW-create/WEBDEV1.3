@@ -11,6 +11,7 @@ class AddressInfo extends Model
 
     protected $fillable = [
         'user_id', 'address_1', 'address_2', 'country', 'state_province', 'city', 'zipcode',
+        'delivery_address', 'contact_number'
     ];
 
     public function user()

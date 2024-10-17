@@ -25,12 +25,6 @@ class DatabaseSeeder extends Seeder
         // Call the AdminUserSeeder
         $this->call(AdminUserSeeder::class);
         
-        // Create Users
-        User::factory(10)->create()->each(function ($user) {
-            // Create Address Info for each user
-            AddressInfo::factory(1)->create(['user_id' => $user->id]);
-        });
-
-        
+               
     }
 }

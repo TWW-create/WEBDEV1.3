@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Notifications\VerifyEmail;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -126,9 +128,18 @@ class AuthController extends Controller
      */
     public function profile()
     {
-        return response()->json(auth()->user());
+        try {
+            $user = Auth::user()->load('addressInfo');
+            return response()->json([
+                'message' => 'Profile retrieved successfully',
+                'data' => $user,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error retrieving profile: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while retrieving profile'], 500);
+        }
     }
-
+    
     /**
      * Log the user out (Invalidate the token).
      *
