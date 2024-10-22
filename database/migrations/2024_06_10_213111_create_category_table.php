@@ -12,16 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::disableForeignKeyConstraints();
-
+    
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->enum('name', ['men', 'women', 'accessories', 'sales'])->unique();
             $table->timestamps();
             $table->index('name');
         });
-
+    
         Schema::enableForeignKeyConstraints();
     }
+    
 
     /**
      * Reverse the migrations.

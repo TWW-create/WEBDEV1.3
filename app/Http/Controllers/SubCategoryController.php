@@ -45,10 +45,20 @@ class SubCategoryController extends Controller
     }
     
 
+
     public function store(Request $request)
     {
-        $subCategory = SubCategory::create($request->all());
-
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|in:ready to wear,tailoring',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        $subCategory = SubCategory::create($validator->validated());
+    
         return response()->json($subCategory, 201);
     }
 
