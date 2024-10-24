@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SubCategory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+
 
 class SubCategoryController extends Controller
 {
@@ -66,7 +66,21 @@ class SubCategoryController extends Controller
     public function show($id)
     {
         try {
-            return SubCategory::with('category', 'products')->findOrFail($id);
+            $subcategory = SubCategory::with(['category', 'productTypes'])->findOrFail($id);
+            return response()->json([
+                'id' => $subcategory->id,
+                'name' => $subcategory->name,
+                'category' => [
+                    'id' => $subcategory->category->id,
+                    'name' => $subcategory->category->name,
+                ],
+                'product_types' => $subcategory->productTypes->map(function ($productType) {
+                    return [
+                        'id' => $productType->id,
+                        'name' => $productType->name,
+                    ];
+                }),
+            ]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'SubCategory not found'], 404);
         }

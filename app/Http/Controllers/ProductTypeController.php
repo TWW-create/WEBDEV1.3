@@ -10,7 +10,7 @@ class ProductTypeController extends Controller
 {
     public function index()
     {
-        $productTypes = ProductType::with('subcategory')->get();
+        $productTypes = ProductType::with(['subcategory.category'])->get();
         return response()->json($productTypes);
     }
 
@@ -27,13 +27,24 @@ class ProductTypeController extends Controller
 
         $productType = ProductType::create($validator->validated());
 
-        return response()->json($productType, 201);
+        return response()->json($productType->load('subcategory.category'), 201);
     }
 
     public function show($id)
     {
-        $productType = ProductType::with('subcategory')->findOrFail($id);
-        return response()->json($productType);
+        $productType = ProductType::with(['subcategory.category'])->findOrFail($id);
+        return response()->json([
+            'id' => $productType->id,
+            'name' => $productType->name,
+            'subcategory' => [
+                'id' => $productType->subcategory->id,
+                'name' => $productType->subcategory->name,
+                'category' => [
+                    'id' => $productType->subcategory->category->id,
+                    'name' => $productType->subcategory->category->name,
+                ],
+            ],
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -51,7 +62,7 @@ class ProductTypeController extends Controller
 
         $productType->update($validator->validated());
 
-        return response()->json($productType);
+        return response()->json($productType->load('subcategory.category'));
     }
 
     public function destroy($id)
