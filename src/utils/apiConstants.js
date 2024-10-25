@@ -1,0 +1,11 @@
+export const BASE_URL = "https://api-baraweb.bam-techservices.com/api";
+export const IMAGE_BASE_URL = "https://api-baraweb.bam-techservices.com/storage";
+export const REGISTER = "/auth/register";
+export const LOGIN = "/auth/login";
+export const BANNER = "banners";
+export const BLOGS = "/blogs";
+export const NEWSLETTER = "/newsletter";
+export const CATEGORY = "/categories";
+export const SUBCATEGORY = "/subcategories";
+export const PRODUCTTYPE = "/product-types";
+export const PRODUCT = "/products";

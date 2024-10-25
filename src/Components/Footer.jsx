@@ -1,5 +1,37 @@
+import { useState } from "react";
+import { useSubscribeNewsletterMutation } from "../redux/slice/newsletterApiSlice";
+import { message } from "antd";
 
 const Footer = () => {
+
+  const [email, setEmail] = useState("");
+  const [ subscribeNewsletter, { isLoading }] = useSubscribeNewsletterMutation()
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSubscribe = async () => {
+    if (!email) {
+      message.error("Please enter a valid email.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      message.error("Please enter a valid email.");
+      return;
+    }
+
+    try {
+      await subscribeNewsletter({ email, is_subscribed: true, }).unwrap();
+      message.success("Subscribed successfully!");
+      setEmail(""); // Reset the email field after success
+      // setIsChecked(false); // Reset the checkbox
+    } catch (error) {
+      message.error("Subscription failed. Please try again.");
+    }
+  };
   return (
     <footer className="bg-black text-white py-20 ">
       <div className="container mx-auto px-4">
@@ -20,8 +52,10 @@ const Footer = () => {
               </label>
             </div>
             <div className="flex items-center mb-4">
-              <input type="email" placeholder="Your email" className="bg-gray-800 text-white p-2 flex-grow rounded-2xl" />
-              <button className="bg-gray-700 p-2 ml-2 rounded-2xl">Submit</button>
+              <input type="email" placeholder="Your email" className="bg-gray-800 text-white p-2 flex-grow rounded-2xl" value={email}
+                onChange={(e) => setEmail(e.target.value)} />
+              <button className="bg-gray-700 p-2 ml-2 rounded-2xl" onClick={handleSubscribe}
+                disabled={isLoading}>{isLoading ? 'Submitting...': "Submit"}</button>
             </div>
             <label className="flex items-center">
               <input type="checkbox" className="mr-2" /> I agree to the Privacy Policy

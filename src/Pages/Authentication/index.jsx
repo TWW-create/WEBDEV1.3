@@ -8,7 +8,7 @@ const Authentication = ({open, setOpen}) => {
         {
           key: '1',
           label: 'Sign in',
-          children: <Login />,
+          children: <Login setOpen={setOpen} />,
         },
         {
           key: '2',

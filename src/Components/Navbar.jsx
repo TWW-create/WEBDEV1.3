@@ -101,7 +101,7 @@ const MegaMenu = () => {
         setSelectedKey([item.key])
     }
     return (
-        <div className='bg-white px-5 py-5 grid grid-cols-6 max-w-5xl gap-8'>
+        <div className='bg-white px-5 py-5 grid grid-cols-6 max-w-6xl gap-8'>
             {/* <div className='space-x-8 flex'> */}
                 <div className="inline-block  h-full col-span-1">
                     <div className='h-full border-r-2 font-bold flex justify-end items-end text-end text-5xl border-black pr-1'>
