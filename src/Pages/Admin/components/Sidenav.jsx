@@ -127,7 +127,7 @@ const Sidenav = ({ open, toggleSidebar }) => {
     <div
       className={`!h-screen ease-in-out ${
         open ? "w-72 md:w-64 lg:w-64" : "hidden lg:block w-16"
-      } bg-[#1E2753] p-3 relative z-50 text-white`}
+      } bg-[#000] p-3 relative z-50 text-white`}
     >
       <div className=' flex justify-center items-center'>
         {/* <div className='flex flex-col items-center '>

@@ -32,7 +32,7 @@ const Topnav = ({toggleSidebar}) => {
         }
     };
   return (
-        <div className='w-full bg-[#070B1D] text-white sticky top-0 z-10 shadow-sm'>
+        <div className='w-full bg-[#000] text-white sticky top-0 z-10 shadow-sm'>
             <div className={`w-[95%] h-16 mx-auto flex justify-between items-center`}>
                 <div className={`flex items-center ml-[-10px]`}>
                     <HiMenuAlt3

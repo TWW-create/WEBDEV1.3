@@ -61,8 +61,8 @@ const AdminProducts = () => {
       key: 'actions',
       render: (_, record) => (
         <div className="space-x-2">
-          <Button icon={<EditOutlined />} className='!text-[#1E5EFF] p-2' onClick={() => navigate(`/admin/products/${record.id}`)} />
-          <Button icon={<DeleteOutlined />} className='!text-[#1E5EFF] p-2' onClick={() =>{
+          <Button icon={<EditOutlined />} className='!text-[#000] p-2' onClick={() => navigate(`/admin/products/${record.id}`)} />
+          <Button icon={<DeleteOutlined />} className='!text-[#000] p-2' onClick={() =>{
             setActiveId(record.id)
             setVisible(true)
           }} />
