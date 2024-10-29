@@ -44,4 +44,33 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+
+    public function updateAttribute($key, $value)
+    {
+        try {
+            if (in_array($key, ['sizes', 'colors']) && isset($value['index'])) {
+                $current = $this->$key;
+                $current[$value['index']] = $value['value'];
+                $this->$key = $current;
+            } else {
+                $this->$key = $value;
+            }
+            $this->save();
+            
+            Log::info("Product attribute updated", [
+                'product_id' => $this->id,
+                'attribute' => $key,
+                'value' => $value
+            ]);
+            
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to update product attribute", [
+                'product_id' => $this->id,
+                'attribute' => $key,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
 }
