@@ -101,13 +101,14 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::get('/newsletter/subscribers', [NewsletterController::class, 'index']);
 
     Route::post('/blogs', [BlogController::class, 'store']);
-    Route::put('/blogs/{id}', [BlogController::class, 'update']);
+    Route::post('/blogs/{id}', [BlogController::class, 'update']);
     Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
     Route::delete('/blogs/media/{id}', [BlogController::class, 'deleteMedia']);
 
     Route::post('products', [ProductController::class, 'store']);
-    Route::put('products/{id}', [ProductController::class, 'update']);
+    Route::post('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
+    Route::delete('products/images/{id}', [ProductController::class, 'deleteImage']);
 
     Route::post('categories', [CategoryController::class, 'store']);
     Route::put('categories/{id}', [CategoryController::class, 'update']);

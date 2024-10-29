@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -121,106 +122,82 @@ class ProductController extends Controller
 
 
     public function update(Request $request, $id)
-{
-    return DB::transaction(function () use ($request, $id) {
-        try {
-            $product = Product::findOrFail($id);
-            
-            // Handle array updates
-            if ($request->has('sizes') && isset($request->sizes['index'])) {
-                $currentSizes = $product->sizes;
-                $currentSizes[$request->sizes['index']] = $request->sizes['value'];
-                $product->sizes = $currentSizes;
-                $product->save();
+    {
+        return DB::transaction(function () use ($request, $id) {
+            try {
+                $product = Product::findOrFail($id);
                 
-                return response()->json([
-                    'message' => 'Product sizes updated successfully',
-                    'product' => $product->fresh()
+                \Log::info('Update request received', [
+                    'request' => $request->all(),
+                    'files' => $request->allFiles()
                 ]);
-            }
-
-            if ($request->has('colors') && isset($request->colors['index'])) {
-                $currentColors = $product->colors;
-                $currentColors[$request->colors['index']] = $request->colors['value'];
-                $product->colors = $currentColors;
-                $product->save();
-                
-                return response()->json([
-                    'message' => 'Product colors updated successfully',
-                    'product' => $product->fresh()
-                ]);
-            }
-
-            // Handle regular field updates
-            $validator = Validator::make($request->all(), [
-                'name' => 'sometimes|string|max:255',
-                'creator' => 'sometimes|string|max:255',
-                'description' => 'sometimes|nullable|string',
-                'sizes' => 'sometimes|array',
-                'sizes.*' => 'string',
-                'colors' => 'sometimes|array',
-                'colors.*' => 'string',
-                'qty' => 'sometimes|integer|min:0',
-                'price' => 'sometimes|numeric|min:0',
-                'category_id' => 'sometimes|exists:categories,id',
-                'sub_category_id' => [
-                    'sometimes',
-                    'exists:sub_categories,id',
-                    Rule::exists('sub_categories', 'id')->where(function ($query) use ($request) {
-                        return $query->where('category_id', $request->category_id);
-                    }),
-                ],
-                'product_type_id' => [
-                    'sometimes',
-                    'exists:product_types,id',
-                    Rule::exists('product_types', 'id')->where(function ($query) use ($request) {
-                        return $query->where('sub_category_id', $request->sub_category_id);
-                    }),
-                ],
-                'status' => 'sometimes|string|in:available,out_of_stock,discontinued',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-
-            $product->update($validator->validated());
-
-            // Handle image updates
-            if ($request->hasFile('featured_image')) {
-                $product->featured_image = $request->file('featured_image')->store('products', 'public');
-                $product->save();
-            }
-
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    ProductImage::create([
-                        'product_id' => $product->id,
-                        'image_path' => $image->store('products', 'public'),
-                    ]);
+    
+                // Handle image updates first
+                if ($request->hasFile('featured_image')) {
+                    $product->featured_image = $request->file('featured_image')->store('products', 'public');
+                    $product->save();
                 }
+    
+                if ($request->hasFile('images')) {
+                    foreach ($request->file('images') as $image) {
+                        ProductImage::create([
+                            'product_id' => $product->id,
+                            'image_path' => $image->store('products', 'public'),
+                        ]);
+                    }
+                }
+    
+                // Handle other field updates
+                $updateData = $request->except(['featured_image', 'images']);
+                if (!empty($updateData)) {
+                    $product->update($updateData);
+                }
+    
+                \Log::info('Update successful', ['product' => $product->toArray()]);
+    
+                return response()->json([
+                    'message' => 'Product updated successfully',
+                    'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'images']),
+                ]);
+    
+            } catch (\Exception $e) {
+                \Log::error('Update failed', [
+                    'error' => $e->getMessage(),
+                    'request' => $request->all()
+                ]);
+                throw $e;
             }
-
-            // Handle tags
-            if ($request->has('tags')) {
-                $product->tags()->sync($request->tags);
+        });
+    }
+    
+    public function deleteImage($id)
+    {
+        return DB::transaction(function () use ($id) {
+            try {
+                $image = ProductImage::findOrFail($id);
+                
+                // Delete file from storage
+                Storage::disk('public')->delete($image->image_path);
+                
+                // Delete record from database
+                $image->delete();
+                
+                \Log::info('Product image deleted', ['image_id' => $id]);
+    
+                return response()->json([
+                    'message' => 'Product image deleted successfully'
+                ]);
+    
+            } catch (\Exception $e) {
+                \Log::error('Failed to delete product image', [
+                    'image_id' => $id,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
             }
-
-            return response()->json([
-                'message' => 'Product updated successfully',
-                'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'images']),
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'message' => 'Failed to update product',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    });
-}
-
+        });
+    }
+    
     
     public function destroy($id)
     {
