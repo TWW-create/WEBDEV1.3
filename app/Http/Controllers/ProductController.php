@@ -125,6 +125,44 @@ class ProductController extends Controller
     {
         return DB::transaction(function () use ($request, $id) {
             try {
+                // Validate the request first
+                $validator = Validator::make($request->all(), [
+                    'name' => 'sometimes|string|max:255',
+                    'creator' => 'sometimes|string|max:255',
+                    'description' => 'sometimes|nullable|string',
+                    'sizes' => 'sometimes|array',
+                    'sizes.*' => 'string',
+                    'colors' => 'sometimes|array',
+                    'colors.*' => 'string',
+                    'qty' => 'sometimes|integer|min:0',
+                    'price' => 'sometimes|numeric|min:0',
+                    'category_id' => 'sometimes|exists:categories,id',
+                    'sub_category_id' => [
+                        'sometimes',
+                        'exists:sub_categories,id',
+                        Rule::exists('sub_categories', 'id')->where(function ($query) use ($request) {
+                            return $query->where('category_id', $request->category_id);
+                        }),
+                    ],
+                    'product_type_id' => [
+                        'sometimes',
+                        'exists:product_types,id',
+                        Rule::exists('product_types', 'id')->where(function ($query) use ($request) {
+                            return $query->where('sub_category_id', $request->sub_category_id);
+                        }),
+                    ],
+                    'featured_image' => 'sometimes|nullable|image|max:2048',
+                    'images.*' => 'sometimes|nullable|image|max:2048',
+                    'status' => 'sometimes|string|in:available,out_of_stock,discontinued',
+                ]);
+    
+                if ($validator->fails()) {
+                    return response()->json([
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+    
                 $product = Product::findOrFail($id);
                 
                 \Log::info('Update request received', [
@@ -132,8 +170,11 @@ class ProductController extends Controller
                     'files' => $request->allFiles()
                 ]);
     
-                // Handle image updates first
                 if ($request->hasFile('featured_image')) {
+                    // Delete old featured image if exists
+                    if ($product->featured_image) {
+                        Storage::disk('public')->delete($product->featured_image);
+                    }
                     $product->featured_image = $request->file('featured_image')->store('products', 'public');
                     $product->save();
                 }
@@ -147,13 +188,10 @@ class ProductController extends Controller
                     }
                 }
     
-                // Handle other field updates
                 $updateData = $request->except(['featured_image', 'images']);
                 if (!empty($updateData)) {
                     $product->update($updateData);
                 }
-    
-                \Log::info('Update successful', ['product' => $product->toArray()]);
     
                 return response()->json([
                     'message' => 'Product updated successfully',
@@ -163,12 +201,22 @@ class ProductController extends Controller
             } catch (\Exception $e) {
                 \Log::error('Update failed', [
                     'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                     'request' => $request->all()
                 ]);
-                throw $e;
+    
+                return response()->json([
+                    'message' => 'Failed to update product',
+                    'error' => $e->getMessage(),
+                    'debug_info' => config('app.debug') ? [
+                        'trace' => $e->getTraceAsString(),
+                        'request' => $request->all()
+                    ] : null
+                ], 400);
             }
         });
     }
+    
     
     public function deleteImage($id)
     {
