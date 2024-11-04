@@ -35,6 +35,12 @@ class ProductController extends Controller
         if ($request->sub_category_id) {
             $query->where('sub_category_id', $request->sub_category_id);
         }
+        // New product type name filter
+        if ($request->product_type) {
+            $query->whereHas('productType', function($q) use ($request) {
+                $q->where('name', 'like', "%{$request->product_type}%");
+            });
+        }        
         if ($request->product_type_id) {
             $query->where('product_type_id', $request->product_type_id);
         }
