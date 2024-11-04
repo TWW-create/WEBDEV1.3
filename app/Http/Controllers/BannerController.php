@@ -36,7 +36,7 @@ class BannerController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'content' => 'required|string|max:1000',
+                'content' => 'string|max:1000',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:40960',
                 'location' => 'required|string|max:255',
                 'start_date' => 'required|date',
@@ -95,7 +95,7 @@ class BannerController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'sometimes|string|max:255',
-                'content' => 'sometimes|string|max:1000',
+                'content' => 'string|max:1000',
                 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:40960',
                 'location' => 'sometimes|string|max:255',
                 'start_date' => 'sometimes|date',
