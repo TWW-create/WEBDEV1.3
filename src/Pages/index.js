@@ -26,6 +26,7 @@ import SubCategoryInfo from "./Admin/Categories/SubCategoryInfo.jsx";
 import AdminProducts from "./Admin/AdminProducts";
 import AddProduct from "./Admin/AdminProducts/AddProduct.jsx";
 import EditProduct from "./Admin/AdminProducts/EditProduct.jsx";
+import BlogDetail from "./Blog/BlogDetail.jsx";
 
 
-export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct}
+export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail}

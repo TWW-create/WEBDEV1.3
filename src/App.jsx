@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Accessories, AddBanner, AddProduct, Admin, AdminBlog, AdminDashboard, AdminProducts, Cart, Categories, CategoryInfo, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
+import { Accessories, AddBanner, AddProduct, Admin, AdminBlog, AdminDashboard, AdminProducts, BlogDetail, Cart, Categories, CategoryInfo, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
 
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
               <Route path='favorites' element={<Favorites />} />
             </Route>
             <Route path="/blog" element={<MainBlog />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
           </Route>
           <Route path="/admin" element={<Admin />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />

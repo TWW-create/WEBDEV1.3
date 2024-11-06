@@ -26,6 +26,21 @@ export const productApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["products", "single_product"],
         }),
+        updateProduct: builder.mutation({
+            query: ({data, id}) => ({
+                url: `/admin${PRODUCT}/${id}`,
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["products", "single_product"],
+        }),
+        deleteProductMedia: builder.mutation({
+            query: (id) => ({
+                url: `admin${PRODUCT}/image/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["products", "single_product"],
+        }),
         getSingleProduct: builder.query({
             query: (id) => ({
                 url: `${PRODUCT}/${id}`,
@@ -40,4 +55,6 @@ export const {
     useGetAllProductsQuery,
     useGetSingleProductQuery,
     useDeleteProductMutation,
+    useUpdateProductMutation,
+    useDeleteProductMediaMutation,
 } = productApiSlice

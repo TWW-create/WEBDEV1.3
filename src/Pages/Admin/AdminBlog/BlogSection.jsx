@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import DeleteBlogPost from './DeleteBlogPost';
-import { BASE_URL } from '../../../utils/apiConstants';
+import { BASE_URL, IMAGE_BASE_URL } from '../../../utils/apiConstants';
 
 const BlogSection = ({ blogs }) => {
 
@@ -39,7 +39,7 @@ const BlogItem = ({ blog }) => {
       <div className="relative">
         {/* Full-width Image without padding */}
         <img
-          src={"https://api-baraweb.bam-techservices.com/storage" + "/" + blog?.media[0]?.file_path}  // Fallback to default image if `blog.image` is null
+          src={IMAGE_BASE_URL+ "/" + blog?.media[0]?.file_path}  // Fallback to default image if `blog.image` is null
           alt={blog.title}
           className="w-full h-52 object-cover rounded-t-md"
         />
@@ -47,7 +47,7 @@ const BlogItem = ({ blog }) => {
 
           {/* Edit and Delete Icons */}
           <div className="flex space-x-2">
-            <FiEdit className="text-blue-500 cursor-pointer" onClick={() => navigate(`/blog/edit/${blog.id}`)} />
+            <FiEdit className="text-blue-500 cursor-pointer" onClick={() => navigate(`/admin/blog/edit/${blog.id}`)} />
             <FiTrash2 className="text-red-500 cursor-pointer" onClick={() => setDeleteVisible(true)} />
           </div>
         </div>

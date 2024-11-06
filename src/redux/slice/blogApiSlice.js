@@ -34,7 +34,7 @@ export const blogApiSlice = apiSlice.injectEndpoints({
             invalidatesTags: ["blog_posts", "single_post",],
         }),
         deleteBlogMedia: builder.mutation({
-            query: ({id}) => ({
+            query: (id) => ({
                 url: `admin${BLOGS}/media/${id}`,
                 method: "DELETE",
             }),
@@ -43,7 +43,7 @@ export const blogApiSlice = apiSlice.injectEndpoints({
         updateBlogPost: builder.mutation({
             query: ({id, data}) => ({
                 url: `admin${BLOGS}/${id}`,
-                method: "PUT",
+                method: "POST",
                 body: data
             }),
             invalidatesTags: ["blog_posts", "single_post"],

@@ -1,11 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetBlogPostQuery } from "../../../redux/slice/blogApiSlice";
-import { Button, Spin } from "antd";
+import { useDeleteBlogMediaMutation, useGetBlogPostQuery } from "../../../redux/slice/blogApiSlice";
+import { Button, message, Spin } from "antd";
 import { IoIosArrowBack } from "react-icons/io";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useState } from "react";
 import dayjs from "dayjs";
 import DeleteBlogPost from "./DeleteBlogPost";
+import { errorCheck } from "../../../utils/utils";
 
 const ViewBlog = () => {
   const { id } = useParams();
@@ -15,9 +16,20 @@ const ViewBlog = () => {
 
   const { data, isLoading } = useGetBlogPostQuery(id);
 
+  const [deleteImage, {isLoading: deleteLoading}] = useDeleteBlogMediaMutation()
+
+  const handleDeleteMedia = async (mediaId) => {
+    try {
+      const res = await deleteImage(mediaId).unwrap();
+      message.success(res.message);
+      setDeleteMediaVisible(false);
+    } catch (error) {
+      errorCheck(error);
+    }
+  };
+
   const blog = data;
 
-  console.log(blog);
 
   if (isLoading) return <div className='flex justify-center items-center pt-10'><Spin size='large' /></div>;
 
@@ -71,18 +83,15 @@ const ViewBlog = () => {
                     </button>
                     {/* Display delete confirmation for media */}
                     {deleteMediaVisible === mediaItem.id && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2">
                         <div className="bg-white p-4 rounded-lg">
-                          <p>Are you sure you want to delete this media?</p>
+                          <p>Are you sure you want to delete this image?</p>
                           <div className="flex space-x-2 mt-2">
                             <Button
                               type="primary"
                               danger
-                              onClick={() => {
-                                // Call a function to handle the deletion of the media item
-                                console.log(`Delete media with id: ${mediaItem.id}`);
-                                setDeleteMediaVisible(null);
-                              }}
+                              onClick={() => handleDeleteMedia(mediaItem.id)}
+                              loading={deleteLoading}
                             >
                               Delete
                             </Button>

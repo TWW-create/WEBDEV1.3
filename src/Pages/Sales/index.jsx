@@ -1,10 +1,10 @@
 import { Tabs } from "antd"
 import ProductsContainer from "../../Components/ProductsContainer";
-import banner from '../../assets/images/men.png'
 import shirt1 from '../../assets/images/shirt1.png';
 import shirt2 from '../../assets/images/shirt2.png';
 import shirt3 from '../../assets/images/shirt3.png';
 import shirt4 from '../../assets/images/shirt4.png';
+import { useGetBannersQuery } from "../../redux/slice/bannerApiSlice";
 
 const products = [
     {
@@ -176,10 +176,14 @@ const Sales = () => {
           children: <ProductsContainer products={products} />,
         },
     ];
+
+    const { data: bannerData } = useGetBannersQuery();
+
+    const banner = bannerData?.data?.find(banner => banner.location === 'Men' && banner.is_active);
   return (
     <div>
         <div className="w-full">
-            <img src={banner} alt="men banner" className="object-cover object-center w-full" />
+            <img src={banner} alt="sales banner" className="object-cover object-center w-full h-[200px]" />
         </div>
         <div className="container mx-auto px-4">
             <Tabs defaultActiveKey="1" items={items} />

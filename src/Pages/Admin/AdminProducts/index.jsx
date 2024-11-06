@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGetAllProductsQuery } from '../../../redux/slice/productApiSlice';
 import { useState } from 'react';
 import DeleteProduct from './DeleteProduct';
+import { IMAGE_BASE_URL } from '../../../utils/apiConstants';
 
 // const getStatusTag = (inventory) => {
 //   if (inventory === 'Out of Stock') {
@@ -16,10 +17,17 @@ const AdminProducts = () => {
 
     const navigate = useNavigate()
 
+    const [currentPage, setCurrentPage] = useState(1);
+
     const [visible, setVisible] = useState(false)
     const [activeId, setActiveId] = useState()
 
-    const { data, isLoading } = useGetAllProductsQuery()
+    const { data, isLoading } = useGetAllProductsQuery({page: currentPage})
+
+    const handlePageChange = (page) => {
+      setCurrentPage(page);
+  };
+
   const columns = [
     {
       title: 'Product',
@@ -27,7 +35,7 @@ const AdminProducts = () => {
       key: 'product_name',
       render: (_, record) => (
         <div className="flex items-center space-x-2">
-          {record.image_url && <Avatar src={record.image_url} size={48} shape='square' />}
+          {record.featured_image && <Avatar src={IMAGE_BASE_URL+ "/" + record?.featured_image} size={48} shape='square' />}
           <div>
             <div className="font-bold">{record.name}</div>
             {/* <div className="text-gray-500">{record.category}</div> */}
@@ -94,7 +102,17 @@ const AdminProducts = () => {
             {/* <Input prefix={<SearchOutlined />} placeholder="Search" className='w-[400px]' /> */}
             </div>
             <Spin spinning={isLoading}>
-              <Table columns={columns} dataSource={data?.data} className='whitespace-nowrap' />
+              <Table 
+                columns={columns} 
+                dataSource={data?.data} 
+                className='whitespace-nowrap'
+                pagination={{
+                  current: currentPage,
+                  pageSize: data?.per_page,
+                  total: data?.total, // Total number of products
+                  onChange: handlePageChange,
+              }}
+              />
             </Spin>
         </div> 
         <DeleteProduct id={activeId} setActiveId={setActiveId} deleteVisible={visible} setDeleteVisible={setVisible} />

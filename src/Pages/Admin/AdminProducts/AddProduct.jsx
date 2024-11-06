@@ -299,7 +299,7 @@ const AddProduct = () => {
             </Form.Item>
           </div>
           <Form.Item>
-            <Button type="primary" loading={isLoading} htmlType="submit" className='py-2 px-6'>
+            <Button type="primary" loading={isLoading} htmlType="submit" className='py-3 px-8 mt-5'>
               Add Product
             </Button>
           </Form.Item>

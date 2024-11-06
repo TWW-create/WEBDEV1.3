@@ -18,9 +18,9 @@ const AdminBlog = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Blog</h2>
-                <Button type='primary rounded-sm flex gap-2 items-center' onClick={() => navigate('/admin/blog/add')}>
+                <Button type='primary' className="rounded-sm flex gap-2 items-center" onClick={() => navigate('/admin/blog/add')}>
                     <FaPlus />
                     <span>Create New Post</span>
                 </Button>
