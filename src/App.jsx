@@ -10,10 +10,14 @@ function App() {
         <Routes>
           <Route element={<HomeWrapper />}>
             <Route path='/' element={<Home />} />
-            <Route path='/men/:tab' element={<Men />} />
-            <Route path='/women/:tab' element={<Women />} />
-            <Route path='/accessories/:tab' element={<Accessories />} />
+            <Route path='/men' element={<Men />} />
+            <Route path='/men/:subCat/:tab' element={<Men />} />
+            <Route path='/women' element={<Women />} />
+            <Route path='/women/:subCat/:tab' element={<Women />} />
+            <Route path='/accessories' element={<Accessories />} />
+            <Route path='/accessories/:subCat/:tab' element={<Accessories />} />
             <Route path='/sales' element={<Sales />} />
+            <Route path='/sales/:subCat/:tab' element={<Sales />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/favorites' element={<Favorites />} />
             <Route path='/products/:id' element={<ProductDetail />} />

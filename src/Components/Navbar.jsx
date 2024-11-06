@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GoSearch } from 'react-icons/go';
 import { LuUser2 } from 'react-icons/lu';
 import { RiShoppingBag3Line } from 'react-icons/ri';
@@ -13,6 +13,7 @@ import MenB from "../assets/images/men.png";
 import WomenB from "../assets/images/women.png";
 import AccesoriesB from "../assets/images/accessories.png";
 import SalesB from "../assets/images/sales.png";
+import PropTypes from 'prop-types';
 
 
 // const MegaMenu = () => {
@@ -205,15 +206,29 @@ import SalesB from "../assets/images/sales.png";
 //   };
 
 const MegaMenu = ({ categoryName }) => {
-    const [selectedKey, setSelectedKey] = useState();
+    // const [selectedKey, setSelectedKey] = useState();
     const { data, isLoading } = useGetCategoriesQuery();
+
+    const navigate = useNavigate();
   
     // Finding the category based on the dynamic `categoryName`
     const category = data?.data?.find((cat) => cat.name === categoryName);
   
     const onMenuItemClick = (item) => {
-      setSelectedKey([item.key]);
-    };
+      // setSelectedKey([item.key]);
+      const clickedSubCategory = category?.sub_categories.find(subCat =>
+        subCat.product_types.some(type => type.id === parseInt(item.key))
+      );
+      
+      // Find the type by key and navigate if it's a product type (not the group header)
+      const clickedType = category?.sub_categories
+        .flatMap(subCat => subCat.product_types)
+        .find(type => type.id === parseInt(item.key));        
+        
+      if (clickedType) {
+        navigate(`/${categoryName}/${clickedSubCategory.id}/${clickedType.name.toLowerCase()}`);
+      }
+    };    
   
     if (!category || isLoading) return null;
   
@@ -232,7 +247,7 @@ const MegaMenu = ({ categoryName }) => {
             <Menu
               key={subCategory.id}
               onClick={onMenuItemClick}
-              selectedKeys={selectedKey}
+              selectedKeys={[]}
               items={[
                 {
                   label: <span className="text-gray-500">{subCategory.name.toUpperCase()}</span>,
@@ -308,17 +323,17 @@ const MegaMenu = ({ categoryName }) => {
                     <ul className="hidden lg:flex space-x-8 text-sm font-bold">
                         <li>
                             <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('women')} >
-                                <Link to={'/women/all'}>Women</Link>
+                                <Link to={'/women'}>Women</Link>
                             </Dropdown>
                         </li>
                         <li>
                             <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('men')} >
-                                <Link to={'/men/all'}>Men</Link>
+                                <Link to={'/men'}>Men</Link>
                             </Dropdown>
                         </li>
                         <li>
                             <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('accessories')} >
-                                <Link to={'/accessories/all'}>Accessories</Link>
+                                <Link to={'/accessories'}>Accessories</Link>
                             </Dropdown>
                         </li>
                         <li><Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('sales')} ><Link to={'/sales'}>Sales</Link></Dropdown></li>
@@ -336,5 +351,9 @@ const MegaMenu = ({ categoryName }) => {
         </div>
     );
 };
+
+MegaMenu.propTypes = {
+  categoryName: PropTypes.string
+}
 
 export default Navbar;

@@ -48,7 +48,7 @@ const ViewBlog = () => {
         <div className="p-3 md:p-7 lg:p-12">
           <div className="flex items-center justify-between mb-4">
             <div className='px-4 py-1 rounded-md bg-white/80 border'>
-              <span className="text-[#131523] text-sm">{dayjs(blog.created_at).format('DD MMMM, YYYY')}</span>
+              <span className="text-[#131523] text-sm">{dayjs(blog?.created_at).format('DD MMMM, YYYY')}</span>
             </div>
             <div className='px-2 py-1 rounded-md bg-white/80 border flex items-center justify-between gap-20'>
               {/* Edit and Delete Icons */}
@@ -59,30 +59,30 @@ const ViewBlog = () => {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-[#131523] tracking-tight mb-7">
-            {blog.title}
+            {blog?.title}
           </h1>
-          <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+          <div dangerouslySetInnerHTML={{ __html: blog?.content }} />
 
           {/* Media Images */}
-          {blog.media?.length > 0 && (
+          {blog?.media?.length > 0 && (
             <div className="mt-6">
               <h3 className="text-xl font-bold">Media</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                {blog.media.map((mediaItem) => (
+                {blog?.media.map((mediaItem) => (
                   <div key={mediaItem.id} className="relative">
                     <img 
                       src={"https://api-baraweb.bam-techservices.com/storage" + "/" + mediaItem.file_path} 
-                      alt={`Media ${mediaItem.id}`} 
+                      alt={`Media ${mediaItem?.id}`} 
                       className="w-full h-48 object-cover rounded" 
                     />
                     <button
                       className="absolute top-2 right-2 text-red-500 bg-white/70 p-1 rounded-sm border border-white"
-                      onClick={() => setDeleteMediaVisible(mediaItem.id)} // Set delete state for media
+                      onClick={() => setDeleteMediaVisible(mediaItem?.id)} // Set delete state for media
                     >
                       <FiTrash2 size={20} />
                     </button>
                     {/* Display delete confirmation for media */}
-                    {deleteMediaVisible === mediaItem.id && (
+                    {deleteMediaVisible === mediaItem?.id && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2">
                         <div className="bg-white p-4 rounded-lg">
                           <p>Are you sure you want to delete this image?</p>
@@ -90,7 +90,7 @@ const ViewBlog = () => {
                             <Button
                               type="primary"
                               danger
-                              onClick={() => handleDeleteMedia(mediaItem.id)}
+                              onClick={() => handleDeleteMedia(mediaItem?.id)}
                               loading={deleteLoading}
                             >
                               Delete
@@ -107,7 +107,7 @@ const ViewBlog = () => {
           )}
         </div>
       </div>
-      <DeleteBlogPost deleteVisible={deleteVisible} setDeleteVisible={setDeleteVisible} id={blog.id} />
+      <DeleteBlogPost deleteVisible={deleteVisible} setDeleteVisible={setDeleteVisible} id={blog?.id} />
     </div>
   );
 };

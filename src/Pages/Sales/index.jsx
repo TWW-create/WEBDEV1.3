@@ -1,185 +1,52 @@
 import { Tabs } from "antd"
-import ProductsContainer from "../../Components/ProductsContainer";
-import shirt1 from '../../assets/images/shirt1.png';
-import shirt2 from '../../assets/images/shirt2.png';
-import shirt3 from '../../assets/images/shirt3.png';
-import shirt4 from '../../assets/images/shirt4.png';
 import { useGetBannersQuery } from "../../redux/slice/bannerApiSlice";
+import ProductsContainer from "../../Components/ProductsContainer";
+import { useEffect, useState } from "react";
+import { useGetAllProductsQuery } from "../../redux/slice/productApiSlice";
+import { useGetCategoriesQuery } from "../../redux/slice/categoryApiSlice";
+import { useParams } from "react-router-dom";
 
-const products = [
-    {
-      name: 'Black Identity T-Shirt',
-      image: shirt1,
-      price: '€84.95',
-      label: 'Online Exclusive',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Orange Identity T-Shirt',
-      image: shirt2,
-      price: '€84.95',
-      label: 'New',
-      sales: true
-    },
-    {
-      name: 'Pink Identity T-Shirt',
-      image: shirt3,
-      price: '€84.95',
-      label: 'New',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Red Identity T-Shirt',
-      image: shirt4,
-      price: '€59.95',
-      label: 'New',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Black Identity T-Shirt',
-      image: shirt1,
-      price: '€84.95',
-      label: 'Online Exclusive',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Pink Identity T-Shirt',
-      image: shirt3,
-      price: '€84.95',
-      label: 'New',
-      sales: true
-    },
-    {
-      name: 'Black Identity T-Shirt',
-      image: shirt1,
-      price: '€84.95',
-      label: 'Online Exclusive',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Orange Identity T-Shirt',
-      image: shirt2,
-      price: '€84.95',
-      label: 'New',
-      sales: true
-    },
-    {
-      name: 'Pink Identity T-Shirt',
-      image: shirt3,
-      price: '€84.95',
-      label: 'New',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Red Identity T-Shirt',
-      image: shirt4,
-      price: '€59.95',
-      label: 'New',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Black Identity T-Shirt',
-      image: shirt1,
-      price: '€84.95',
-      label: 'Online Exclusive',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Pink Identity T-Shirt',
-      image: shirt3,
-      price: '€84.95',
-      label: 'New',
-      sales: true
-    },
-    {
-      name: 'Black Identity T-Shirt',
-      image: shirt1,
-      price: '€84.95',
-      label: 'Online Exclusive',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Orange Identity T-Shirt',
-      image: shirt2,
-      price: '€84.95',
-      label: 'New',
-      sales: true
-    },
-    {
-      name: 'Pink Identity T-Shirt',
-      image: shirt3,
-      price: '€84.95',
-      label: 'New',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Red Identity T-Shirt',
-      image: shirt4,
-      price: '€59.95',
-      label: 'New',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Black Identity T-Shirt',
-      image: shirt1,
-      price: '€84.95',
-      label: 'Online Exclusive',
-      isLiked: true,
-      sales: true
-    },
-    {
-      name: 'Pink Identity T-Shirt',
-      image: shirt3,
-      price: '€84.95',
-      label: 'New',
-      sales: true
-    },
-];
 const Sales = () => {
 
+  const {tab, subCat} = useParams();
 
-    const items = [
-        {
-          key: '1',
-          label: 'All 1',
-          children: <ProductsContainer products={products} />,
-        },
-        {
-          key: '2',
-          label: 'Essentials 2',
-          children: <ProductsContainer products={products} />,
-        },
-        {
-          key: '3',
-          label: 'T-Shirts 4',
-          children: <ProductsContainer products={products} />,
-        },
-        {
-          key: '4',
-          label: 'Swimwear 4',
-          children: <ProductsContainer products={products} />,
-        },
-        {
-          key: '5',
-          label: 'Hoodies & Sweaters 4',
-          children: <ProductsContainer products={products} />,
-        },
-    ];
+  const [defaultKey, setDefaultKey] = useState()
 
     const { data: bannerData } = useGetBannersQuery();
 
-    const banner = bannerData?.data?.find(banner => banner.location === 'Men' && banner.is_active);
+    const banner = bannerData?.data?.find(banner => banner.location === 'Sales' && banner.is_active);
+
+    const { data } = useGetCategoriesQuery();
+
+  const category = data?.data?.find((cat) => cat.name === "accessories");
+
+  const subCategory = category?.sub_categories?.find((sub) => sub.id === parseInt(subCat)) || []
+
+  const productTypes = subCategory?.product_types || [];
+
+  const { data: products, isLoading } = useGetAllProductsQuery({
+    page: 1, 
+    category_id: 4, 
+    sub_category_id: defaultKey !== 'all' ? subCat : undefined, 
+    product_type: defaultKey === 'all' ? undefined : defaultKey
+  })
+
+  const items = [
+    {
+      key: 'all',
+      label: `All`,
+      children: <ProductsContainer products={products?.data} isLoading={isLoading} />,
+    },
+    ...productTypes.map((type) => ({
+      key: type.name.toLowerCase(), // Use lowercase for consistency with URL params
+      label: <p className='capitalize'>{type.name}</p>,
+      children: <ProductsContainer products={products?.data} isLoading={isLoading} />, // Filtered products could go here based on `type.id`
+    })),
+  ];
+  
+  useEffect(() => {
+    setDefaultKey(tab || 'all')
+  }, [tab])
   return (
     <div>
         <div className="w-full">
