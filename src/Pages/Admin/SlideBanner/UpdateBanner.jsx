@@ -8,7 +8,7 @@ import { errorCheck } from "../../../utils/utils";
 import dayjs from "dayjs";
 
 
-const innerLinks = ['product','brand','category','blog','coupon','discount'] 
+const innerLinks = ['Home','Home/Men', 'Home/Women', 'Men', 'Women', 'Accessories', 'Sales'] 
 const {Option} = Select;
 const UpdateBanner = () => {
 
