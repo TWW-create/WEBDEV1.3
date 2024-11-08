@@ -12,7 +12,6 @@ return new class extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->integer('view_count')->default(0);
             $table->text('composition')->nullable();
             $table->json('shipping_details')->nullable();
         });
@@ -21,7 +20,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['view_count', 'composition', 'shipping_details']);
+            $table->dropColumn(['composition', 'shipping_details']);
         });
     }
     
