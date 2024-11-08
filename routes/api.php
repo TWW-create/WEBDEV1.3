@@ -34,10 +34,10 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
 Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe']);
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
+Route::get('/products/trending', [ProductController::class, 'getTrendingProducts']);
 Route::get('products', [ProductController::class, 'index']);
 Route::get('products/{id}', [ProductController::class, 'show']);
 Route::get('products/{slug}', [ProductController::class, 'show']);
-Route::get('/products/trending', [ProductController::class, 'getTrendingProducts']);
 Route::get('menu', [MenuController::class, 'index']);
 
 Route::get('categories', [CategoryController::class, 'index']);

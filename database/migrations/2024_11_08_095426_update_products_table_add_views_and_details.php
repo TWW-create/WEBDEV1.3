@@ -12,10 +12,22 @@ return new class extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('slug')->unique();
+            $table->string('slug')->nullable();
             $table->integer('view_count')->default(0);
             $table->text('composition')->nullable();
             $table->json('shipping_details')->nullable();
+        });
+    
+        // Generate slugs for existing products
+        DB::table('products')->orderBy('id')->each(function ($product) {
+            DB::table('products')
+                ->where('id', $product->id)
+                ->update(['slug' => Str::slug($product->name)]);
+        });
+    
+        // Now add the unique constraint
+        Schema::table('products', function (Blueprint $table) {
+            $table->unique('slug');
         });
     }
     
