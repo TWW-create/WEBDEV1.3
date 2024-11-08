@@ -65,6 +65,11 @@ class AuthController extends Controller
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
 
+        // Update last login timestamp
+        auth()->user()->update([
+            'last_login_at' => now()
+        ]);
+
             return $this->createNewToken($token);
         } catch (\Exception $e) {
             Log::error('Login error: ' . $e->getMessage());
@@ -75,17 +80,33 @@ class AuthController extends Controller
     public function profile()
     {
         try {
-            $user = Auth::user()->load('addressInfo');
-            return response()->json([
-                'message' => 'Profile retrieved successfully',
-                'data' => $user,
+            $user = Auth::user()->load([
+                'addressInfo',
+                'orders',
+                'transactions',
+                'reviews',
+                'favorites',
+                'notifications'
             ]);
+    
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'user' => $user,
+                    'verified' => $user->hasVerifiedEmail(),
+                    'joined_date' => $user->created_at->format('Y-m-d'),
+                    'last_login' => $user->last_login_at
+                ]
+            ], 200);
         } catch (\Exception $e) {
             Log::error('Profile retrieval error: ' . $e->getMessage());
-            return response()->json(['message' => 'An error occurred while retrieving profile'], 500);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error retrieving profile data'
+            ], 500);
         }
     }
-
+    
     public function logout()
     {
         try {

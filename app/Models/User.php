@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Str;
 
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
@@ -26,6 +27,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'email',
         'password',
         'is_admin',
+        'last_login_at',
     ];
 
     /**
@@ -86,5 +88,20 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function isAdmin()
     {
         return $this->is_admin;
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+    
+    public function favoritedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'favorites');
+    }
+    
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

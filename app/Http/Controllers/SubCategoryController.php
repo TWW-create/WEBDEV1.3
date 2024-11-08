@@ -18,9 +18,11 @@ class SubCategoryController extends Controller
             return [
                 'id' => $subcategory->id,
                 'name' => $subcategory->name,
+                'slug' => $subcategory->slug,
                 'category' => [
                     'id' => $subcategory->category->id,
                     'name' => $subcategory->category->name,
+                    'slug' => $subcategory->category->slug
                 ],
                 'product_types' => $subcategory->productTypes->map(function ($productType) {
                     return [
@@ -32,6 +34,7 @@ class SubCategoryController extends Controller
                     return [
                         'id' => $product->id,
                         'name' => $product->name,
+                        'slug' => $product->slug,
                         'price' => $product->price,
                         'featured_image' => $product->featured_image,
                     ];
@@ -51,7 +54,7 @@ class SubCategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|in:ready to wear,tailoring',
+            'name' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
     
@@ -71,9 +74,11 @@ class SubCategoryController extends Controller
             return response()->json([
                 'id' => $subcategory->id,
                 'name' => $subcategory->name,
+                'slug' => $subcategory->slug,
                 'category' => [
                     'id' => $subcategory->category->id,
                     'name' => $subcategory->category->name,
+                    'slug' => $subcategory->category->slug
                 ],
                 'product_types' => $subcategory->productTypes->map(function ($productType) {
                     return [
@@ -94,17 +99,19 @@ class SubCategoryController extends Controller
 
         return response()->json($subCategory, 200);
     }
-
-    public function destroy($id)
+    
+    public function destroy($identifier)
     {
-        $sub_category = SubCategory::find($id);
+        $subCategory = SubCategory::where('id', $identifier)
+            ->orWhere('slug', $identifier)
+            ->firstOrFail();
 
-        if (! $sub_category || $sub_category->user_id !== Auth::id()) {
-            return response()->json(['message' => 'SubCategory not found'], 404);
-        }
+        $subCategory->delete();
 
-        $sub_category->delete();
-
-        return response()->json(null, 204);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Subcategory deleted successfully'
+        ], 200);
     }
+    
 }

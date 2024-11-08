@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -22,6 +23,17 @@ class ProductController extends Controller
         }
         if ($request->creator) {
             $query->where('creator', 'like', "%{$request->creator}%");
+        }
+        if ($request->category_slug) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('slug', $request->category_slug);
+            });
+        }
+        
+        if ($request->subcategory_slug) {
+            $query->whereHas('subCategory', function($q) use ($request) {
+                $q->where('slug', $request->subcategory_slug);
+            });
         }
         if ($request->min_price) {
             $query->where('price', '>=', $request->min_price);
@@ -54,7 +66,10 @@ class ProductController extends Controller
             $query->whereJsonContains('colors', $request->color);
         }
 
-        $products = $query->paginate(15);
+        $sortBy = $request->get('sort_by', 'created_at');
+        $direction = $request->get('direction', 'desc');
+        
+        $products = $query->orderBy($sortBy, $direction)->paginate(15); 
         return response()->json($products);
     }
 
@@ -64,6 +79,8 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'creator' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'composition' => 'nullable|string',
+            'shipping_details' => 'nullable|array',
             'sizes' => 'required|array',
             'sizes.*' => 'string',
             'colors' => 'required|array',
@@ -120,11 +137,46 @@ class ProductController extends Controller
         ], 201);
     }
 
-    public function show($id)
+    /**
+     * @OA\Get(
+     *     path="/api/products/{slug}",
+     *     tags={"Products"},
+     *     summary="Get product details by slug",
+     *     @OA\Parameter(name="slug", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(response=200, description="Success"),
+     *     @OA\Response(response=404, description="Product not found")
+     * )
+     */
+    public function show($identifier)
     {
-        $product = Product::with(['category', 'subCategory', 'productType', 'tags', 'images'])->findOrFail($id);
-        return response()->json($product);
+        $product = Product::with([
+            'category',
+            'subCategory',
+            'productType',
+            'tags',
+            'images'
+        ])
+        ->where('id', $identifier)
+        ->orWhere('slug', $identifier)
+        ->firstOrFail();
+        
+        $product->incrementViewCount();
+        
+        $relatedProducts = Product::where('sub_category_id', $product->sub_category_id)
+            ->where('id', '!=', $product->id)
+            ->take(4)
+            ->get();
+        
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'product' => $product,
+                'related_products' => $relatedProducts
+            ]
+        ]);
     }
+    
+
 
 
     public function update(Request $request, $id)
@@ -260,4 +312,36 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product deleted successfully']);
     }
+
+    public function getTrendingProducts()
+    {
+        $trendingProducts = Product::with(['category', 'subCategory'])
+            ->orderBy('view_count', 'desc')
+            ->take(6)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => $product->price,
+                    'featured_image' => $product->featured_image,
+                    'view_count' => $product->view_count,
+                    'category' => [
+                        'name' => $product->category->name,
+                        'slug' => $product->category->slug
+                    ],
+                    'sub_category' => [
+                        'name' => $product->subCategory->name,
+                        'slug' => $product->subCategory->slug
+                    ]
+                ];
+            });
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => $trendingProducts
+        ]);
+    }
+    
 }

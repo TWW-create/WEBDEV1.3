@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -15,15 +17,56 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        // Admin dashboard logic
-        return response()->json(['message' => 'Welcome to admin dashboard']);
+        $totalUsers = User::count();
+        $totalProducts = Product::count();
+        $totalOrders = Order::count();
+        $totalRevenue = Order::where('status', 'completed')->sum('total');
+        
+        $recentOrders = Order::with('user')
+            ->latest()
+            ->take(5)
+            ->get();
+    
+        $topSellingProducts = Product::withCount('orders')
+            ->orderBy('orders_count', 'desc')
+            ->take(5)
+            ->get();
+    
+        $monthlySales = Order::where('status', 'completed')
+            ->whereYear('created_at', now()->year)
+            ->selectRaw('MONTH(created_at) as month, sum(total) as revenue')
+            ->groupBy('month')
+            ->get();
+    
+        $stockAlerts = Product::where('qty', '<=', 10)->get();
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'metrics' => [
+                    'total_users' => $totalUsers,
+                    'total_products' => $totalProducts,
+                    'total_orders' => $totalOrders,
+                    'total_revenue' => $totalRevenue,
+                ],
+                'recent_orders' => $recentOrders,
+                'top_selling_products' => $topSellingProducts,
+                'monthly_sales' => $monthlySales,
+                'stock_alerts' => $stockAlerts
+            ]
+        ]);
     }
+    
 
     public function getAllUsers()
     {
-        $users = User::all();
-        return response()->json($users);
+        $users = User::with(['profile'])->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $users
+        ], 200);
     }
+    
 
     public function makeAdmin($id)
     {

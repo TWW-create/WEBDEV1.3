@@ -21,10 +21,12 @@ class CategoryController extends Controller
             return [
                 'id' => $category->id,
                 'name' => $category->name,
+                'slug' => $category->slug,
                 'sub_categories' => $category->subCategories->map(function ($subCategory) {
                     return [
                         'id' => $subCategory->id,
                         'name' => $subCategory->name,
+                        'slug' => $subCategory->slug,
                         'product_types' => $subCategory->productTypes->map(function ($productType) {
                             return [
                                 'id' => $productType->id,
@@ -71,13 +73,23 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($identifier)
     {
-        try {
-            return Category::with('subCategories', 'products')->findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
+        $category = Category::with('subCategories', 'products')
+            ->where('id', $identifier)
+            ->orWhere('slug', $identifier)
+            ->firstOrFail();
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'slug' => $category->slug,
+                'sub_categories' => $category->subCategories,
+                'products' => $category->products
+            ]
+        ]);
     }
 
     /**

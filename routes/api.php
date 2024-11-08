@@ -17,6 +17,8 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -34,12 +36,15 @@ Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::get('products', [ProductController::class, 'index']);
 Route::get('products/{id}', [ProductController::class, 'show']);
+Route::get('products/{slug}', [ProductController::class, 'show']);
+Route::get('/products/trending', [ProductController::class, 'getTrendingProducts']);
 Route::get('menu', [MenuController::class, 'index']);
 
 Route::get('categories', [CategoryController::class, 'index']);
 Route::get('categories/{id}', [CategoryController::class, 'show']);
 Route::get('subcategories', [SubCategoryController::class, 'index']);
 Route::get('subcategories/{id}', [SubCategoryController::class, 'show']);
+Route::delete('subcategories/{identifier}', [SubCategoryController::class, 'destroy']);
 Route::get('product-types', [ProductTypeController::class, 'index']);
 Route::get('product-types/{id}', [ProductTypeController::class, 'show']);
 Route::get('tags', [TagController::class, 'index']);
@@ -86,6 +91,18 @@ Route::middleware('auth:api')->group(function () {
     Route::get('views/{id}', [ViewController::class, 'show']);
     Route::put('views/{id}', [ViewController::class, 'update']);
     Route::delete('views/{id}', [ViewController::class, 'destroy']);
+    
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{id}', [FavoriteController::class, 'destroy']);
+    Route::get('/favorites/check/{productId}', [FavoriteController::class, 'check']);
+
+    Route::post('reviews', [ReviewController::class, 'store']);
+    Route::get('products/{productId}/reviews', [ReviewController::class, 'index']);
+    Route::get('user/reviews', [ReviewController::class, 'userReviews']);
+    Route::get('reviews/product/{identifier}', [ReviewController::class, 'getProductReviews']);
+    Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
+    
 });
 
 // Admin routes

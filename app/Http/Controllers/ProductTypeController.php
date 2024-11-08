@@ -16,18 +16,22 @@ class ProductTypeController extends Controller
             return [
                 'id' => $productType->id,
                 'name' => $productType->name,
+                'slug' => $productType->slug,
                 'subcategory' => $productType->subcategory ? [
                     'id' => $productType->subcategory->id,
                     'name' => $productType->subcategory->name,
+                    'slug' => $productType->subcategory->slug,
                     'category' => $productType->subcategory->category ? [
                         'id' => $productType->subcategory->category->id,
                         'name' => $productType->subcategory->category->name,
+                        'slug' => $productType->subcategory->category->slug
                     ] : null,
                 ] : null,
                 'products' => $productType->products->map(function ($product) {
                     return [
                         'id' => $product->id,
                         'name' => $product->name,
+                        'slug' => $product->slug,
                         'creator' => $product->creator,
                         'price' => $product->price,
                         'featured_image' => $product->featured_image,
@@ -36,95 +40,107 @@ class ProductTypeController extends Controller
                 }),
             ];
         });
-
+    
         return response()->json([
-            'message' => 'Product types retrieved successfully',
+            'status' => 'success',
             'data' => $formattedProductTypes,
             'count' => $formattedProductTypes->count()
         ]);
     }
-
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'sub_category_id' => 'required|exists:sub_categories,id',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
         $productType = ProductType::create($validator->validated());
-        return response()->json($productType->load('subcategory.category'), 201);
-    }
-
-    public function show($id)
-    {
-        $productType = ProductType::with(['subcategory.category', 'products'])->find($id);
-
-        if (!$productType) {
-            return response()->json(['message' => 'Product type not found'], 404);
-        }
-
         return response()->json([
-            'id' => $productType->id,
-            'name' => $productType->name,
-            'subcategory' => $productType->subcategory ? [
-                'id' => $productType->subcategory->id,
-                'name' => $productType->subcategory->name,
-                'category' => $productType->subcategory->category ? [
-                    'id' => $productType->subcategory->category->id,
-                    'name' => $productType->subcategory->category->name,
+            'status' => 'success',
+            'data' => $productType->load('subcategory.category')
+        ], 201);
+    }
+    
+    public function show($identifier)
+    {
+        $productType = ProductType::with(['subcategory.category', 'products'])
+            ->where('id', $identifier)
+            ->orWhere('slug', $identifier)
+            ->firstOrFail();
+    
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => $productType->id,
+                'name' => $productType->name,
+                'slug' => $productType->slug,
+                'subcategory' => $productType->subcategory ? [
+                    'id' => $productType->subcategory->id,
+                    'name' => $productType->subcategory->name,
+                    'slug' => $productType->subcategory->slug,
+                    'category' => $productType->subcategory->category ? [
+                        'id' => $productType->subcategory->category->id,
+                        'name' => $productType->subcategory->category->name,
+                        'slug' => $productType->subcategory->category->slug
+                    ] : null
                 ] : null,
-            ] : null,
-            'products' => $productType->products->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'creator' => $product->creator,
-                    'description' => $product->description,
-                    'price' => $product->price,
-                    'qty' => $product->qty,
-                    'featured_image' => $product->featured_image,
-                    'status' => $product->status,
-                    'sizes' => $product->sizes,
-                    'colors' => $product->colors,
-                ];
-            }),
+                'products' => $productType->products->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'slug' => $product->slug,
+                        'creator' => $product->creator,
+                        'description' => $product->description,
+                        'price' => $product->price,
+                        'qty' => $product->qty,
+                        'featured_image' => $product->featured_image,
+                        'status' => $product->status,
+                        'sizes' => $product->sizes,
+                        'colors' => $product->colors,
+                    ];
+                })
+            ]
         ]);
     }
-
-    public function update(Request $request, $id)
+    
+    public function update(Request $request, $identifier)
     {
-        $productType = ProductType::find($id);
-
-        if (!$productType) {
-            return response()->json(['message' => 'Product type not found'], 404);
-        }
-
+        $productType = ProductType::where('id', $identifier)
+            ->orWhere('slug', $identifier)
+            ->firstOrFail();
+    
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'sub_category_id' => 'required|exists:sub_categories,id',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
         $productType->update($validator->validated());
-        return response()->json($productType->load('subcategory.category'));
+        return response()->json([
+            'status' => 'success',
+            'data' => $productType->load('subcategory.category')
+        ]);
     }
-
-    public function destroy($id)
+    
+    public function destroy($identifier)
     {
-        $productType = ProductType::find($id);
-
-        if (!$productType) {
-            return response()->json(['message' => 'Product type not found'], 404);
-        }
-
+        $productType = ProductType::where('id', $identifier)
+            ->orWhere('slug', $identifier)
+            ->firstOrFail();
+    
         $productType->delete();
-        return response()->json(['message' => 'Product type deleted successfully'], 200);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Product type deleted successfully'
+        ]);
     }
+    
 }
