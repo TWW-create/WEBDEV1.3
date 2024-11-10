@@ -8,7 +8,7 @@ import Cart from "./Cart";
 import Blog from "./Blog";
 import MainBlog from "./Blog/MainBlog";
 import ProductDetail from "./ProductDetail";
-import Favorites from "./Profile/Favorites.jsx";
+import Favorites from "./Favorites.jsx";
 import Profile from "./Profile";
 import Admin from "./Admin";
 import AdminDashboard from "./Admin/AdminDashboard";

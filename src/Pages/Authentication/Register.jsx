@@ -2,8 +2,9 @@ import { Link } from "react-router-dom"
 import logo from '../../assets/images/logo.png';
 import { Button, Form, Input, message } from "antd";
 import { useCreateAccountMutation } from "../../redux/slice/authApiSlice";
+import { errorCheck } from "../../utils/utils";
 
-const Register = () => {
+const Register = ({setActiveTab}) => {
 
     const [ createAccount, { isLoading } ] = useCreateAccountMutation();
 
@@ -11,9 +12,9 @@ const Register = () => {
         try {
             const res = await createAccount(values).unwrap();
             message.success("Account created successfully, Please login to continue");
-            console.log(res);
+            setActiveTab('1');
         } catch (error) {
-            console.error(error);
+            errorCheck(error);
         }
     };
   return (

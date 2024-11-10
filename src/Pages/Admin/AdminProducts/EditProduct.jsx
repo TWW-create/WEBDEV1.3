@@ -81,22 +81,24 @@ const EditProduct = () => {
     };
 
     useEffect(() => {
-      if (data) {
+      if (data?.data?.product) {
+        const product = data?.data?.product;
   
         form.setFieldsValue({
-          name: data?.name,
-          description: data?.description,
-          price: data?.price,
-          creator: data?.creator,
-          size: data?.sizes,
-          colors: data?.colors,
-          qty: data?.qty,
-          category_id: data?.category_id,
-          sub_category_id: data?.sub_category_id,
-          product_type_id: data?.product_type_id,
+          name: product?.name,
+          description: product?.description,
+          price: product?.price,
+          creator: product?.creator,
+          size: product?.sizes,
+          colors: product?.colors,
+          qty: product?.qty,
+          category_id: product?.category_id,
+          sub_category_id: product?.sub_category_id,
+          product_type_id: product?.product_type_id,
+          composition: product?.composition,
         });
-        setSelectedCat(data?.category_id)
-        setSelectedSubCat(data?.sub_category_id)
+        setSelectedCat(product?.category_id)
+        setSelectedSubCat(product?.sub_category_id)
         // setFileList([
         //   {
         //     uid: '-1',
@@ -128,17 +130,17 @@ const EditProduct = () => {
           <h3 className="text-xl font-bold">Featured Image</h3>
           <div>
             <img 
-              src={"https://api-baraweb.bam-techservices.com/storage" + "/" + data?.featured_image} 
+              src={"https://api-baraweb.bam-techservices.com/storage" + "/" + data?.data?.product?.featured_image} 
               alt={`Media ${data?.id}`} 
               className="w-full lg:w-4/12 h-60 object-cover rounded" 
             />
           </div>
         </div>
-        {data.images?.length > 0 && (
+        {data?.data?.product?.images?.length > 0 && (
             <div className="mt-6">
               <h3 className="text-xl font-bold">Media</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                {data.images.map((mediaItem) => (
+                {data?.data?.product?.images.map((mediaItem) => (
                   <div key={mediaItem.id} className="relative">
                     <img 
                       src={"https://api-baraweb.bam-techservices.com/storage" + "/" + mediaItem.image_path} 
@@ -228,6 +230,9 @@ const EditProduct = () => {
                 />
               </Form.Item>
             </div>
+            <Form.Item name={'composition'} label="Product Composition">
+              <Input.TextArea placeholder='Enter product composition' />
+            </Form.Item>
             <Form.Item
                 name="product_type_id"
                 label="Product Type"

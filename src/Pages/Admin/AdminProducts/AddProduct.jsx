@@ -74,7 +74,7 @@ const AddProduct = () => {
 
   return (
     <div className="p-4">
-      <SingleHeader header={'Edit Product'} />
+      <SingleHeader header={'Add Product'} />
       <div className="">
         <Form form={form} className='' onFinish={onFinish} layout="vertical">
           <div className=" bg-white p-4 rounded-lg shadow-md">
@@ -121,7 +121,7 @@ const AddProduct = () => {
                     form.setFieldsValue({ product_type_id: null });
                   }}
                   placeholder="Please select the category for this product"
-                  options={subCat?.sub_categories?.map((item) => ({
+                  options={subCat?.data?.sub_categories?.map((item) => ({
                     label: item.name,
                     value: item.id,
                   }))}
@@ -141,6 +141,9 @@ const AddProduct = () => {
                   }))}
                 />
               </Form.Item>
+            <Form.Item name={'composition'} label="Product Composition">
+              <Input.TextArea placeholder='Enter product composition' />
+            </Form.Item>
             <p className='pb-2'>Featured Image</p>
             <div className=''>
               <div className='m-6'>

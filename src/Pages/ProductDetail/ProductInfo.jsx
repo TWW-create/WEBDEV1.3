@@ -1,22 +1,15 @@
 import { Divider } from "antd";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { FiPlus, FiMinus } from "react-icons/fi";
+import { IMAGE_BASE_URL } from "../../utils/apiConstants";
 
-const ProductInfo = () => {
+
+const ProductInfo = ({product}) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("M");
-  const [selectedColor, setSelectedColor] = useState("Black");
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [openAccordion, setOpenAccordion] = useState(null);
-
-  const images = [
-    "https://via.placeholder.com/1000x1000",
-    "https://via.placeholder.com/1000x1000",
-    "https://via.placeholder.com/1000x1000",
-    "https://via.placeholder.com/1000x1000",
-  ];
-
-  const sizes = ["S", "M", "L", "XL", "XXL"];
-  const colors = ["Black", "White", "Blue"];
 
   const toggleAccordion = (section) => {
     if (openAccordion === section) {
@@ -30,18 +23,18 @@ const ProductInfo = () => {
     <div className="px-6 lg:px-10 xl:px-20 pt-12 flex gap-9 flex-col lg:flex-row lg:h-[90vh]">
       <div className="w-full flex-grow">
         <div className="flex flex-col gap-4 mb-3 md:mb-0">
-          {images && (
+          {product?.images && (
             <img
-              src={images[selectedImageIndex]}
+              src={IMAGE_BASE_URL + "/" + product?.images[selectedImageIndex]?.image_path}
               alt="/"
-              className="w-full h-[calc(80vh-80px)] object-cover object-center rounded-md"
+              className="w-full h-[calc(80vh-80px)] object-contain bg-[#eeeeee] object-center rounded-md"
             />
           )}
           <div className="flex gap-5">
-            {images?.map((image, index) => (
+            {product?.images?.map((image, index) => (
               <img
                 key={index}
-                src={image}
+                src={IMAGE_BASE_URL + "/" + image?.image_path}
                 alt="/"
                 className={`w-16 lg:w-20 h-16 lg:h-20 object-cover rounded-md cursor-pointer border hover:border-solid border-primary/70 ${
                   selectedImageIndex === index && "border-2 border-solid !border-black p-1"
@@ -53,12 +46,12 @@ const ProductInfo = () => {
         </div>
       </div>
       <div className="lg:w-[300px] xl:w-[500px] shrink-0 mt-10 lg:mt-0 overflow-y-scroll scrollbar-hide">
-        <h1 className="text-2xl font-bold mb-2">Product Title</h1>
-        <p className="text-xl text-gray-700 mb-4">$99.99</p>
+        <h1 className="text-2xl font-bold mb-2">{product?.name}</h1>
+        <p className="text-xl text-gray-700 mb-4">${product?.price}</p>
         <div className="mb-4 flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700 mb-2">Color:</label>
             <div className="flex gap-2 items-center">
-                {colors.map((color, index) => (
+                {product?.colors?.map((color, index) => (
                 <div
                     key={index}
                     className={`w-9 h-9 flex justify-center items-center ${
@@ -80,10 +73,10 @@ const ProductInfo = () => {
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-4">Size</label>
           <div className="flex gap-2">
-            {sizes.map((size) => (
+            {product?.sizes.map((size) => (
               <div
                 key={size}
-                className={`flex justify-center items-center border h-10 w-10 p-4 rounded-full cursor-pointer ${
+                className={`flex justify-center items-center border h-12 w-12 p-4 rounded-full cursor-pointer ${
                   selectedSize === size ? "border-black" : "border-gray-300"
                 }`}
                 onClick={() => setSelectedSize(size)}
@@ -93,12 +86,12 @@ const ProductInfo = () => {
             ))}
           </div>
           <Divider className="!mb-2" />
-          <p className="text-sm text-gray-500 mt-2">Model is wearing a size Medium</p>
+          {/* <p className="text-sm text-gray-500 mt-2">Model is wearing a size Medium</p> */}
         </div>
         <button className="w-full py-3 bg-black text-white rounded-3xl mb-4">Add to cart</button>
-        <button className="w-full py-3 border rounded-md font-semibold">Size Chart</button>
+        {/* <button className="w-full py-3 border rounded-md font-semibold">Size Chart</button> */}
         <p className="text-sm my-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla condimentum, purus a volutpat dapibus, metus lorem venenatis justo, vel tincidunt turpis libero non enim.
+          {product?.description}
         </p>
         <div className="accordion">
           {["composition", "shipping", "returns"].map((section) => (
@@ -113,7 +106,11 @@ const ProductInfo = () => {
               <Divider className="!my-2" />
               {openAccordion === section && (
                 <div className="p-4">
-                  <p>{`${section.charAt(0).toUpperCase() + section.slice(1)} details go here. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vel omnis dignissimos ipsum eius voluptas accusantium, debitis illum nihil soluta. Nemo aliquam optio fugiat ratione unde necessitatibus minus voluptate doloremque ullam? Vel omnis dignissimos ipsum eius voluptas accusantium, debitis illum nihil soluta. Nemo aliquam optio fugiat ratione unde necessitatibus minus voluptate doloremque ullam? `}</p>
+                  <p>
+                    {section === "composition" && product?.composition}
+                    {section === "shipping" && "Shipping details"}
+                    {section === "returns" && "Returns details"}
+                  </p>
                 </div>
               )}
             </div>
@@ -123,5 +120,9 @@ const ProductInfo = () => {
     </div>
   );
 };
+
+ProductInfo.propTypes = {
+  product: PropTypes.object, 
+}
 
 export default ProductInfo;

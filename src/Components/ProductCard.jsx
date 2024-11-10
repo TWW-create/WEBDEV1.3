@@ -1,6 +1,7 @@
 import { FaHeart } from 'react-icons/fa';
 import { RiHeartLine } from 'react-icons/ri';
 import { IMAGE_BASE_URL } from '../utils/apiConstants';
+import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product }) => {
   return (
@@ -16,7 +17,7 @@ const ProductCard = ({ product }) => {
         <RiHeartLine size={18} />}
       </div>
       <div className="mt-2 md:mt-4">
-        <p className="text-sm lg:text-base">{product.name}</p>
+        <Link to={`/products/${product.id}`} className="text-sm lg:text-base hover:font-bold hover:text-black">{product.name}</Link>
         <p className="font-bold">${product.price}</p>
       </div>
     </div>

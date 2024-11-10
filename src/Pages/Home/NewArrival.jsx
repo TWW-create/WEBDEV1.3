@@ -122,7 +122,7 @@ const NewArrival = () => {
           className="overflow-product-scroll px-4 ml-2 md:ml-1 scrollbar-hide"
           ref={containerRef}
         >
-          <div className="flex flex-nowrap">
+          <div className="flex flex-nowrap w-full">
             {data?.data?.map((product, index) => (
               <div
                 key={index}

@@ -20,7 +20,6 @@ const Login = ({setOpen}) => {
                 navigate("/admin/dashboard");
             }
             setOpen(false);
-            // message.success("Account created successfully, Please login to continue");
         } catch (error) {
             console.error(error);
         }

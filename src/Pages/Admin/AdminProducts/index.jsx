@@ -92,10 +92,10 @@ const AdminProducts = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Products</h2>
-        {data?.data.length > 0 && <div className="space-x-2">
+        <div className="space-x-2">
           {/* <Button icon={<ExportOutlined />}>Export</Button> */}
           <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/products/add')} >Add Product</Button>
-        </div>}
+        </div>
       </div>
         <div className="bg-white p-4 rounded-lg shadow-md overflow-x-scroll scrollbar-hide">
             <div className="flex justify-between items-center mb-4">

@@ -1,5 +1,5 @@
 import { Button } from 'antd'
-import empty from '../../../assets/images/SVG.png'
+import empty from '../../assets/images/SVG.png'
 import { Link } from 'react-router-dom'
 const EmptyFavorites = () => {
   return (

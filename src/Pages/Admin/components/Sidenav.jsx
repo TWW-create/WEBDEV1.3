@@ -70,6 +70,11 @@ const Sidenav = ({ open, toggleSidebar }) => {
           path: "/admin/newsletter",
           icon: <FaRegFolder size={20} />,
       },
+      {
+          name: "Shop",
+          path: "/",
+          icon: <FaRegFolder size={20} />,
+      },
     //   {
     //       name: "Customers",
     //       path: "/customers",

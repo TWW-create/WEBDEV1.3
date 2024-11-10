@@ -1,8 +1,11 @@
 import { Drawer, Tabs } from "antd"
 import Login from "./Login";
 import Register from "./Register";
+import { useState } from "react";
 
 const Authentication = ({open, setOpen}) => {
+
+  const [activeTab, setActiveTab] = useState("1");
 
     const items = [
         {
@@ -13,7 +16,7 @@ const Authentication = ({open, setOpen}) => {
         {
           key: '2',
           label: 'Register',
-          children: <Register />,
+          children: <Register setActiveTab={setActiveTab} />,
         },
 
     ];
@@ -29,7 +32,7 @@ const Authentication = ({open, setOpen}) => {
       className="rest-drawer relative w-full"
       width={window.innerWidth > 1200 ? 300 : 'auto'}
     >
-        <Tabs defaultActiveKey="1" items={items} centered size="large" className="!p-0" />
+        <Tabs  items={items} centered size="large" className="!p-0" activeKey={activeTab} onChange={(key) => setActiveTab(key)} />
     </Drawer>
   )
 }

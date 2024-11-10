@@ -1,55 +1,10 @@
 import  { useRef, useState, useEffect } from 'react';
 import { IoIosArrowDropleft, IoIosArrowDropright } from "react-icons/io";
 import ProductCard from "../../Components/ProductCard";
-import shirt1 from '../../assets/images/shirt1.png';
-import shirt2 from '../../assets/images/shirt2.png';
-import shirt3 from '../../assets/images/shirt3.png';
-import shirt4 from '../../assets/images/shirt4.png';
+import PropTypes from 'prop-types';
 
-const products = [
-  {
-    name: 'Black Identity T-Shirt',
-    image: shirt1,
-    // price: '€84.95',
-    label: 'Online Exclusive',
-    isLiked: true,
-  },
-  {
-    name: 'Orange Identity T-Shirt',
-    image: shirt2,
-    // price: '€84.95',
-    label: 'New',
-  },
-  {
-    name: 'Pink Identity T-Shirt',
-    image: shirt3,
-    // price: '€84.95',
-    label: 'New',
-    isLiked: true,
-  },
-  {
-    name: 'Red Identity T-Shirt',
-    image: shirt4,
-    // price: '€59.95',
-    label: 'New',
-    isLiked: true,
-  },
-  {
-    name: 'Black Identity T-Shirt',
-    image: shirt1,
-    // price: '€84.95',
-    label: 'Online Exclusive',
-    isLiked: true,
-  },
-  {
-    name: 'Pink Identity T-Shirt',
-    image: shirt3,
-    // price: '€84.95',
-    label: 'New',
-  },
-];
 
-const RecommendedItems = () => {
+const RecommendedItems = ({products}) => {
   const containerRef = useRef(null);
   const productRefs = useRef([]);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -123,8 +78,8 @@ const RecommendedItems = () => {
           className="overflow-product-scroll px-4 ml-2 md:ml-1 scrollbar-hide"
           ref={containerRef}
         >
-          <div className="flex flex-nowrap">
-            {products.map((product, index) => (
+          <div className="flex flex-nowrap w-full">
+            {products?.map((product, index) => (
               <div
                 key={index}
                 className="flex-shrink-0 w-5/6 md:w-1/2 lg:w-1/3 xl:w-1/4 mx-2 xl:mx-1 h-full"
@@ -138,6 +93,11 @@ const RecommendedItems = () => {
       </div>
     </section>
   );
+};
+
+
+RecommendedItems.propTypes = {
+  products: PropTypes.array,
 };
 
 export default RecommendedItems;

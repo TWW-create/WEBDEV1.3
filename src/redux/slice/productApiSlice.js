@@ -12,6 +12,11 @@ export const productApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["products"],
         }),
+        getTrendingProducts: builder.query({
+            query: () => ({
+                url: `${PRODUCT}/trending`,
+            }),
+        }),
         createProduct: builder.mutation({
             query: (data) => ({
                 url: `/admin${PRODUCT}`,
@@ -58,4 +63,5 @@ export const {
     useDeleteProductMutation,
     useUpdateProductMutation,
     useDeleteProductMediaMutation,
+    useGetTrendingProductsQuery,
 } = productApiSlice

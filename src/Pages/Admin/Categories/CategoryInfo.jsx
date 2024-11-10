@@ -31,7 +31,7 @@ import { useGetCategoryDetailsQuery } from "../../../redux/slice/categoryApiSlic
         <div className="mt-10">
             <p className="text-xl font-bold">Sub Categories</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
-                {data?.sub_categories?.map((category, index) => (
+                {data?.data?.sub_categories?.map((category, index) => (
                     <CategoryCard
                     key={index}
                     name={category.name}

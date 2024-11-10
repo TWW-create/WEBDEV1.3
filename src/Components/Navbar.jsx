@@ -14,6 +14,8 @@ import WomenB from "../assets/images/women.png";
 import AccesoriesB from "../assets/images/accessories.png";
 import SalesB from "../assets/images/sales.png";
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie'
+import { useSelector } from 'react-redux';
 
 
 // const MegaMenu = () => {
@@ -288,6 +290,10 @@ const MegaMenu = ({ categoryName }) => {
     const [scrolled, setScrolled] = useState(false);
     const [open, setOpen] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState('');
+
+    const { user } = useSelector((state) => state.user);
+
+    const navigate = useNavigate();
     
     const items = [
         {
@@ -301,6 +307,21 @@ const MegaMenu = ({ categoryName }) => {
           }
         },
     ]
+
+
+    const handleProfileClick = () => {
+      const token = Cookies.get('jwtbara')  
+      if (token) {
+        if (user.is_admin === 1) {
+          navigate("/admin/dashboard");
+        }else{
+          navigate('/profile');
+        }
+      } else{
+        setOpen(true);
+      }
+
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -342,8 +363,8 @@ const MegaMenu = ({ categoryName }) => {
                 </div>
                 <div className="hidden lg:flex items-center space-x-4">
                     <GoSearch />
-                    <div onClick={() => setOpen(true)} className='cursor-pointer'><LuUser2 /></div>
-                    <FaRegHeart />
+                    <div onClick={() => handleProfileClick()} className='cursor-pointer'><LuUser2 /></div>
+                    <Link to={'/favorites'}><FaRegHeart /></Link>
                     <Link to={'/cart'}><RiShoppingBag3Line /></Link>
                 </div>
             </nav>
