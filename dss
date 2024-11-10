@@ -1,0 +1,13 @@
+php artisan migrate:rollback --path=/database/migrations/2024_11_08_095426_update_products_table_add_views_and_details.php
+
+php artisan migrate --path=/database/migrations/2024_11_08_095426_update_products_table_add_views_and_details.php
+
+git clone https://github.com/TWW-create/baraweb
+
+npm install
+
+npm run dev
+
+npm run build
+
+php artisan generate:slugs
