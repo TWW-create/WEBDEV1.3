@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 import Sidenav from "./Sidenav"
 import { Tabs } from "antd"
-import Favorites from "./Favorites.jsx"
+import Favorites from "../Favorites.jsx"
 
 const Profile = () => {
 
