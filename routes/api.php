@@ -62,11 +62,14 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.resend');
 
-    Route::get('address-infos', [AddressInfoController::class, 'index']);
-    Route::post('address-infos', [AddressInfoController::class, 'store']);
-    Route::get('address-infos/{id}', [AddressInfoController::class, 'show']);
-    Route::put('address-infos/{id}', [AddressInfoController::class, 'update']);
-    Route::delete('address-infos/{id}', [AddressInfoController::class, 'destroy']);
+// Protected address route
+    Route::get('/addresses', [AddressInfoController::class, 'index']);
+    Route::get('/user/{userId}/addresses', [AddressInfoController::class, 'userAddresses']);
+    Route::get('/my-addresses', [AddressInfoController::class, 'myAddresses']);
+    Route::post('/addresses', [AddressInfoController::class, 'store']);
+    Route::put('/addresses/{id}', [AddressInfoController::class, 'update']);
+    Route::delete('/addresses/{id}', [AddressInfoController::class, 'destroy']);
+    Route::patch('/addresses/{id}/set-delivery', [AddressInfoController::class, 'setDeliveryAddress']);
 
     Route::get('orders', [OrderController::class, 'index']);
     Route::post('orders', [OrderController::class, 'store']);

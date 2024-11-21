@@ -12,20 +12,70 @@ use Validator;
 
 class AddressInfoController extends Controller
 {
+    // Get all addresses
     public function index()
     {
         try {
             $addressInfos = AddressInfo::with('user:id,first_name,last_name')->get();
             return response()->json([
-                'message' => 'All Address Info retrieved',
-                'data' => $addressInfos,
+                'message' => 'All addresses retrieved successfully',
+                'data' => $addressInfos
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error retrieving address info: ' . $e->getMessage());
-            return response()->json(['message' => 'An error occurred while retrieving address info'], 500);
+            Log::error('Error retrieving all addresses: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to retrieve addresses',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
+    // Get authenticated user's addresses
+    public function myAddresses()
+    {
+        try {
+            $addresses = AddressInfo::where('user_id', Auth::id())->get();
+            return response()->json([
+                'message' => 'Your addresses retrieved successfully',
+                'data' => $addresses
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error retrieving user addresses: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to retrieve your addresses',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Get addresses for a specific user
+    public function userAddresses($userId)
+    {
+        try {
+            $user = User::findOrFail($userId);
+            $addresses = AddressInfo::where('user_id', $userId)
+                ->with('user:id,first_name,last_name')
+                ->get();
+            
+            return response()->json([
+                'message' => 'User addresses retrieved successfully',
+                'data' => $addresses
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'User not found',
+                'error' => $e->getMessage()
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error retrieving user addresses: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to retrieve user addresses',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Add new address
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -35,47 +85,73 @@ class AddressInfoController extends Controller
             'state_province' => 'required|string|max:50',
             'country' => 'required|string|max:100',
             'zipcode' => 'required|string|max:20',
-            'delivery_address' => 'nullable|string',
+            'delivery_address' => 'nullable|boolean',
             'contact_number' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         try {
             $userId = Auth::id();
-            $addressInfo = AddressInfo::updateOrCreate(
-                ['user_id' => $userId],
+            
+            if ($request->delivery_address) {
+                AddressInfo::where('user_id', $userId)
+                    ->update(['delivery_address' => false]);
+            }
+
+            $addressInfo = AddressInfo::create(
                 array_merge($validator->validated(), ['user_id' => $userId])
             );
 
             return response()->json([
-                'message' => 'Address Info created/updated successfully',
-                'data' => $addressInfo->load('user:id,first_name,last_name'),
+                'message' => 'Address added successfully',
+                'data' => $addressInfo
             ], 201);
         } catch (\Exception $e) {
-            Log::error('Error creating/updating address info: ' . $e->getMessage());
-            return response()->json(['message' => 'An error occurred while creating/updating address info'], 500);
+            Log::error('Error creating address: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to create address',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
-    public function show($id)
+    // Set delivery address
+    public function setDeliveryAddress($id)
     {
         try {
-            $addressInfo = AddressInfo::with('user:id,first_name,last_name')->findOrFail($id);
-            if (!Auth::user()->isAdmin() && $addressInfo->user_id !== Auth::id()) {
-                return response()->json(['message' => 'Unauthorized'], 403);
-            }
-            return response()->json($addressInfo);
+            $address = AddressInfo::where('user_id', Auth::id())
+                ->findOrFail($id);
+
+            AddressInfo::where('user_id', Auth::id())
+                ->update(['delivery_address' => false]);
+
+            $address->update(['delivery_address' => true]);
+
+            return response()->json([
+                'message' => 'Delivery address updated successfully',
+                'data' => $address
+            ], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Address Info not found'], 404);
+            return response()->json([
+                'message' => 'Address not found',
+                'error' => $e->getMessage()
+            ], 404);
         } catch (\Exception $e) {
-            Log::error('Error retrieving address info: ' . $e->getMessage());
-            return response()->json(['message' => 'An error occurred while retrieving address info'], 500);
+            Log::error('Error setting delivery address: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to set delivery address',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
+    // Update address
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -85,46 +161,68 @@ class AddressInfoController extends Controller
             'state_province' => 'required|string|max:50',
             'country' => 'required|string|max:100',
             'zipcode' => 'required|string|max:20',
-            'delivery_address' => 'nullable|string',
+            'delivery_address' => 'nullable|boolean',
             'contact_number' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         try {
-            $addressInfo = AddressInfo::findOrFail($id);
-            if (!Auth::user()->isAdmin() && $addressInfo->user_id !== Auth::id()) {
-                return response()->json(['message' => 'Unauthorized'], 403);
+            $address = AddressInfo::where('user_id', Auth::id())
+                ->findOrFail($id);
+
+            if ($request->delivery_address) {
+                AddressInfo::where('user_id', Auth::id())
+                    ->update(['delivery_address' => false]);
             }
-            $addressInfo->update($validator->validated());
+
+            $address->update($validator->validated());
+            
             return response()->json([
-                'message' => 'Address Info updated successfully',
-                'data' => $addressInfo->load('user:id,first_name,last_name'),
-            ]);
+                'message' => 'Address updated successfully',
+                'data' => $address
+            ], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Address Info not found'], 404);
+            return response()->json([
+                'message' => 'Address not found',
+                'error' => $e->getMessage()
+            ], 404);
         } catch (\Exception $e) {
-            Log::error('Error updating address info: ' . $e->getMessage());
-            return response()->json(['message' => 'An error occurred while updating address info'], 500);
+            Log::error('Error updating address: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to update address',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
+    // Delete address
     public function destroy($id)
     {
         try {
-            $addressInfo = AddressInfo::findOrFail($id);
-            if (!Auth::user()->isAdmin() && $addressInfo->user_id !== Auth::id()) {
-                return response()->json(['message' => 'Unauthorized'], 403);
-            }
-            $addressInfo->delete();
-            return response()->json(['message' => 'Address Info deleted successfully'], 204);
+            $address = AddressInfo::where('user_id', Auth::id())
+                ->findOrFail($id);
+                
+            $address->delete();
+            return response()->json([
+                'message' => 'Address deleted successfully'
+            ], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Address Info not found'], 404);
+            return response()->json([
+                'message' => 'Address not found',
+                'error' => $e->getMessage()
+            ], 404);
         } catch (\Exception $e) {
-            Log::error('Error deleting address info: ' . $e->getMessage());
-            return response()->json(['message' => 'An error occurred while deleting address info'], 500);
+            Log::error('Error deleting address: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to delete address',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }
