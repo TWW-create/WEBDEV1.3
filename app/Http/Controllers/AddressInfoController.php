@@ -35,7 +35,7 @@ class AddressInfoController extends Controller
             'state_province' => 'required|string|max:50',
             'country' => 'required|string|max:100',
             'zipcode' => 'required|string|max:20',
-            'delivery_address' => 'required|string',
+            'delivery_address' => 'nullable|string',
             'contact_number' => 'required|string',
         ]);
 
@@ -85,7 +85,7 @@ class AddressInfoController extends Controller
             'state_province' => 'required|string|max:50',
             'country' => 'required|string|max:100',
             'zipcode' => 'required|string|max:20',
-            'delivery_address' => 'required|string',
+            'delivery_address' => 'nullable|string',
             'contact_number' => 'required|string',
         ]);
 
