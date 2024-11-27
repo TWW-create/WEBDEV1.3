@@ -43,13 +43,25 @@ class BannerController extends Controller
                 'end_date' => 'required|date|after:start_date',
                 'is_active' => 'boolean',
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
-
+    
+            // Check if active banner exists at the requested location
+            $existingBanner = Banner::where('location', $request->location)
+                ->where('is_active', true)
+                ->first();
+    
+            if ($existingBanner) {
+                return response()->json([
+                    'message' => 'An active banner already exists at this location',
+                    'existing_banner' => $existingBanner
+                ], 409);
+            }
+    
             $imagePath = $request->file('image')->store('banners', 'public');
-
+    
             $banner = Banner::create([
                 'title' => $request->title,
                 'content' => $request->content,
@@ -59,9 +71,9 @@ class BannerController extends Controller
                 'end_date' => $request->end_date,
                 'is_active' => $request->is_active ?? true,
             ]);
-
+    
             $banner->image_url = url(Storage::url($banner->image_path));
-
+    
             return response()->json([
                 'message' => 'Banner created successfully',
                 'data' => $banner
@@ -71,6 +83,7 @@ class BannerController extends Controller
             return response()->json(['message' => 'An error occurred while creating the banner'], 500);
         }
     }
+    
 
     public function show($id)
     {
@@ -95,7 +108,7 @@ class BannerController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'sometimes|string|max:255',
-                'content' => 'string|max:1000',
+                'content' => 'sometimes|string|max:1000',
                 'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:40960',
                 'location' => 'sometimes|string|max:255',
                 'start_date' => 'sometimes|date',
@@ -108,16 +121,39 @@ class BannerController extends Controller
             }
         
             $banner = Banner::findOrFail($id);
-        
+            
+            // Handle location update with active banner check
+            if ($request->has('location') && $request->location !== $banner->location) {
+                $existingBanner = Banner::where('location', $request->location)
+                    ->where('is_active', true)
+                    ->where('id', '!=', $id)
+                    ->first();
+    
+                if ($existingBanner) {
+                    return response()->json([
+                        'message' => 'An active banner already exists at this location',
+                        'existing_banner' => $existingBanner
+                    ], 409);
+                }
+            }
+    
+            // Handle image update
             if ($request->hasFile('image')) {
                 Storage::disk('public')->delete($banner->image_path);
                 $imagePath = $request->file('image')->store('banners', 'public');
                 $banner->image_path = $imagePath;
             }
+    
+            // Update only the fields that are present in the request
+            foreach ($request->only(['title', 'content', 'location', 'start_date', 'end_date', 'is_active']) as $key => $value) {
+                if ($request->has($key)) {
+                    $banner->$key = $value;
+                }
+            }
         
-            $banner->fill($request->except('image'));
             $banner->save();
             $banner->image_url = url(Storage::url($banner->image_path));
+            
             return response()->json([
                 'message' => 'Banner updated successfully',
                 'data' => $banner
@@ -129,7 +165,8 @@ class BannerController extends Controller
             Log::error('Error updating banner: ' . $e->getMessage());
             return response()->json(['message' => 'An error occurred while updating the banner'], 500);
         }
-    }    
+    }
+       
 
     public function destroy($id)
     {

@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\PolicyController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -52,6 +53,11 @@ Route::get('tags/{id}', [TagController::class, 'show']);
 
 Route::get('/banners', [BannerController::class, 'index']);
 Route::get('/banners/{id}', [BannerController::class, 'show']);
+
+//others
+Route::get('shipping-policy', [PolicyController::class, 'getShippingPolicy']);
+Route::get('return-policy', [PolicyController::class, 'getReturnPolicy']);
+Route::get('faqs', [PolicyController::class, 'getFaqs']);
 
 // Authenticated routes
 Route::middleware('auth:api')->group(function () {
@@ -153,4 +159,22 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::get('users/{id}', [UserController::class, 'show']);
     Route::put('users/{id}', [UserController::class, 'update']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
+
+    // Shipping Policy Routes
+    Route::post('shipping-policy', [PolicyController::class, 'updateShippingPolicy']);
+
+    // Return Policy Routes
+    Route::post('return-policy', [PolicyController::class, 'updateReturnPolicy']);
+
+    // FAQ Routes
+    Route::post('faqs', [PolicyController::class, 'createFaq']);
+    Route::put('faqs/{faq}', [PolicyController::class, 'updateFaq']);
+    Route::delete('faqs/{faq}', [PolicyController::class, 'deleteFaq']);
+
+    //inactives
+    Route::get('shipping-policy/inactive', [PolicyController::class, 'getInactiveShippingPolicies']);
+    Route::get('return-policy/inactive', [PolicyController::class, 'getInactiveReturnPolicies']);
+    Route::get('faqs/inactive', [PolicyController::class, 'getInactiveFaqs']);
+
+
 });
