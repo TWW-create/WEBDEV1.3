@@ -17,6 +17,9 @@ const Accessories = () => {
 
   const banner = bannerData?.data?.find(banner => banner.location === 'Accessories' && banner.is_active);
 
+  console.log(banner);
+  
+
   const { data } = useGetCategoriesQuery();
 
   const category = data?.data?.find((cat) => cat.name === "accessories");
@@ -51,7 +54,7 @@ const Accessories = () => {
   return (
     <div>
         <div className="w-full">
-            <img src={banner} alt="accessories banner" className="object-cover object-center w-full h-[200px]" />
+            <img src={banner?.image_url} alt="accessories banner" className="object-cover object-center w-full h-[200px]" />
         </div>
         <div className="container mx-auto px-4">
             <Tabs activeKey={defaultKey} onChange={setDefaultKey} items={items} />

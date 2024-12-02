@@ -1,9 +1,14 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 import Sidenav from "./Sidenav"
 import { Tabs } from "antd"
-import Favorites from "./Favorites.jsx"
+import Favorites from "../Favorites.jsx"
+import { useEffect } from "react"
+import Cookies from "js-cookie";
+
 
 const Profile = () => {
+
+    const navigate = useNavigate();
 
     const items = [
         {
@@ -23,6 +28,12 @@ const Profile = () => {
         },
         
     ]
+
+    useEffect(() => {
+        if (!Cookies.get('jwtbara')) {
+          navigate('/');
+        }
+      }, [navigate]);
 
 
   return (

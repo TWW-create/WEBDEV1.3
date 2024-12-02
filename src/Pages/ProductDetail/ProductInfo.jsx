@@ -1,15 +1,46 @@
-import { Divider } from "antd";
+import { Divider, message } from "antd";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import { IMAGE_BASE_URL } from "../../utils/apiConstants";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../redux/slice/cartSlice";
 
 
-const ProductInfo = ({product}) => {
+const ProductInfo = ({product, shipping, returns}) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [openAccordion, setOpenAccordion] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const cart = useSelector((state) => state.cart.cart);
+
+  console.log(cart);
+  
+
+
+  const handleAddToCart = () => {
+    if (!selectedColor || !selectedSize) {
+      return; // Ensure the necessary selections are made
+    }
+  
+    dispatch(
+      addToCart({
+        id: product?.id,
+        name: product.name,
+        price: product.price,
+        selectedColor: selectedColor,
+        selectedSize: selectedSize,
+        quantity: 1,
+        image: product?.images?.[selectedImageIndex]?.image_path,
+      })
+    );
+    message.success(`${product?.name} added to cart successfully!`);
+  };
+  
+  
 
   const toggleAccordion = (section) => {
     if (openAccordion === section) {
@@ -18,6 +49,7 @@ const ProductInfo = ({product}) => {
       setOpenAccordion(section);
     }
   };
+
 
   return (
     <div className="px-6 lg:px-10 xl:px-20 pt-12 flex gap-9 flex-col lg:flex-row lg:h-[90vh]">
@@ -88,7 +120,15 @@ const ProductInfo = ({product}) => {
           <Divider className="!mb-2" />
           {/* <p className="text-sm text-gray-500 mt-2">Model is wearing a size Medium</p> */}
         </div>
-        <button className="w-full py-3 bg-black text-white rounded-3xl mb-4">Add to cart</button>
+        <button 
+          className={`w-full py-3 rounded-3xl mb-4 ${
+            !selectedColor || !selectedSize
+              ? "bg-gray-600 text-white/80 cursor-not-allowed"
+              : "bg-black text-white"
+          }`}
+          disabled={!selectedColor || !selectedSize}
+          onClick={handleAddToCart}
+        >Add to cart</button>
         {/* <button className="w-full py-3 border rounded-md font-semibold">Size Chart</button> */}
         <p className="text-sm my-4">
           {product?.description}
@@ -108,8 +148,8 @@ const ProductInfo = ({product}) => {
                 <div className="p-4">
                   <p>
                     {section === "composition" && product?.composition}
-                    {section === "shipping" && "Shipping details"}
-                    {section === "returns" && "Returns details"}
+                    {section === "shipping" && shipping}
+                    {section === "returns" && returns}
                   </p>
                 </div>
               )}

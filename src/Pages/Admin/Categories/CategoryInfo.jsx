@@ -27,7 +27,7 @@ import { useGetCategoryDetailsQuery } from "../../../redux/slice/categoryApiSlic
     }
   return (
     <div>
-        <SingleHeader header={data?.name} />
+        <SingleHeader header={data?.data?.name} />
         <div className="mt-10">
             <p className="text-xl font-bold">Sub Categories</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">

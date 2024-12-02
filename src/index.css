@@ -37,3 +37,8 @@
 .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled){
     color: #fff!important;
   }
+
+.profile-select .ant-select-selector {
+    padding: 0.25rem !important;
+    padding: 0.25rem !important;
+}

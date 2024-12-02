@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../slice/apiSlice";
 import userReducer from "../slice/userSlice";
 import storage from "redux-persist/lib/storage";
+import cartReducer from '../slice/cartSlice';
+
 import { persistReducer, persistStore } from "redux-persist";
 import {
   FLUSH,
@@ -17,11 +19,18 @@ const userPersistConfig = {
   storage,
 };
 
+const cartPersistConfig = {
+  key: 'cart',
+  storage,
+};
+
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
 
 export const store = configureStore({
   reducer: {
     user: persistedUserReducer,
+    cart: persistedCartReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

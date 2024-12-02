@@ -8,7 +8,6 @@ import Cart from "./Cart";
 import Blog from "./Blog";
 import MainBlog from "./Blog/MainBlog";
 import ProductDetail from "./ProductDetail";
-import Favorites from "./Favorites.jsx";
 import Profile from "./Profile";
 import Admin from "./Admin";
 import AdminDashboard from "./Admin/AdminDashboard";
@@ -27,6 +26,9 @@ import AdminProducts from "./Admin/AdminProducts";
 import AddProduct from "./Admin/AdminProducts/AddProduct.jsx";
 import EditProduct from "./Admin/AdminProducts/EditProduct.jsx";
 import BlogDetail from "./Blog/BlogDetail.jsx";
+import Favorites from "./Favorites.jsx";
+import ProfileInfo from "./Profile/ProfileInfo.jsx";
+import AdminSettings from "./Admin/AdminSettings";
 
 
-export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail}
+export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings}

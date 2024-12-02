@@ -6,7 +6,7 @@ const ArticleCard = ({article}) => {
   const navigate = useNavigate()
   
   return (
-    <div className="w-full">
+    <div className="w-full cursor-pointer" onClick={() => navigate(`/blog/${article?.id}`)}>
         <div className="w-full relative mx-auto h-auto overflow-hidden ">
             <img src={IMAGE_BASE_URL + "/" + article?.media[0]?.file_path} alt={article?.title} className="w-full h-80 object-cover object-center transition-all duration-300 hover:scale-110" />
         </div>

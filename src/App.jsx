@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Accessories, AddBanner, AddProduct, Admin, AdminBlog, AdminDashboard, AdminProducts, BlogDetail, Cart, Categories, CategoryInfo, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
+import { Accessories, AddBanner, AddProduct, Admin, AdminBlog, AdminDashboard, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import ScrollToTop from "./Components/ScrollToTop";
 
 
 function App() {
@@ -7,6 +9,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop>
         <Routes>
           <Route element={<HomeWrapper />}>
             <Route path='/' element={<Home />} />
@@ -21,7 +24,12 @@ function App() {
             <Route path='/cart' element={<Cart />} />
             <Route path='/favorites' element={<Favorites />} />
             <Route path='/products/:id' element={<ProductDetail />} />
-            <Route path='profile' element={<Profile />}>
+            <Route path='profile' element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }>
+              <Route index element={<ProfileInfo />} />
               <Route path='favorites' element={<Favorites />} />
             </Route>
             <Route path="/blog" element={<MainBlog />} />
@@ -29,6 +37,7 @@ function App() {
           </Route>
           <Route path="/admin" element={<Admin />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/products" element={<AdminProducts/>} />
             <Route path="/admin/products/add" element={<AddProduct/>} />
             <Route path="/admin/products/:id" element={<EditProduct/>} />
@@ -45,6 +54,7 @@ function App() {
             <Route path="/admin/banners/add" element={<AddBanner />} />
           </Route>
         </Routes>
+        </ScrollToTop>
       </BrowserRouter>
     </>
   )

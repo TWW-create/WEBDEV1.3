@@ -1,13 +1,19 @@
-// import React from 'react'
-
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../../redux/slice/userSlice";
+import { message } from "antd";
+import { errorCheck } from "../../utils/utils";
+import { useDispatch } from "react-redux";
+// import { apiSlice } from "../../redux/slice/apiSlice";
 
 const Sidenav = () => {
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
     const navLinks = [
         {
-          title: "Favorites",
-          href: "/profile/favorites",
+          title: "Profile Information",
+          href: "/profile",
         },
         {
           title: "Order History",
@@ -18,6 +24,17 @@ const Sidenav = () => {
           href: "/profile/favorites",
         },
     ];
+
+    const logoutHandler = async () => {
+      try {
+        dispatch(logout());
+        // dispatch(apiSlice.util.resetApiState())
+        navigate("/");
+        message.success('Logged out successfully')
+      } catch (error) {
+        errorCheck(error)
+      }
+  };
   return (
     <div className='lg:h-[100vh]'>
         <div className='hidden lg:w-[240px] xl:w-[284px] lg:fixe lg:flex px-[30px] h-full border-r'>
@@ -40,6 +57,7 @@ const Sidenav = () => {
                     <span className=''>{link?.title}</span>
                     </NavLink>
                 ))}
+                <p className={`w-full flex justify-start font-semibold text-sm items-center p-1 text-[#000000] mb-2 cursor-pointer`} onClick={() => logoutHandler()}>Logout</p>
             </div>
         </div>
     </div>

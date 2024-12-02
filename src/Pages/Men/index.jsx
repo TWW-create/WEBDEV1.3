@@ -54,7 +54,7 @@ const Men = () => {
   return (
     <div>
       <div className="w-full">
-        <img src={banner} alt="men banner" className="object-cover object-center w-full h-[200px]" />
+        <img src={banner?.img_url} alt="men banner" className="object-cover object-center w-full h-[200px]" />
       </div>
       <div className="container mx-auto px-4">
         <Tabs activeKey={defaultKey} onChange={setDefaultKey} items={items} />

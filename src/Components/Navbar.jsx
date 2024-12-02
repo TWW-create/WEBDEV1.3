@@ -292,6 +292,7 @@ const MegaMenu = ({ categoryName }) => {
     const [hoveredCategory, setHoveredCategory] = useState('');
 
     const { user } = useSelector((state) => state.user);
+    const { cart } = useSelector((state) => state.cart); 
 
     const navigate = useNavigate();
     
@@ -362,10 +363,19 @@ const MegaMenu = ({ categoryName }) => {
                     </ul>
                 </div>
                 <div className="hidden lg:flex items-center space-x-4">
-                    <GoSearch />
-                    <div onClick={() => handleProfileClick()} className='cursor-pointer'><LuUser2 /></div>
-                    <Link to={'/favorites'}><FaRegHeart /></Link>
-                    <Link to={'/cart'}><RiShoppingBag3Line /></Link>
+                    <GoSearch className="text-xl" />
+                    <div onClick={() => handleProfileClick()} className='cursor-pointer'><LuUser2 className="text-xl" /></div>
+                    <Link to={'/favorites'}><FaRegHeart className="text-xl" /></Link>
+                    <div className="relative">
+                        <Link to={'/cart'}>
+                            <RiShoppingBag3Line className="text-xl" />
+                        </Link>
+                        {cart.length > 0 && (
+                            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                {cart.reduce((total, item) => total + item.quantity, 0)}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
             <Authentication open={open} setOpen={setOpen} />

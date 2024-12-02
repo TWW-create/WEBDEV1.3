@@ -4,8 +4,11 @@ import { Button, Form, Input, message } from "antd";
 import { useSignInMutation } from "../../redux/slice/authApiSlice";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../redux/slice/userSlice";
+import { errorCheck } from "../../utils/utils";
 
 const Login = ({setOpen}) => {
+
+    const [form] = Form.useForm();
 
     const [login, {isLoading}] = useSignInMutation()
 
@@ -14,14 +17,15 @@ const Login = ({setOpen}) => {
     const onFinish = async (values) => {
         try {
             const res = await login(values).unwrap();
-            message.success(res.message);
+            message.success('Logged In Successfully');
             dispatch(setCredentials({...res}));
             if (res.user.is_admin === 1) {
                 navigate("/admin/dashboard");
             }
             setOpen(false);
+            form.resetFields();
         } catch (error) {
-            console.error(error);
+            errorCheck(error);
         }
     };
   return (
@@ -32,7 +36,7 @@ const Login = ({setOpen}) => {
             <p>Welcome back,</p>
             <p>Login below to access your account.</p>
         </div>
-        <Form onFinish={onFinish} className="pt-7 px-0 !w-full">
+        <Form onFinish={onFinish} form={form} className="pt-7 px-0 !w-full">
             <Form.Item className="!mb-4" name={'email'}>
                 <Input type="email" className="rounded-2xl bg-[#F5F5F5] !border-none text-sm !p-2 !h-auto" placeholder="Email address" />
             </Form.Item>

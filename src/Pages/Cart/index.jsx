@@ -1,46 +1,15 @@
 import { Button, Collapse, Divider, Input } from 'antd';
 import CartItem from './CartItem';
+import { useSelector } from 'react-redux';
 
 const Cart = () => {
   // Example cart items
-  const cartItems = [
-    {
-      id: 1,
-      name: 'Black T-shirt',
-      image: 'https://via.placeholder.com/150',
-      price: '€19.95',
-    },
-    {
-      id: 2,
-      name: 'White Sweater',
-      image: 'https://via.placeholder.com/150',
-      price: '€139.95',
-    },
-    {
-      id: 3,
-      name: 'Black T-shirt',
-      image: 'https://via.placeholder.com/150',
-      price: '€19.95',
-    },
-    {
-      id: 4,
-      name: 'White Sweater',
-      image: 'https://via.placeholder.com/150',
-      price: '€139.95',
-    },
-    {
-      id: 5,
-      name: 'Black T-shirt',
-      image: 'https://via.placeholder.com/150',
-      price: '€19.95',
-    },
-    {
-      id: 6,
-      name: 'White Sweater',
-      image: 'https://via.placeholder.com/150',
-      price: '€139.95',
-    },
-  ];
+  const cart = useSelector((state) => state.cart.cart);
+
+  const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  console.log(totalAmount);
+  
 
   const items = [
     {
@@ -65,9 +34,12 @@ const Cart = () => {
           <div>
             <p className="text-xl font-bold">Shopping cart</p>
           </div>
+          {cart.length < 1 && <div className="mt-6">
+              <h1 className='text-lg '>Your cart is empty</h1>
+          </div>}
           <div className="grid gap-5 grid-cols-1">
-            {cartItems.map(item => (
-              <div key={item.id} className='border-b last:border-none'>
+            {cart.map((item, i) => (
+              <div key={i} className='border-b last:border-none'>
                 <CartItem item={item} />
               </div>
             ))}
@@ -80,7 +52,7 @@ const Cart = () => {
               Apply
             </Button>
           </div>
-          <Button type='primary' block className='rounded-2xl mt-8'>Checkout • €159.95</Button>
+          <Button type='primary' block className='rounded-2xl mt-8' disabled={cart.length === 0}>{cart.length > 0 ? `Checkout • €${totalAmount.toFixed(2)}` : 'Checkout'}</Button>
           <Divider className='bg-black' />
           <Collapse defaultActiveKey={['1']} ghost items={items} />
         </div>
