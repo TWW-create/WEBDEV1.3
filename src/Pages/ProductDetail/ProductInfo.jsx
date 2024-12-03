@@ -1,9 +1,9 @@
 import { Divider, message } from "antd";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import { IMAGE_BASE_URL } from "../../utils/apiConstants";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/slice/cartSlice";
 
 
@@ -15,9 +15,9 @@ const ProductInfo = ({product, shipping, returns}) => {
 
   const dispatch = useDispatch();
 
-  const cart = useSelector((state) => state.cart.cart);
-
-  console.log(cart);
+  console.log(selectedColor);
+  console.log(selectedSize);
+  
   
 
 
@@ -50,6 +50,11 @@ const ProductInfo = ({product, shipping, returns}) => {
     }
   };
 
+  useEffect(() => {
+    setSelectedColor(null);
+    setSelectedSize(null);
+    setSelectedImageIndex(0);
+  }, [product]);
 
   return (
     <div className="px-6 lg:px-10 xl:px-20 pt-12 flex gap-9 flex-col lg:flex-row lg:h-[90vh]">
@@ -163,6 +168,8 @@ const ProductInfo = ({product, shipping, returns}) => {
 
 ProductInfo.propTypes = {
   product: PropTypes.object, 
+  shipping: PropTypes.string,
+  returns: PropTypes.string,
 }
 
 export default ProductInfo;

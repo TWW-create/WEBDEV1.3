@@ -2,9 +2,12 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Accessories, AddBanner, AddProduct, Admin, AdminBlog, AdminDashboard, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ScrollToTop from "./Components/ScrollToTop";
+import { useSelector } from "react-redux";
 
 
 function App() {
+
+  const { user } = useSelector((state) => state.user);
 
   return (
     <>
@@ -22,7 +25,7 @@ function App() {
             <Route path='/sales' element={<Sales />} />
             <Route path='/sales/:subCat/:tab' element={<Sales />} />
             <Route path='/cart' element={<Cart />} />
-            <Route path='/favorites' element={<Favorites />} />
+            {user && <Route path='/favorites' element={<Favorites />} />}
             <Route path='/products/:id' element={<ProductDetail />} />
             <Route path='profile' element={
               <ProtectedRoute>

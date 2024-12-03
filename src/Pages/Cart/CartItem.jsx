@@ -56,7 +56,7 @@ const CartItem = ({item}) => {
                         />
                     </div>
                 </div>
-                <p className='text-xs font-semibold'>€{item.quantity * item.price}</p>
+                <p className='text-xs font-semibold'>€{item.price}</p>
             </div>
         </div>
         <div className='flex gap-2 items-center'>

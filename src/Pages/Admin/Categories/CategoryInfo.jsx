@@ -52,7 +52,7 @@ import { useGetCategoryDetailsQuery } from "../../../redux/slice/categoryApiSlic
             onCancel={() => {
             setVisible(false);
             }}
-            category={data}
+            category={data?.data}
         />
     </div>
   )

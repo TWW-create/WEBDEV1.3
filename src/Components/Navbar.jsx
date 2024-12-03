@@ -365,7 +365,7 @@ const MegaMenu = ({ categoryName }) => {
                 <div className="hidden lg:flex items-center space-x-4">
                     <GoSearch className="text-xl" />
                     <div onClick={() => handleProfileClick()} className='cursor-pointer'><LuUser2 className="text-xl" /></div>
-                    <Link to={'/favorites'}><FaRegHeart className="text-xl" /></Link>
+                    {user && <Link to={'/favorites'}><FaRegHeart className="text-xl" /></Link>}
                     <div className="relative">
                         <Link to={'/cart'}>
                             <RiShoppingBag3Line className="text-xl" />

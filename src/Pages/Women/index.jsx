@@ -51,7 +51,7 @@ const Women = () => {
   return (
     <div>
       <div className="w-full">
-        <img src={banner?.img_url} alt="women banner" className="object-cover object-center w-full h-[200px]" />
+        <img src={banner?.image_url} alt="women banner" className="object-cover object-center w-full h-[200px]" />
       </div>
       <div className="container mx-auto px-4">
         <Tabs activeKey={defaultKey} onChange={setDefaultKey} items={items} />
