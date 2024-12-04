@@ -20,6 +20,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -59,6 +60,9 @@ Route::get('shipping-policy', [PolicyController::class, 'getShippingPolicy']);
 Route::get('return-policy', [PolicyController::class, 'getReturnPolicy']);
 Route::get('faqs', [PolicyController::class, 'getFaqs']);
 
+//stripe
+Route::post('/webhook/stripe', [StripeController::class, 'handleWebhook']);
+
 // Authenticated routes
 Route::middleware('auth:api')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -68,7 +72,7 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.resend');
 
-// Protected address route
+    // Protected address route
     Route::get('/addresses', [AddressInfoController::class, 'index']);
     Route::get('/user/{userId}/addresses', [AddressInfoController::class, 'userAddresses']);
     Route::get('/my-addresses', [AddressInfoController::class, 'myAddresses']);
@@ -111,6 +115,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('user/reviews', [ReviewController::class, 'userReviews']);
     Route::get('reviews/product/{identifier}', [ReviewController::class, 'getProductReviews']);
     Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
+
+    //stripe
+    Route::post('/checkout/create-session', [StripeController::class, 'createCheckoutSession']);
+    Route::post('/create-payment-intent', [StripeController::class, 'createPaymentIntent']);
     
 });
 
