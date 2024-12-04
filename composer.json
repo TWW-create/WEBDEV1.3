@@ -11,6 +11,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "stripe/stripe-php": "^16.3",
         "tymon/jwt-auth": "^2.1",
         "zircote/swagger-php": "^4.10"
     },

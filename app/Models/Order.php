@@ -14,9 +14,11 @@ class Order extends Model
 
     public $incrementing = false;
 
-    protected $fillable = [
-        'id', 'subtotal', 'shipping_cost', 'total', 'user_id', 'status',
-    ];
+protected $fillable = [
+    'id', 'subtotal', 'shipping_cost', 'total', 'user_id', 'status',
+    'stripe_session_id', 'payment_status'
+];
+
 
     // Automatically generate a UUID for the 'id' field when creating a new Order
     protected static function boot()
