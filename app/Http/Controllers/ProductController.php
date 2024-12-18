@@ -71,6 +71,27 @@ class ProductController extends Controller
         
         $products = $query->orderBy($sortBy, $direction)->paginate(15); 
         return response()->json($products);
+
+        // Enhanced sorting logic
+        switch ($request->sort_by) {
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'best_seller':
+                $query->orderBy('sales_count', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $products = $query->paginate(15);
+        return response()->json($products);
     }
 
     public function store(Request $request)
