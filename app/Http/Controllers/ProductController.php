@@ -66,28 +66,27 @@ class ProductController extends Controller
             $query->whereJsonContains('colors', $request->color);
         }
 
-        $sortBy = $request->get('sort_by', 'created_at');
-        $direction = $request->get('direction', 'desc');
-        
-        $products = $query->orderBy($sortBy, $direction)->paginate(15); 
-        return response()->json($products);
-
         // Enhanced sorting logic
-        switch ($request->sort_by) {
-            case 'newest':
-                $query->orderBy('created_at', 'desc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'best_seller':
-                $query->orderBy('sales_count', 'desc');
-                break;
-            default:
-                $query->orderBy('created_at', 'desc');
+        if ($request->sort_by) {
+            switch ($request->sort_by) {
+                case 'newest':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'price_high':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'price_low':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'best_seller':
+                    $query->orderBy('sales_count', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            // Default sorting when no sort_by parameter is provided
+            $query->orderBy('created_at', 'desc');
         }
 
         $products = $query->paginate(15);
