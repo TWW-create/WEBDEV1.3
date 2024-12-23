@@ -1,14 +1,19 @@
 import { Button, Collapse, Divider, Input } from 'antd';
 import CartItem from './CartItem';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
+
+  const navigate = useNavigate();
   // Example cart items
   const cart = useSelector((state) => state.cart.cart);
 
   const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  console.log(totalAmount);
+  const handleCheckout = () => {
+    navigate('/checkout');
+  };
   
 
   const items = [
@@ -52,7 +57,7 @@ const Cart = () => {
               Apply
             </Button>
           </div>
-          <Button type='primary' block className='rounded-2xl mt-8' disabled={cart.length === 0}>{cart.length > 0 ? `Checkout • €${totalAmount.toFixed(2)}` : 'Checkout'}</Button>
+          <Button onClick={() => handleCheckout()} type='primary' block className='rounded-2xl mt-8' disabled={cart.length === 0}>{cart.length > 0 ? `Checkout • €${totalAmount.toFixed(2)}` : 'Checkout'}</Button>
           <Divider className='bg-black' />
           <Collapse defaultActiveKey={['1']} ghost items={items} />
         </div>

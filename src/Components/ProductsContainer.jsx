@@ -1,20 +1,9 @@
-import { useState } from "react"
 import ProductCard from "./ProductCard"
-import Filters from "./Filters";
-import { IoFilter } from "react-icons/io5";
 import NewFilters from "./NewFilters";
 import { Spin } from "antd";
 
 
-const ProductsContainer = ({products, isLoading}) => {
-    const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState({
-        category: [],
-        color: [],
-        price: [0, 550],
-        sort: ''
-    })
-
+const ProductsContainer = ({products, isLoading, setFilter, filter}) => {
 
     if (isLoading) return <div className='flex justify-center items-center h-[50vh] xl:h-[30vh]'><Spin /></div>;
 
@@ -29,7 +18,7 @@ const ProductsContainer = ({products, isLoading}) => {
             </div> */}
           </div>
           <div className="mb-5">
-            <NewFilters />
+            <NewFilters filters={filter} setFilters={setFilter} />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products?.map((product, index) => (

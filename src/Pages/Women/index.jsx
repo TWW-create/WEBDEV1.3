@@ -11,6 +11,13 @@ const Women = () => {
   const {tab, subCat} = useParams();
 
   const [defaultKey, setDefaultKey] = useState()
+  const [filter, setFilter] = useState({
+    size: '',
+    sort_by: '',
+    creator:  '',
+    color: '',
+    status: '',
+  })
 
   const { data: bannerData } = useGetBannersQuery();
 
@@ -28,19 +35,24 @@ const Women = () => {
     page: 1, 
     category_id: 2, 
     sub_category_id: defaultKey !== 'all' ? subCat : undefined, 
-    product_type: defaultKey === 'all' ? undefined : defaultKey
+    product_type: defaultKey === 'all' ? undefined : defaultKey,
+    size: filter.size,
+    sort_by: filter.sort_by,
+    creator: filter.creator,
+    color: filter.color,
+    status: filter.status,
   })
 
   const items = [
     {
       key: 'all',
       label: `All`,
-      children: <ProductsContainer products={products?.data} isLoading={isLoading} />,
+      children: <ProductsContainer products={products?.data} isLoading={isLoading} setFilter={setFilter} filter={filter} />,
     },
     ...productTypes.map((type) => ({
       key: type.name.toLowerCase(), // Use lowercase for consistency with URL params
       label: <p className='capitalize'>{type.name}</p>,
-      children: <ProductsContainer products={products?.data} isLoading={isLoading} />, // Filtered products could go here based on `type.id`
+      children: <ProductsContainer products={products?.data} isLoading={isLoading} setFilter={setFilter} filter={filter} />, // Filtered products could go here based on `type.id`
     })),
   ];
   

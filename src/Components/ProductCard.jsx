@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
   const [addFavorite] = useAddUserFavoriteMutation();
   const [removeFavorite] = useRemoveUserFavoriteMutation();
 
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
 
   const handleLike = async (event) => {
     event.stopPropagation();

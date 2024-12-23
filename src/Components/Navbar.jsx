@@ -16,196 +16,13 @@ import SalesB from "../assets/images/sales.png";
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie'
 import { useSelector } from 'react-redux';
+import men1 from '../assets/images/men1.png';
+import men2 from '../assets/images/men2.png'
+import men3 from '../assets/images/men3.png'
+import women1 from '../assets/images/women1.png'
+import women2 from '../assets/images/women2.png'
+import women3 from '../assets/images/women3.png'
 
-
-// const MegaMenu = () => {
-//     const [selectedKey, setSelectedKey] = useState()
-
-//   const {data, isLoading} = useGetCategoriesQuery()
-
-//   console.log(data);
-  
-
-//     const onMenuItemClick = (item) => {
-//         setSelectedKey([item.key])
-//     }
-//     return (
-//         <div className='bg-white px-5 py-5 grid grid-cols-6 max-w-6xl gap-8'>
-//             {/* <div className='space-x-8 flex'> */}
-//                 <div className="inline-block  h-full col-span-1">
-//                     <div className='h-full border-r-2 font-bold flex justify-end items-end text-end text-5xl border-black pr-1'>
-//                         <div className="-rotate-90 pb-12">
-//                             <p>Men</p>
-//                         </div>
-//                     </div>
-//                 </div>
-//                 <Space direction='horizontal' className='flex items-start col-span-2'>
-//                     <Menu 
-//                     onClick={onMenuItemClick}
-//                     selectedKeys={selectedKey}
-//                     items={[
-//                         {
-//                             label: 'READY TO WEAR',
-//                             key: 'readyToWear',
-//                             type: 'group'
-//                         },
-//                         {
-//                             label: 'All',
-//                             key: 'all',
-//                         },
-//                         {
-//                             label: 'New in',
-//                             key: 'new',
-//                         },
-//                         {
-//                             label: 'Dungarees',
-//                             key: 'dungarees',
-//                         },
-//                         {
-//                             label: 'Shorts',
-//                             key: 'shorts',
-//                         },
-//                         {
-//                             label: 'Shirts',
-//                             key: 'shirts',
-//                         },
-//                         {
-//                             label: 'Tops',
-//                             key: 'tops',
-//                         },
-//                         {
-//                             label: 'Pants',
-//                             key: 'pants',
-//                         },
-//                         {
-//                             label: 'Hoodies',
-//                             key: 'hoodies',
-//                         },
-//                         {
-//                             label: 'Jackets',
-//                             key: 'jackets',
-//                         },
-//                     ]}
-//                     style={{ boxShadow: 'none', border: 'none' }}
-//                     />
-//                     <Menu 
-//                     onClick={onMenuItemClick}
-//                     selectedKeys={selectedKey}
-//                     items={[
-//                         {
-//                             label: 'READY TO WEAR',
-//                             key: 'readyToWear1',
-//                             type: 'group'
-//                         },
-//                         {
-//                             label: 'All',
-//                             key: 'all1',
-//                         },
-//                         {
-//                             label: 'New in',
-//                             key: 'new1',
-//                         },
-//                         {
-//                             label: 'Dungarees',
-//                             key: 'dungarees1',
-//                         },
-//                         {
-//                             label: 'Shorts',
-//                             key: 'shorts1',
-//                         },
-//                         {
-//                             label: 'Shirts',
-//                             key: 'shirts1',
-//                         },
-//                     ]} 
-//                     style={{ boxShadow: 'none', border: 'none' }}
-//                     />
-//                 </Space>
-//                 <div className='h-[350px] max-w-xl col-span-3'>
-//                     <p className='text-center mb-4'>Best of Seasons</p>
-//                     <div className="grid grid-cols-5 gap-5 h-full">
-//                         {/* First image container */}
-//                         <div className='w-full h-[350px] col-span-2'>
-//                             <img src={IMAGE} alt="male" className='w-full h-[350px] object-cover object-center' />
-//                         </div>
-//                         {/* The remaining two images */}
-//                         <div className='col-span-3 space-y-4'>
-//                             <img src={IMAGE} alt="male" className='w-full h-[165px] object-cover object-center' />
-//                             <img src={IMAGE} alt="male" className='w-full h-[165px] object-cover object-center' /> 
-//                         </div>
-//                     </div>
-//                 </div>
-//             {/* </div> */}
-//         </div>
-//     )
-// }
-
-// const MegaMenu = ({categoryName}) => {
-//     const [selectedKey, setSelectedKey] = useState();
-//     const { data, isLoading } = useGetCategoriesQuery();
-    
-  
-//     // Assuming the 'men' category is at index 0 in `data`.
-//     const menCategory = data?.data?.find(category => category.name === categoryName);
-  
-//     const onMenuItemClick = (item) => {
-//       setSelectedKey([item.key]);
-//     };
-  
-//     if (!menCategory || isLoading) return null;
-  
-//     return (
-//       <div className='bg-white px-5 py-5 grid grid-cols-6 max-w-6xl gap-8 min-h-[450px]'>
-//         {/* Displaying the main category label */}
-//         {/* <div className="inline-block h-full col-span-1">
-//           <div className='h-full border-r-2 font-bold flex justify-end items-end text-end text-4xl border-black pr-1'>
-//             <div className="-rotate-90 pb-12 capitalize">
-//               <p>{categoryName}</p>
-//             </div>
-//           </div>
-//         </div> */}
-  
-//         {/* Displaying subcategories and their product types */}
-//         <Space direction='horizontal' className='flex items-start col-span-2 cap'>
-//           {menCategory.sub_categories.map(subCategory => (
-//             <Menu
-//               key={subCategory.id}
-//               onClick={onMenuItemClick}
-//               selectedKeys={selectedKey}
-//               items={[
-//                 {
-//                   label: subCategory.name.toUpperCase(),
-//                   key: subCategory.id,
-//                   type: 'group'
-//                 },
-//                 ...subCategory.product_types.map(type => ({
-//                   label: type.name,
-//                   key: type.id,
-//                 }))
-//               ]}
-//               style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
-//             />
-//           ))}
-//         </Space>
-  
-//         {/* Sample image content */}
-//         <div className='h-[350px] max-w-xl col-span-3'>
-//           <p className='text-center mb-4'>Best of Seasons</p>
-//           <div className="grid grid-cols-5 gap-5 h-full">
-//             {/* First image container */}
-//             <div className='w-full h-[350px] col-span-2'>
-//               <img src={IMAGE} alt="male" className='w-full h-[350px] object-cover object-center' />
-//             </div>
-//             {/* Remaining two images */}
-//             <div className='col-span-3 space-y-4'>
-//               <img src={IMAGE} alt="male" className='w-full h-[165px] object-cover object-center' />
-//               <img src={IMAGE} alt="male" className='w-full h-[165px] object-cover object-center' />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   };
 
 const MegaMenu = ({ categoryName }) => {
     // const [selectedKey, setSelectedKey] = useState();
@@ -272,12 +89,12 @@ const MegaMenu = ({ categoryName }) => {
           <div className="grid grid-cols-5 gap-5 h-full">
             {/* First image container */}
             <div className="w-full h-[350px] col-span-2">
-              <img src={IMAGE} alt="best season" className="w-full h-[350px] object-cover object-center" />
+              <img src={(categoryName === 'men' && men1) || (categoryName === 'women' && women1) || IMAGE} alt="best season" className="w-full h-[350px] object-cover object-center" />
             </div>
             {/* Remaining two images */}
             <div className="col-span-3 space-y-4">
-              <img src={IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
-              <img src={IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
+              <img src={(categoryName === 'men' && men2) || (categoryName === 'women' && women2) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
+              <img src={(categoryName === 'men' && men3) || (categoryName === 'women' && women3) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
             </div>
           </div>
         </div>
