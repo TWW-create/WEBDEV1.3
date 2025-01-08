@@ -105,7 +105,7 @@ const ProfileInfo = () => {
                   </div>
                   <div className="mt-3">
                     <Checkbox
-                      checked={selectedAddressId === address.id}
+                      checked={selectedAddressId === address.id || address?.delivery_address === '1'}
                       onChange={() => handleSetDeliveryAddress(address.id)}
                       disabled={isLoadingDelivery && selectedAddressId === address.id}
                     >

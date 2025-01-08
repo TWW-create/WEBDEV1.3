@@ -1,11 +1,12 @@
 import { Breadcrumb } from "antd"
 import { Link } from "react-router-dom"
+import ContentArea from "./ContentArea"
 
 
 const Checkout = () => {
   return (
-    <div>
-        <div className="px-10 xl:px-20 pt-12 flex gap-4 flex-col lg:flex-row">
+    <div className="bg-[#f8f8f8] pb-16">
+        <div className="container mx-auto px-4 py-5">
             <Breadcrumb
                 items={[
                     {
@@ -17,6 +18,7 @@ const Checkout = () => {
                 ]}
             />
         </div>
+        <ContentArea />
     </div>
   )
 }
