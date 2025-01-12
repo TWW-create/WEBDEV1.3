@@ -9,7 +9,7 @@ class Newsletter extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['email', 'is_subscribed'];
+    protected $fillable = ['email', 'is_subscribed', 'fashion_preference'];
 
     protected $casts = [
         'is_subscribed' => 'boolean',

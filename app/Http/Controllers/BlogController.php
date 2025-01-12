@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Models\Media;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -11,18 +12,14 @@ use Illuminate\Support\Facades\Log;
 
 class BlogController extends Controller
 {
-    public function index()
-    {
-        $blogs = Blog::with('media')->latest()->paginate(10);
-        return response()->json($blogs);
-    }
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'media.*' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:40960', // 20MB max
+            'media.*' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:40960',
+            'product_slugs' => 'nullable|array',
+            'product_slugs.*' => 'exists:products,slug'
         ]);
 
         if ($validator->fails()) {
@@ -35,36 +32,30 @@ class BlogController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        Log::info('Request has file: ' . $request->hasFile('media'));
-
+        // Handle media files
         if ($request->hasFile('media')) {
-            foreach ($request->file('media') as $index => $mediaFile) {
-                Log::info('Processing file ' . $index);
-                Log::info('File mime type: ' . $mediaFile->getMimeType());
-                Log::info('File size: ' . $mediaFile->getSize());
-    
+            foreach ($request->file('media') as $mediaFile) {
                 $path = $mediaFile->store('blog_media', 'public');
-                Log::info('File stored at: ' . $path);
-    
                 $fileType = substr($mediaFile->getMimeType(), 0, 5) == 'image' ? 'image' : 'video';
-    
-                $media = Media::create([
+                
+                Media::create([
                     'blog_id' => $blog->id,
                     'file_path' => $path,
                     'file_type' => $fileType,
                 ]);
-    
-                Log::info('Media created: ' . $media->id);
             }
         }
 
-        return response()->json(['message' => 'Blog created successfully', 'blog' => $blog->load('media')], 201);
-    }
+        // Link products to blog
+        if ($request->has('product_slugs')) {
+            $products = Product::whereIn('slug', $request->product_slugs)->get();
+            $blog->products()->attach($products->pluck('id'));
+        }
 
-    public function show($id)
-    {
-        $blog = Blog::with('media')->findOrFail($id);
-        return response()->json($blog);
+        return response()->json([
+            'message' => 'Blog created successfully', 
+            'blog' => $blog->load(['media', 'products'])
+        ], 201);
     }
 
     public function update(Request $request, $id)
@@ -74,7 +65,9 @@ class BlogController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'media.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:40960', // 20MB max
+            'media.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:40960',
+            'product_slugs' => 'nullable|array',
+            'product_slugs.*' => 'exists:products,slug'
         ]);
 
         if ($validator->fails()) {
@@ -86,6 +79,7 @@ class BlogController extends Controller
             'content' => $request->content,
         ]);
 
+        // Handle media files
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $mediaFile) {
                 $path = $mediaFile->store('blog_media', 'public');
@@ -99,29 +93,27 @@ class BlogController extends Controller
             }
         }
 
-        return response()->json(['message' => 'Blog updated successfully', 'blog' => $blog->load('media')]);
-    }
-
-    public function destroy($id)
-    {
-        $blog = Blog::findOrFail($id);
-        
-        // Delete associated media files
-        foreach ($blog->media as $media) {
-            Storage::disk('public')->delete($media->file_path);
+        // Update linked products
+        if ($request->has('product_slugs')) {
+            $products = Product::whereIn('slug', $request->product_slugs)->get();
+            $blog->products()->sync($products->pluck('id'));
         }
 
-        $blog->delete();
-
-        return response()->json(['message' => 'Blog deleted successfully']);
+        return response()->json([
+            'message' => 'Blog updated successfully', 
+            'blog' => $blog->load(['media', 'products'])
+        ]);
     }
 
-    public function deleteMedia($id)
+    public function show($id)
     {
-        $media = Media::findOrFail($id);
-        Storage::disk('public')->delete($media->file_path);
-        $media->delete();
+        $blog = Blog::with(['media', 'products'])->findOrFail($id);
+        return response()->json($blog);
+    }
 
-        return response()->json(['message' => 'Media deleted successfully']);
+    public function index()
+    {
+        $blogs = Blog::with(['media', 'products'])->latest()->paginate(10);
+        return response()->json($blogs);
     }
 }

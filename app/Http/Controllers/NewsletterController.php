@@ -12,6 +12,7 @@ class NewsletterController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
+            'fashion_preference' => 'required|in:menswear,womenswear,both',
         ]);
     
         if ($validator->fails()) {
@@ -20,16 +21,18 @@ class NewsletterController extends Controller
     
         $newsletter = Newsletter::updateOrCreate(
             ['email' => $request->email],
-            ['is_subscribed' => true]
+            [
+                'is_subscribed' => true,
+                'fashion_preference' => $request->fashion_preference
+            ]
         );
     
         $message = $newsletter->wasRecentlyCreated
             ? 'Successfully subscribed to newsletter'
-            : 'Successfully resubscribed to newsletter';
+            : 'Successfully updated newsletter preferences';
     
         return response()->json(['message' => $message, 'data' => $newsletter], 201);
     }
-    
 
     public function unsubscribe(Request $request)
     {
@@ -54,7 +57,13 @@ class NewsletterController extends Controller
 
     public function index()
     {
-        $subscribers = Newsletter::where('is_subscribed', true)->get();
-        return response()->json(['data' => $subscribers, 'count' => $subscribers->count()], 200);
+        $subscribers = Newsletter::where('is_subscribed', true)
+            ->get()
+            ->groupBy('fashion_preference');
+            
+        return response()->json([
+            'data' => $subscribers, 
+            'total_count' => $subscribers->flatten()->count()
+        ], 200);
     }
 }

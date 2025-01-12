@@ -20,4 +20,10 @@ class Blog extends Model
     {
         return $this->hasMany(Media::class);
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+    
 }
