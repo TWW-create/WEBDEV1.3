@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductVariant;
+use App\Models\VariantImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +18,13 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'subCategory', 'productType', 'tags', 'images']);
+        $query = Product::with([
+            'category', 
+            'subCategory', 
+            'productType', 
+            'tags', 
+            'variants.images'
+        ]);
 
         if ($request->name) {
             $query->where('name', 'like', "%{$request->name}%");
@@ -29,7 +37,6 @@ class ProductController extends Controller
                 $q->where('slug', $request->category_slug);
             });
         }
-        
         if ($request->subcategory_slug) {
             $query->whereHas('subCategory', function($q) use ($request) {
                 $q->where('slug', $request->subcategory_slug);
@@ -47,23 +54,26 @@ class ProductController extends Controller
         if ($request->sub_category_id) {
             $query->where('sub_category_id', $request->sub_category_id);
         }
-        // New product type name filter
         if ($request->product_type) {
             $query->whereHas('productType', function($q) use ($request) {
                 $q->where('name', 'like', "%{$request->product_type}%");
             });
-        }        
+        }
         if ($request->product_type_id) {
             $query->where('product_type_id', $request->product_type_id);
         }
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        if ($request->size) {
-            $query->whereJsonContains('sizes', $request->size);
-        }
         if ($request->color) {
-            $query->whereJsonContains('colors', $request->color);
+            $query->whereHas('variants', function($q) use ($request) {
+                $q->where('color', $request->color);
+            });
+        }
+        if ($request->size) {
+            $query->whereHas('variants', function($q) use ($request) {
+                $q->whereJsonContains('sizes', $request->size);
+            });
         }
 
         // Enhanced sorting logic
@@ -85,7 +95,6 @@ class ProductController extends Controller
                     $query->orderBy('created_at', 'desc');
             }
         } else {
-            // Default sorting when no sort_by parameter is provided
             $query->orderBy('created_at', 'desc');
         }
 
@@ -101,11 +110,6 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'composition' => 'nullable|string',
             'shipping_details' => 'nullable|array',
-            'sizes' => 'required|array',
-            'sizes.*' => 'string',
-            'colors' => 'required|array',
-            'colors.*' => 'string',
-            'qty' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'sub_category_id' => [
@@ -123,7 +127,13 @@ class ProductController extends Controller
                 }),
             ],
             'featured_image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'variants' => 'required|array',
+            'variants.*.color' => 'required|string',
+            'variants.*.sizes' => 'required|array',
+            'variants.*.sizes.*' => 'string',
+            'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.images' => 'required|array',
+            'variants.*.images.*' => 'image|max:2048',
             'status' => 'string|in:available,out_of_stock,discontinued',
         ]);
 
@@ -131,42 +141,51 @@ class ProductController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $product = Product::create($validator->validated());
+        return DB::transaction(function () use ($request, $validator) {
+            try {
+                $product = Product::create($validator->validated());
 
-        if ($request->hasFile('featured_image')) {
-            $product->featured_image = $request->file('featured_image')->store('products', 'public');
-            $product->save();
-        }
+                if ($request->hasFile('featured_image')) {
+                    $product->featured_image = $request->file('featured_image')
+                        ->store("products/{$product->id}", 'public');
+                    $product->save();
+                }
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $image->store('products', 'public'),
+                foreach ($request->variants as $variantData) {
+                    $variant = $product->variants()->create([
+                        'color' => $variantData['color'],
+                        'sizes' => $variantData['sizes'],
+                        'stock' => $variantData['stock'],
+                        'sku' => Str::uuid()
+                    ]);
+
+                    foreach ($variantData['images'] as $index => $image) {
+                        $path = $image->store("products/{$product->id}/variants/{$variant->id}", 'public');
+                        $variant->images()->create([
+                            'image_path' => $path,
+                            'sort_order' => $index
+                        ]);
+                    }
+                }
+
+                if ($request->has('tags')) {
+                    $product->tags()->sync($request->tags);
+                }
+
+                return response()->json([
+                    'message' => 'Product created successfully',
+                    'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'variants.images']),
+                ], 201);
+
+            } catch (\Exception $e) {
+                Log::error('Product creation failed', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
                 ]);
+                throw $e;
             }
-        }
-
-        if ($request->has('tags')) {
-            $product->tags()->sync($request->tags);
-        }
-
-        return response()->json([
-            'message' => 'Product created successfully',
-            'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'images']),
-        ], 201);
+        });
     }
-
-    /**
-     * @OA\Get(
-     *     path="/api/products/{slug}",
-     *     tags={"Products"},
-     *     summary="Get product details by slug",
-     *     @OA\Parameter(name="slug", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Success"),
-     *     @OA\Response(response=404, description="Product not found")
-     * )
-     */
     public function show($identifier)
     {
         $product = Product::with([
@@ -174,7 +193,7 @@ class ProductController extends Controller
             'subCategory',
             'productType',
             'tags',
-            'images'
+            'variants.images'
         ])
         ->where('id', $identifier)
         ->orWhere('slug', $identifier)
@@ -195,127 +214,102 @@ class ProductController extends Controller
             ]
         ]);
     }
-    
-
-
 
     public function update(Request $request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
             try {
-                // Validate the request first
                 $validator = Validator::make($request->all(), [
                     'name' => 'sometimes|string|max:255',
                     'creator' => 'sometimes|string|max:255',
                     'description' => 'sometimes|nullable|string',
-                    'sizes' => 'sometimes|array',
-                    'sizes.*' => 'string',
-                    'colors' => 'sometimes|array',
-                    'colors.*' => 'string',
-                    'qty' => 'sometimes|integer|min:0',
                     'price' => 'sometimes|numeric|min:0',
                     'category_id' => 'sometimes|exists:categories,id',
-                    'sub_category_id' => [
-                        'sometimes',
-                        'exists:sub_categories,id',
-                        Rule::exists('sub_categories', 'id')->where(function ($query) use ($request) {
-                            return $query->where('category_id', $request->category_id);
-                        }),
-                    ],
-                    'product_type_id' => [
-                        'sometimes',
-                        'exists:product_types,id',
-                        Rule::exists('product_types', 'id')->where(function ($query) use ($request) {
-                            return $query->where('sub_category_id', $request->sub_category_id);
-                        }),
-                    ],
+                    'sub_category_id' => 'sometimes|exists:sub_categories,id',
+                    'product_type_id' => 'sometimes|exists:product_types,id',
                     'featured_image' => 'sometimes|nullable|image|max:2048',
-                    'images.*' => 'sometimes|nullable|image|max:2048',
-                    'status' => 'sometimes|string|in:available,out_of_stock,discontinued',
+                    'variants' => 'sometimes|array',
+                    'variants.*.id' => 'required_with:variants|exists:product_variants,id',
+                    'variants.*.color' => 'required_with:variants|string',
+                    'variants.*.sizes' => 'required_with:variants|array',
+                    'variants.*.sizes.*' => 'string',
+                    'variants.*.stock' => 'required_with:variants|integer|min:0',
+                    'variants.*.images' => 'sometimes|array',
+                    'variants.*.images.*' => 'image|max:2048'
                 ]);
     
                 if ($validator->fails()) {
-                    return response()->json([
-                        'message' => 'Validation failed',
-                        'errors' => $validator->errors()
-                    ], 422);
+                    return response()->json(['errors' => $validator->errors()], 422);
                 }
     
                 $product = Product::findOrFail($id);
-                
-                \Log::info('Update request received', [
-                    'request' => $request->all(),
-                    'files' => $request->allFiles()
-                ]);
     
-                if ($request->hasFile('featured_image')) {
-                    // Delete old featured image if exists
-                    if ($product->featured_image) {
-                        Storage::disk('public')->delete($product->featured_image);
-                    }
-                    $product->featured_image = $request->file('featured_image')->store('products', 'public');
-                    $product->save();
-                }
-    
-                if ($request->hasFile('images')) {
-                    foreach ($request->file('images') as $image) {
-                        ProductImage::create([
-                            'product_id' => $product->id,
-                            'image_path' => $image->store('products', 'public'),
+                if ($request->has('variants')) {
+                    foreach ($request->variants as $variantData) {
+                        $variant = $product->variants()->findOrFail($variantData['id']);
+                        
+                        $variant->update([
+                            'color' => $variantData['color'],
+                            'sizes' => $variantData['sizes'],
+                            'stock' => $variantData['stock']
                         ]);
+    
+                        if (isset($variantData['images'])) {
+                            // Delete old images if new ones are provided
+                            foreach ($variant->images as $oldImage) {
+                                Storage::disk('public')->delete($oldImage->image_path);
+                                $oldImage->delete();
+                            }
+    
+                            // Add new images
+                            foreach ($variantData['images'] as $index => $image) {
+                                $path = $image->store("products/{$product->id}/variants/{$variant->id}", 'public');
+                                $variant->images()->create([
+                                    'image_path' => $path,
+                                    'sort_order' => $index
+                                ]);
+                            }
+                        }
                     }
                 }
     
-                $updateData = $request->except(['featured_image', 'images']);
+                $updateData = $request->except(['variants', 'featured_image']);
                 if (!empty($updateData)) {
                     $product->update($updateData);
                 }
     
                 return response()->json([
                     'message' => 'Product updated successfully',
-                    'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'images']),
+                    'product' => $product->load(['variants.images'])
                 ]);
     
             } catch (\Exception $e) {
-                \Log::error('Update failed', [
+                Log::error('Update failed', [
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request' => $request->all()
+                    'trace' => $e->getTraceAsString()
                 ]);
-    
-                return response()->json([
-                    'message' => 'Failed to update product',
-                    'error' => $e->getMessage(),
-                    'debug_info' => config('app.debug') ? [
-                        'trace' => $e->getTraceAsString(),
-                        'request' => $request->all()
-                    ] : null
-                ], 400);
+                throw $e;
             }
         });
     }
-    
     
     public function deleteImage($id)
     {
         return DB::transaction(function () use ($id) {
             try {
-                $image = ProductImage::findOrFail($id);
+                $image = ProductVariant::findOrFail($id)->images()->firstOrFail();
                 
-                // Delete file from storage
                 Storage::disk('public')->delete($image->image_path);
-                
-                // Delete record from database
                 $image->delete();
                 
-                \Log::info('Product image deleted', ['image_id' => $id]);
+                Log::info('Product variant image deleted', ['image_id' => $id]);
     
                 return response()->json([
                     'message' => 'Product image deleted successfully'
                 ]);
     
             } catch (\Exception $e) {
-                \Log::error('Failed to delete product image', [
+                Log::error('Failed to delete product image', [
                     'image_id' => $id,
                     'error' => $e->getMessage()
                 ]);
@@ -324,18 +318,86 @@ class ProductController extends Controller
         });
     }
     
-    
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
-
-        return response()->json(['message' => 'Product deleted successfully']);
+        return DB::transaction(function () use ($id) {
+            try {
+                $product = Product::findOrFail($id);
+                
+                // Delete all variant images from storage
+                foreach ($product->variants as $variant) {
+                    foreach ($variant->images as $image) {
+                        Storage::disk('public')->delete($image->image_path);
+                    }
+                }
+                
+                // Delete featured image if exists
+                if ($product->featured_image) {
+                    Storage::disk('public')->delete($product->featured_image);
+                }
+                
+                $product->delete();
+                
+                return response()->json(['message' => 'Product deleted successfully']);
+                
+            } catch (\Exception $e) {
+                Log::error('Failed to delete product', [
+                    'product_id' => $id,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+        });
     }
+
+    public function deleteVariant($id)
+    {
+        return DB::transaction(function () use ($id) {
+            try {
+                $variant = ProductVariant::findOrFail($id);
+                
+                foreach ($variant->images as $image) {
+                    Storage::disk('public')->delete($image->image_path);
+                }
+                
+                $variant->delete();
+                
+                return response()->json(['message' => 'Product variant deleted successfully']);
+                
+            } catch (\Exception $e) {
+                Log::error('Failed to delete product variant', [
+                    'variant_id' => $id,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+        });
+    }
+    
+    public function deleteVariantImage($id)
+    {
+        return DB::transaction(function () use ($id) {
+            try {
+                $image = VariantImage::findOrFail($id);
+                Storage::disk('public')->delete($image->image_path);
+                $image->delete();
+                
+                return response()->json(['message' => 'Variant image deleted successfully']);
+                
+            } catch (\Exception $e) {
+                Log::error('Failed to delete variant image', [
+                    'image_id' => $id,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+        });
+    }
+    
 
     public function getTrendingProducts()
     {
-        $trendingProducts = Product::with(['category', 'subCategory'])
+        $trendingProducts = Product::with(['category', 'subCategory', 'variants.images'])
             ->orderBy('view_count', 'desc')
             ->take(6)
             ->get()
@@ -347,6 +409,14 @@ class ProductController extends Controller
                     'price' => $product->price,
                     'featured_image' => $product->featured_image,
                     'view_count' => $product->view_count,
+                    'variants' => $product->variants->map(function ($variant) {
+                        return [
+                            'color' => $variant->color,
+                            'sizes' => $variant->sizes,
+                            'stock' => $variant->stock,
+                            'images' => $variant->images
+                        ];
+                    }),
                     'category' => [
                         'name' => $product->category->name,
                         'slug' => $product->category->slug
@@ -357,11 +427,11 @@ class ProductController extends Controller
                     ]
                 ];
             });
-    
+   
         return response()->json([
             'status' => 'success',
             'data' => $trendingProducts
         ]);
     }
-    
 }
+

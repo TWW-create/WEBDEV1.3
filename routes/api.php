@@ -21,6 +21,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -59,6 +60,7 @@ Route::get('/banners/{id}', [BannerController::class, 'show']);
 Route::get('shipping-policy', [PolicyController::class, 'getShippingPolicy']);
 Route::get('return-policy', [PolicyController::class, 'getReturnPolicy']);
 Route::get('faqs', [PolicyController::class, 'getFaqs']);
+Route::get('/search', [SearchController::class, 'search']);
 
 //stripe
 Route::post('/webhook/stripe', [StripeController::class, 'handleWebhook']);
@@ -143,6 +145,9 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::post('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
     Route::delete('products/images/{id}', [ProductController::class, 'deleteImage']);
+    Route::delete('products/variants/{id}', [ProductController::class, 'deleteVariant']);
+    Route::delete('products/variants/images/{id}', [ProductController::class, 'deleteVariantImage']);
+
 
     Route::post('categories', [CategoryController::class, 'store']);
     Route::put('categories/{id}', [CategoryController::class, 'update']);

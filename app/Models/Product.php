@@ -107,5 +107,9 @@ class Product extends Model
             ->withPivot('quantity', 'price')
             ->withTimestamps();
     }
-    
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+        
 }
