@@ -25,7 +25,7 @@ class ProductController extends Controller
             'tags', 
             'variants.images'
         ]);
-
+    
         if ($request->name) {
             $query->where('name', 'like', "%{$request->name}%");
         }
@@ -55,9 +55,13 @@ class ProductController extends Controller
             $query->where('sub_category_id', $request->sub_category_id);
         }
         if ($request->product_type) {
-            $query->whereHas('productType', function($q) use ($request) {
-                $q->where('name', 'like', "%{$request->product_type}%");
-            });
+            if ($request->product_type === 'new_in') {
+                $query->where('created_at', '>=', now()->subDays(30));
+            } elseif ($request->product_type !== 'view_all') {
+                $query->whereHas('productType', function($q) use ($request) {
+                    $q->where('name', 'like', "%{$request->product_type}%");
+                });
+            }
         }
         if ($request->product_type_id) {
             $query->where('product_type_id', $request->product_type_id);
@@ -75,8 +79,7 @@ class ProductController extends Controller
                 $q->whereJsonContains('sizes', $request->size);
             });
         }
-
-        // Enhanced sorting logic
+    
         if ($request->sort_by) {
             switch ($request->sort_by) {
                 case 'newest':
@@ -97,10 +100,11 @@ class ProductController extends Controller
         } else {
             $query->orderBy('created_at', 'desc');
         }
-
+    
         $products = $query->paginate(15);
         return response()->json($products);
     }
+    
 
     public function store(Request $request)
     {

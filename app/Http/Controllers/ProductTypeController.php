@@ -68,10 +68,17 @@ class ProductTypeController extends Controller
     
     public function show($identifier)
     {
-        $productType = ProductType::with(['subcategory.category', 'products'])
+        $productType = ProductType::with(['subcategory.category'])
             ->where('id', $identifier)
             ->orWhere('slug', $identifier)
             ->firstOrFail();
+    
+        $products = $productType->products()
+            ->with(['variants.images'])
+            ->when($productType->name === 'new in', function($query) {
+                return $query->orderBy('created_at', 'desc');
+            })
+            ->get();
     
         return response()->json([
             'status' => 'success',
@@ -89,7 +96,7 @@ class ProductTypeController extends Controller
                         'slug' => $productType->subcategory->category->slug
                     ] : null
                 ] : null,
-                'products' => $productType->products->map(function ($product) {
+                'products' => $products->map(function ($product) {
                     return [
                         'id' => $product->id,
                         'name' => $product->name,
@@ -97,16 +104,22 @@ class ProductTypeController extends Controller
                         'creator' => $product->creator,
                         'description' => $product->description,
                         'price' => $product->price,
-                        'qty' => $product->qty,
                         'featured_image' => $product->featured_image,
                         'status' => $product->status,
-                        'sizes' => $product->sizes,
-                        'colors' => $product->colors,
+                        'variants' => $product->variants->map(function ($variant) {
+                            return [
+                                'color' => $variant->color,
+                                'sizes' => $variant->sizes,
+                                'stock' => $variant->stock,
+                                'images' => $variant->images
+                            ];
+                        })
                     ];
                 })
             ]
         ]);
     }
+    
     
     public function update(Request $request, $identifier)
     {

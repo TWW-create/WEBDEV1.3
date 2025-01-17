@@ -12,6 +12,8 @@ class ProductType extends Model
 
     protected $fillable = ['name', 'sub_category_id', 'slug'];
 
+    const SPECIAL_TYPES = ['view all', 'new in'];
+
     protected static function boot()
     {
         parent::boot();
@@ -27,7 +29,6 @@ class ProductType extends Model
             $productType->slug = "{$categorySlug}-{$subCategorySlug}-{$baseSlug}";
         });
     }
-    
 
     public function subcategory()
     {
@@ -36,6 +37,16 @@ class ProductType extends Model
 
     public function products()
     {
+        if ($this->name === 'view all') {
+            return $this->hasMany(Product::class, 'sub_category_id', 'sub_category_id');
+        }
+        
+        if ($this->name === 'new in') {
+            return $this->hasMany(Product::class, 'sub_category_id', 'sub_category_id')
+                ->orderBy('created_at', 'desc')
+                ->where('created_at', '>=', now()->subDays(30));
+        }
+
         return $this->hasMany(Product::class);
     }
 }
