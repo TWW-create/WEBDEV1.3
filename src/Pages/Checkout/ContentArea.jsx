@@ -29,18 +29,18 @@ const ContentArea = () => {
 
     useEffect(() => {
       if (Cookies.get('jwtbara') && addresses) {
-        const loggedInUser = addresses.data.find(address => address.delivery_address === '1');
+        const loggedInUser = addresses?.data.find(address => address.delivery_address === '1');
         setFormData({
-          first_name: user.first_name || "",
-          last_name: user.last_name || "",
-          email: user.email || "",
-          address_1: loggedInUser.address_1 || "",
-          address_2: loggedInUser.address_2 || "",
-          contact_number: loggedInUser.contact_number || "",
-          country: loggedInUser.country || "",
-          city: loggedInUser.city || "",
-          state_province: loggedInUser.state_province || "",
-          zipcode: loggedInUser.zipcode || "",
+          first_name: user?.first_name || "",
+          last_name: user?.last_name || "",
+          email: user?.email || "",
+          address_1: loggedInUser?.address_1 || "",
+          address_2: loggedInUser?.address_2 || "",
+          contact_number: loggedInUser?.contact_number || "",
+          country: loggedInUser?.country || "",
+          city: loggedInUser?.city || "",
+          state_province: loggedInUser?.state_province || "",
+          zipcode: loggedInUser?.zipcode || "",
         });
       }
     }, [addresses, user?.email, user?.first_name, user?.last_name]);

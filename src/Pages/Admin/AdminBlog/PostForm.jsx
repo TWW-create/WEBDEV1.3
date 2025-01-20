@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, message, Upload } from "antd";
+import { Button, Checkbox, Form, Input, message, Select, Upload } from "antd";
 import SingleHeader from "../components/SingleHeader"
 import { useState } from "react";
 import { useCreateBlogPostMutation } from "../../../redux/slice/blogApiSlice";
@@ -6,6 +6,7 @@ import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { errorCheck } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
+import { useGetAllProductsQuery } from "../../../redux/slice/productApiSlice";
 
 const PostForm = () => {
   const [form] = Form.useForm();
@@ -16,6 +17,7 @@ const PostForm = () => {
   const navigate = useNavigate()
 
   const [createPost, {isLoading}] = useCreateBlogPostMutation()
+  const { data } = useGetAllProductsQuery({page: 1})
 
     const onFinish = async (values) => {
         let formData = new FormData();
@@ -30,7 +32,13 @@ const PostForm = () => {
             });
         }
         Object.keys(values).forEach(key => {
-            formData.append(key, values[key]);
+            if (key === 'products') {
+              values[key].forEach((slug, index) => {
+                  formData.append(`product_slugs[${index}]`, slug);
+              });
+          } else {
+              formData.append(key, values[key]);
+          }
         });
         formData.append('is_published', publish ? 1 : 0);
         try {
@@ -116,6 +124,23 @@ const PostForm = () => {
                         className="h-32"
                     />
                 </Form.Item>
+                <Form.Item
+                    name="products"
+                    label="Related Products"
+                >
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                  placeholder="Please select the size"
+                  options={data?.data?.map((item) => ({
+                    label: item.name,
+                    value: item.slug,
+                  }))}
+                />
+              </Form.Item>
                 <Form.Item>
                     <Checkbox checked={publish} onChange={(e) => setPublish(e.target.checked)}>Create and Publish</Checkbox>
                 </Form.Item>

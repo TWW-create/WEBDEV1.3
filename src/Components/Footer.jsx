@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useSubscribeNewsletterMutation } from "../redux/slice/newsletterApiSlice";
-import { message } from "antd";
+import { Alert, message } from "antd";
 
 const Footer = () => {
 
   const [email, setEmail] = useState("");
+  const [fashionPreference, setFashionPreference] = useState("");
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [ subscribeNewsletter, { isLoading }] = useSubscribeNewsletterMutation()
+
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,8 +16,8 @@ const Footer = () => {
   };
 
   const handleSubscribe = async () => {
-    if (!email) {
-      message.error("Please enter a valid email.");
+    if (!email || !fashionPreference) {
+      message.error("Please fill out all fields.");
       return;
     }
 
@@ -24,10 +27,19 @@ const Footer = () => {
     }
 
     try {
-      await subscribeNewsletter({ email, is_subscribed: true, }).unwrap();
-      message.success("Subscribed successfully!");
-      setEmail(""); // Reset the email field after success
-      // setIsChecked(false); // Reset the checkbox
+      await subscribeNewsletter({
+        email,
+        is_subscribed: true,
+        fashion_preference: fashionPreference, // Include fashion preference
+      }).unwrap();
+      setEmail(""); // Reset email field
+      setFashionPreference(""); // Reset preference
+      setShowSuccessAlert(true); // Show success alert
+
+      // Hide the alert after 5 seconds
+      setTimeout(() => {
+        setShowSuccessAlert(false);
+      }, 5000)
     } catch (error) {
       message.error("Subscription failed. Please try again.");
     }
@@ -42,13 +54,16 @@ const Footer = () => {
             <p className="mb-4">I&apos;m interested in:</p>
             <div className="flex items-center mb-4">
               <label className="mr-4">
-                <input type="radio" name="interest" className="mr-2" /> Menswear
+                <input type="radio" name="interest" value="menswear" className="mr-2" checked={fashionPreference === "menswear"}
+                  onChange={(e) => setFashionPreference(e.target.value)} /> Menswear
               </label>
               <label className="mr-4">
-                <input type="radio" name="interest" className="mr-2" /> Womenswear
+                <input type="radio" name="interest" value="womenswear" className="mr-2" checked={fashionPreference === "womenswear"}
+                  onChange={(e) => setFashionPreference(e.target.value)} /> Womenswear
               </label>
               <label>
-                <input type="radio" name="interest" className="mr-2" /> Both
+                <input type="radio" name="interest" value="both" className="mr-2" checked={fashionPreference === "both"}
+                  onChange={(e) => setFashionPreference(e.target.value)} /> Both
               </label>
             </div>
             <div className="flex items-center mb-4">
@@ -57,6 +72,16 @@ const Footer = () => {
               <button className="bg-gray-700 p-2 ml-2 rounded-2xl" onClick={handleSubscribe}
                 disabled={isLoading}>{isLoading ? 'Submitting...': "Submit"}</button>
             </div>
+            {showSuccessAlert && (
+                <div className="my-4">
+                  <Alert
+                    message="Subscription successful!"
+                    type="success"
+                    showIcon
+                    closable
+                  />
+                </div>
+              )}
             <label className="flex items-center">
               <input type="checkbox" className="mr-2" /> I agree to the Privacy Policy
             </label>

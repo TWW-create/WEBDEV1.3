@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, InputNumber, Upload, message, Spin } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import SingleHeader from '../components/SingleHeader';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDeleteProductMediaMutation, useGetSingleProductQuery, useUpdateProductMutation } from '../../../redux/slice/productApiSlice';
 import { useGetCategoriesQuery, useGetCategoryDetailsQuery, useGetSubCategoryDetailsQuery } from '../../../redux/slice/categoryApiSlice';
 import { errorCheck } from '../../../utils/utils';
 import { FiTrash2 } from 'react-icons/fi';
+import { MinusCircleOutlined } from '@ant-design/icons';
 
 
 const EditProduct = () => {
@@ -14,7 +14,6 @@ const EditProduct = () => {
   const navigate = useNavigate()
   const params = useParams()
 
-  const [fileList, setFileList] = useState([]);
   const [featuredFileList, setFeaturedFileList] = useState([]);
   const [selectedCat, setSelectedCat] = useState()
   const [selectedSubCat, setSelectedSubCat] = useState()
@@ -26,6 +25,8 @@ const EditProduct = () => {
   const {data: productType, isLoading: productLoading} = useGetSubCategoryDetailsQuery(selectedSubCat)
 
   const {data, isLoading} = useGetSingleProductQuery(params.id)
+  console.log(subCat);
+  
 
   const [ updateProduct, {isLoading: updateLoading} ] = useUpdateProductMutation()
 
@@ -41,74 +42,75 @@ const EditProduct = () => {
     }
   };
 
-    const onFinish = async (values) => {
-        let formData = new FormData();
-
-        if (featuredFileList.length) {
-          formData.append("featured_image", featuredFileList[0].originFileObj);
-        } 
-
-      if (fileList.length) {
-        fileList.forEach((file) => {
-            formData.append(`images[]`, file.originFileObj);
+  const onFinish = async (values) => {
+    let formData = new FormData();
+  
+    // Add featured image
+    if (featuredFileList.length) {
+      formData.append("featured_image", featuredFileList[0].originFileObj);
+    }
+  
+    // Append other fields
+    Object.keys(values).forEach((key) => {
+      if (key === 'variants') {
+        values[key].forEach((variant, index) => {
+          if (variant.id) {
+            formData.append(`variants[${index}][id]`, variant.id);
+          }
+          formData.append(`variants[${index}][color]`, variant.color);
+          formData.append(`variants[${index}][stock]`, variant.stock);
+          variant?.sizes.forEach((size, sizeIndex) => {
+            formData.append(`variants[${index}][sizes][${sizeIndex}]`, size);
+          });
+          if (variant?.images?.fileList) {
+              variant?.images?.fileList.forEach((image, imgIndex) => {
+                formData.append(`variants[${index}][images][${imgIndex}]`, image.originFileObj);
+              });
+          }
         });
-      } 
-
-        Object.keys(values).forEach(key => {
-          if (key === 'size') {
-            values[key].forEach((size) => {
-                formData.append(`sizes[]`, size);
-            });
-        } else if (key === 'colors') {
-            values[key].forEach((color) => {
-                formData.append(`colors[]`, color);
-            });
-        } else {
-            formData.append(key, values[key]);
-        }
-        });
-
-        // formData.append("name", values.name)
-        
-        try {
-            const res = await updateProduct({data: formData, id: params.id}).unwrap();
-            message.success(res.message);
-            form.resetFields();
-            navigate('/admin/products')
-        } catch (error) {
-            errorCheck(error);
-        }
-    };
+      } else {
+        formData.append(key, values[key]);
+      }
+    });
+  
+    try {
+      const res = await updateProduct({ data: formData, id: params.id }).unwrap();
+      message.success(res.message);
+      form.resetFields();
+      navigate("/admin/products");
+    } catch (error) {
+      errorCheck(error);
+    }
+  };
+  
 
     useEffect(() => {
       if (data?.data?.product) {
-        const product = data?.data?.product;
-  
+        const product = data.data.product;
+    
         form.setFieldsValue({
-          name: product?.name,
-          description: product?.description,
-          price: product?.price,
-          creator: product?.creator,
-          size: product?.sizes,
-          colors: product?.colors,
-          qty: product?.qty,
-          category_id: product?.category_id,
-          sub_category_id: product?.sub_category_id,
-          product_type_id: product?.product_type_id,
-          composition: product?.composition,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          creator: product.creator,
+          composition: product.composition,
+          shipping_details: product.shipping_details,
+          category_id: product.category_id,
+          sub_category_id: product.sub_category_id,
+          product_type_id: product.product_type_id,
+          variants: product.variants.map((variant) => ({
+            color: variant.color,
+            sizes: variant.sizes,
+            stock: variant.stock,
+            id: variant.id,
+          })),
         });
-        setSelectedCat(product?.category_id)
-        setSelectedSubCat(product?.sub_category_id)
-        // setFileList([
-        //   {
-        //     uid: '-1',
-        //     name: 'image.jpg',
-        //     status: 'done',
-        //     url: product.image_url,
-        //   },
-        // ]);
-        }
+    
+        setSelectedCat(product.category_id);
+        setSelectedSubCat(product.sub_category_id);
+      }
     }, [data, form]);
+    
 
     
     
@@ -223,7 +225,7 @@ const EditProduct = () => {
                     form.setFieldsValue({ product_type_id: null });
                   }}
                   placeholder="Please select the category for this product"
-                  options={subCat?.sub_categories?.map((item) => ({
+                  options={subCat?.data?.sub_categories?.map((item) => ({
                     label: item.name,
                     value: item.id,
                   }))}
@@ -278,38 +280,6 @@ const EditProduct = () => {
                 </Upload>
               </div>
             </div>
-            <p className='pb-2'>Image</p>
-            <div className='border border-dotted flex items-center justify-center rounded-xl gap-y-1 py-8 px-8 md:px-0 mb-6'>
-              <div className='m-6'>
-                <Upload
-                  name='photos'
-                  listType='picture'
-                  accept='image/*'
-                  beforeUpload={() => false}
-                  multiple
-                  onChange={(info) => {
-                    let updatedFileList = [...info.fileList];
-                
-                    // Only keep successfully uploaded files in the list
-                    if (info.file.status === 'removed') {
-                      updatedFileList = updatedFileList.filter(file => file.uid !== info.file.uid);
-                    }
-                    
-                    setFileList(updatedFileList);
-                  }}
-                  fileList={fileList}
-                >
-                  <Button
-                    htmlType='button'
-                    size='large'
-                    block
-                    className='py-2 px-5 text-[#1E5EFF] font-semibold hover:!font-semibold text-xs'
-                  >
-                    Upload photo
-                  </Button>
-                </Upload>
-              </div>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <Form.Item
                 name="price"
@@ -317,33 +287,6 @@ const EditProduct = () => {
                 rules={[{ required: true, message: 'Please input the product price!' }]}
               >
                 <InputNumber placeholder='Enter product base price' type='number' style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item
-                name="qty"
-                label="Product Count"
-                rules={[{ required: true, message: 'Please input the quantity!' }]}
-              >
-                <InputNumber placeholder='Enter product quantity' style={{ width: '100%' }} />
-              </Form.Item>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <Form.Item
-                name="size"
-                label="Size"
-                rules={[{ required: true, message: 'Please input the size!' }]}
-              >
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{
-                    width: '100%',
-                  }}
-                  placeholder="Please select the size"
-                  options={['XS', 'SM', 'M', 'L', 'XL', 'XXL', 'XXXL']?.map((size) => ({
-                    label: size,
-                    value: size,
-                  }))}
-                />
               </Form.Item>
               <Form.Item
                 name="creator"
@@ -369,40 +312,84 @@ const EditProduct = () => {
                 />
               </Form.Item>
             </div>
-            <p className='mb-1'>Product Colors</p>
-            <Form.List name="colors" initialValue={['']}>
+          </div>
+          <p className="pt-5">Variants</p>
+            <Form.List name="variants" initialValue={[{}]}>
               {(fields, { add, remove }) => (
-                <div className='w-[50%]'>
+                <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <div key={key} className="flex gap-4 items-center mb-2">
+                    <div key={key} className="border p-4 mb-4 rounded">
+                      <div className="flex justify-between items-center">
+                        <h4>Variant {key + 1}</h4>
+                        <MinusCircleOutlined onClick={() => remove(name)} />
+                      </div>
                       <Form.Item
                         {...restField}
-                        name={[name]}
+                        name={[name, 'color']}
+                        label="Color"
                         rules={[{ required: true, message: 'Please input the color!' }]}
-                        className='!mb-2 w-full'
                       >
-                        <Input placeholder="Enter product color" />
+                        <Input placeholder="Enter color" />
                       </Form.Item>
-                      {fields.length > 1 && <MinusCircleOutlined onClick={() => remove(name)} />}
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'stock']}
+                        label="Stock Number"
+                        rules={[{ required: true, message: 'Please input the stock Number!' }]}
+                      >
+                        <Input placeholder="Enter stock number" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'sizes']}
+                        label="Sizes"
+                        rules={[{ required: true, message: 'Please select sizes!' }]}
+                      >
+                        <Select
+                          mode="multiple"
+                          placeholder="Select sizes"
+                          options={['XS', 'SM', 'M', 'L', 'XL', 'XXL'].map((size) => ({
+                            label: size,
+                            value: size,
+                          }))}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'images']}
+                        label="Images"
+                        // rules={[{ required: true, message: 'Please upload images!' }]}
+                      >
+                        <Upload
+                          name="photos"
+                          listType="picture"
+                          accept="image/*"
+                          beforeUpload={() => false}
+                          multiple
+                          onChange={(info) => {
+                            const updatedFileList = [...info.fileList];
+                            form.setFields([
+                              {
+                                name: [name, 'images'],
+                                value: updatedFileList,
+                              },
+                            ]);
+                          }}
+                        >
+                          <Button type="button" size="large">
+                            Upload photos
+                          </Button>
+                        </Upload>
+                      </Form.Item>
                     </div>
                   ))}
-                  <Form.Item className=''>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      icon={<PlusOutlined />}
-                      block
-                    >
-                      Add Color
-                    </Button>
-                  </Form.Item>
-                </div>
+                  <Button type="dashed" onClick={() => add()} block>
+                    Add Variant
+                  </Button>
+                </>
               )}
             </Form.List>
-            {/* <Form.Item name="displayNameDesc" valuePropName="checked">
-              <Checkbox>Available?</Checkbox>
-            </Form.Item> */}
-          </div>
+
           <Form.Item>
             <Button type="primary" loading={updateLoading} htmlType="submit" className='py-3 px-8 mt-5'>
               Update Product

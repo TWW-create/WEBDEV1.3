@@ -30,9 +30,6 @@ const BlogItem = ({ blog }) => {
   const [deleteVisible, setDeleteVisible] = useState(false);
   // Find the category name based on the category ID
 
-  console.log(BASE_URL + blog?.media[0]?.file_path);
-  
-    
   return (
     <div className="border rounded-md shadow-sm bg-white">
       {/* Image Container */}

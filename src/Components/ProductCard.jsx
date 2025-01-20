@@ -9,17 +9,13 @@ import { useState } from 'react';
 
 const ProductCard = ({ product }) => {
   const { user } = useSelector((state) => state.user);
-
   const { data } = useGetUserFavoritesQuery();
-
   const initialIsLiked = data?.data?.some((like) => like.product_id === product.id);
-
   const [isLiked, setIsLiked] = useState(initialIsLiked);
-
   const [addFavorite] = useAddUserFavoriteMutation();
   const [removeFavorite] = useRemoveUserFavoriteMutation();
 
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
   const handleLike = async (event) => {
     event.stopPropagation();
@@ -47,17 +43,20 @@ const ProductCard = ({ product }) => {
       onClick={() => navigate(`/products/${product.id}`)}
     >
       {product.label && (
-        <div className="absolute top-2 left-2 bg-white text-sm px-2 py-1 rounded-md">
+        <div className="absolute top-2 left-2 bg-white text-sm px-2 py-1 rounded-md z-10">
           {product.label}
         </div>
       )}
-      <img
-        src={IMAGE_BASE_URL + '/' + product.featured_image}
-        alt={product.name}
-        className="w-full h-[350px] xl:h-[400px] object-cover"
-      />
+      {/* Added overflow-hidden to contain the zoomed image */}
+      <div className="w-full h-[350px] xl:h-[400px] overflow-hidden">
+        <img
+          src={IMAGE_BASE_URL + '/' + product.featured_image}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-125"
+        />
+      </div>
       {user?.id && (
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 z-10">
           {isLiked ? (
             <FaHeart
               className="text-black"

@@ -159,7 +159,7 @@ const MegaMenu = ({ categoryName }) => {
             <nav className={`flex justify-between items-center py-5 px-12 top-0 ${scrolled ? 'fixed bg-white shadow-md bg-opacity-100 w-full z-50' : 'static'}`}>
                 <div className="flex gap-10 items-center">
                     <Link to={'/'}><img src={logo} alt="logo" className='w-20 object-cover object-center' /></Link>
-                    <ul className="hidden lg:flex space-x-8 text-sm font-bold">
+                    <ul className="hidden lg:flex space-x-8 font-bold">
                         <li>
                             <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('women')} >
                                 <Link to={'/women'}>Women</Link>
@@ -176,7 +176,7 @@ const MegaMenu = ({ categoryName }) => {
                             </Dropdown>
                         </li>
                         <li><Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('sales')} ><Link to={'/sales'}>Sales</Link></Dropdown></li>
-                        <li><Link to={'/blog'}>Blog</Link></li>
+                        <li><Link to={'/blog'}>Baraworld</Link></li>
                     </ul>
                 </div>
                 <div className="hidden lg:flex items-center space-x-4">

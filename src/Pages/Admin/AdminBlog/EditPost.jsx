@@ -1,4 +1,4 @@
-import { Button, Form, Input, message, Spin, Upload } from "antd";
+import { Button, Form, Input, message, Select, Spin, Upload } from "antd";
 import SingleHeader from "../components/SingleHeader";
 import { useState, useEffect } from "react";
 import { useGetBlogPostQuery, useUpdateBlogPostMutation } from "../../../redux/slice/blogApiSlice";
@@ -6,6 +6,7 @@ import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { errorCheck } from "../../../utils/utils";
 import { useNavigate, useParams } from "react-router-dom";
+import { useGetAllProductsQuery } from "../../../redux/slice/productApiSlice";
 
 
 const EditPost = () => {
@@ -16,6 +17,8 @@ const EditPost = () => {
 
   const { data, isLoading: postLoading } = useGetBlogPostQuery(id);
   const [updatePost, { isLoading }] = useUpdateBlogPostMutation();
+    const { data:productData } = useGetAllProductsQuery({page: 1})
+  
 
   // Prefill form when data is loaded
   useEffect(() => {
@@ -23,6 +26,7 @@ const EditPost = () => {
       form.setFieldsValue({
         title: data?.title,
         content: data?.content,
+        products: data?.products?.map(product => ({ label: product.title, value: product.slug }))
       });
     }
   }, [data, form]);
@@ -37,7 +41,13 @@ const EditPost = () => {
         });
     }
     Object.keys(values).forEach(key => {
-        formData.append(key, values[key]);
+        if (key === 'products') {
+            values[key].forEach((slug, index) => {
+                formData.append(`product_slugs[${index}]`, slug);
+            });
+        } else {
+            formData.append(key, values[key]);
+        }
     });
     try {
         const res = await updatePost({data:formData, id}).unwrap();
@@ -124,6 +134,25 @@ const EditPost = () => {
                         className="h-32"
                     />
                 </Form.Item>
+                <Form.Item
+                    name="products"
+                    label="Related Products"
+                >
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                  placeholder="Please select the size"
+                  options={productData?.data?.map((item) => ({
+                    label: item.name,
+                    value: item.slug,
+                  }))}
+                />
+                {console.log(productData)}
+                {console.log(data?.products)}
+              </Form.Item>
                 <Form.Item>
                     <Button type="primary" loading={isLoading} htmlType="submit" className='py-2 px-6'>
                     Update Post
