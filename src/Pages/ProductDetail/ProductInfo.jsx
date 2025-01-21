@@ -178,32 +178,15 @@ const ProductInfo = ({ product, shipping, returns }) => {
                 <img
                   src={`${IMAGE_BASE_URL}/${variant.images[0]?.image_path}`}
                   alt={variant.color}
-                  className="w-16 h-16 rounded-md mb-2"
+                  className={`w-16 h-16 rounded-md mb-2 ${ activeVariant.id === variant.id ? "border border-black p-1" : ""}`}
                 />
-                <span>{variant.color}</span>
+                <span className="capitalize">{variant.color}</span>
               </div>
             ))}
           </div>
         </div>
 
         <Divider />
-        {/* <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-4">Size</label>
-          <div className="flex gap-2">
-            {product?.sizes?.map((size) => (
-              <div
-                key={size}
-                className={`flex justify-center items-center border h-12 w-12 p-4 rounded-full cursor-pointer ${
-                  selectedSize === size ? "border-black" : "border-gray-300"
-                }`}
-                onClick={() => setSelectedSize(size)}
-              >
-                {size}
-              </div>
-            ))}
-          </div>
-          <Divider className="!mb-2" />
-        </div> */}
          <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">Size:</label>
           <div className="flex gap-2">
@@ -224,7 +207,7 @@ const ProductInfo = ({ product, shipping, returns }) => {
         <div className="flex gap-4 items-center mb-4">
           <button 
             className={`w-full py-3 rounded-3xl ${
-              !selectedColor || !selectedSize
+              !activeVariant || !selectedSize
                 ? "bg-gray-600 text-white/80 cursor-not-allowed"
                 : "bg-black text-white"
             }`}

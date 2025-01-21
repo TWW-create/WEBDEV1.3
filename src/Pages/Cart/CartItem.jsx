@@ -50,10 +50,11 @@ const CartItem = ({item}) => {
                     <p className="text-xs">{item.selectedSize}</p>
                     <span>•</span>
                     <div>
-                        <div
+                        {/* <div
                             className={`w-3 h-3 rounded-full border cursor-pointer`}
                             style={{ backgroundColor: item?.selectedColor.toLowerCase() }}
-                        />
+                        /> */}
+                        <p className='text-sm capitalize'>{item.selectedColor}</p>
                     </div>
                 </div>
                 <p className='text-xs font-semibold'>€{item.price}</p>
