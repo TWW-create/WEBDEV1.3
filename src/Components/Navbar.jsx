@@ -57,7 +57,7 @@ const MegaMenu = ({ categoryName }) => {
         <div className="flex items-center col-span-1">
           <img src={
             (categoryName === 'men' && MenB) || (categoryName === 'women' && WomenB) || (categoryName === 'accessories' && AccesoriesB) || (categoryName === 'sales' && SalesB)
-          } alt="" />
+          } alt="" className='max-w-36 object-contain' />
         </div>
   
         {/* Displaying subcategories and their product types */}
@@ -161,21 +161,27 @@ const MegaMenu = ({ categoryName }) => {
                     <Link to={'/'}><img src={logo} alt="logo" className='w-20 object-cover object-center' /></Link>
                     <ul className="hidden lg:flex space-x-8 font-bold">
                         <li>
-                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('women')} >
+                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('women')} placement='bottom' >
                                 <Link to={'/women'}>Women</Link>
                             </Dropdown>
                         </li>
+                        {/* <li>
+                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('men')} placement='
+                            bottom'>
+                                <Link to={'/men'}>Men</Link>
+                            </Dropdown>
+                        </li> */}
                         <li>
-                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('men')} >
+                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('men')} placement='bottom' >
                                 <Link to={'/men'}>Men</Link>
                             </Dropdown>
                         </li>
                         <li>
-                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('accessories')} >
+                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('accessories')} placement='bottom' >
                                 <Link to={'/accessories'}>Accessories</Link>
                             </Dropdown>
                         </li>
-                        <li><Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('sales')} ><Link to={'/sales'}>Sales</Link></Dropdown></li>
+                        <li><Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('sales')} placement='bottom' ><Link to={'/sales'}>Sales</Link></Dropdown></li>
                         <li><Link to={'/blog'}>Baraworld</Link></li>
                     </ul>
                 </div>

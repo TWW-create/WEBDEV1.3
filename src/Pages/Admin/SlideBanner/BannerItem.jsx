@@ -13,7 +13,7 @@ const BannerItem = ({item}) => {
         <img src={item.image_url} alt="banner" className="w-80 object-center object-cover rounded-l" />
         <div className="p-5 w-full">
             <div className="flex justify-end items-center space-x-2 mb-5">
-                <Button icon={<EditOutlined />} className='!text-[#000000] p-2 cursor-pointer' onClick={() => navigate(`/admin/banners/${item.id}`)} />
+                {/* <Button icon={<EditOutlined />} className='!text-[#000000] p-2 cursor-pointer' onClick={() => navigate(`/admin/banners/${item.id}`)} /> */}
                 <Button icon={<DeleteOutlined />} className='!text-[#000000] p-2 cursor-pointer' onClick={() => setDeleteVisible(true)}   />
             </div>
             <div>
