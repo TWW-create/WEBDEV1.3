@@ -21,8 +21,8 @@ return new class extends Migration
 
             // Create default creator
             DB::table('creators')->insert([
-                'name' => 'Default Creator',
-                'slug' => 'default-creator',
+                'name' => 'Bara ashion',
+                'slug' => 'bara-fashion',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
