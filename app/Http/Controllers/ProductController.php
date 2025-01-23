@@ -23,14 +23,18 @@ class ProductController extends Controller
             'subCategory', 
             'productType', 
             'tags', 
-            'variants.images'
+            'variants.images',
+            'creator'
         ]);
     
         if ($request->name) {
             $query->where('name', 'like', "%{$request->name}%");
         }
         if ($request->creator) {
-            $query->where('creator', 'like', "%{$request->creator}%");
+            $query->whereHas('creator', function($q) use ($request) {
+                $q->where('id', $request->creator)
+                  ->orWhere('slug', $request->creator);
+            });
         }
         if ($request->category_slug) {
             $query->whereHas('category', function($q) use ($request) {
@@ -110,7 +114,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'creator' => 'required|string|max:255',
+            'creator_id' => 'required|exists:creators,id',
             'description' => 'nullable|string',
             'composition' => 'nullable|string',
             'shipping_details' => 'nullable|array',
@@ -140,21 +144,27 @@ class ProductController extends Controller
             'variants.*.images.*' => 'image|max:2048',
             'status' => 'string|in:available,out_of_stock,discontinued',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        return DB::transaction(function () use ($request, $validator) {
+    
+        return DB::transaction(function () use ($request) {
             try {
-                $product = Product::create($validator->validated());
-
+                $productData = $request->only([
+                    'name', 'creator_id', 'description', 'composition',
+                    'shipping_details', 'price', 'category_id',
+                    'sub_category_id', 'product_type_id', 'status'
+                ]);
+    
+                $product = Product::create($productData);
+    
                 if ($request->hasFile('featured_image')) {
                     $product->featured_image = $request->file('featured_image')
                         ->store("products/{$product->id}", 'public');
                     $product->save();
                 }
-
+    
                 foreach ($request->variants as $variantData) {
                     $variant = $product->variants()->create([
                         'color' => $variantData['color'],
@@ -162,7 +172,7 @@ class ProductController extends Controller
                         'stock' => $variantData['stock'],
                         'sku' => Str::uuid()
                     ]);
-
+    
                     foreach ($variantData['images'] as $index => $image) {
                         $path = $image->store("products/{$product->id}/variants/{$variant->id}", 'public');
                         $variant->images()->create([
@@ -171,16 +181,28 @@ class ProductController extends Controller
                         ]);
                     }
                 }
-
+    
                 if ($request->has('tags')) {
                     $product->tags()->sync($request->tags);
                 }
-
+    
+                $product->load(['category', 'subCategory', 'productType', 'tags', 'variants.images', 'creator']);
+                $productData = $product->toArray();
+                $productData['creator'] = array_merge(
+                    $product->creator->toArray(),
+                    [
+                        'filter_links' => [
+                            'products' => "/api/products?creator=" . $product->creator->slug,
+                            'blogs' => "/api/blogs?creator=" . $product->creator->slug
+                        ]
+                    ]
+                );
+    
                 return response()->json([
                     'message' => 'Product created successfully',
-                    'product' => $product->load(['category', 'subCategory', 'productType', 'tags', 'variants.images']),
+                    'product' => $productData
                 ], 201);
-
+    
             } catch (\Exception $e) {
                 Log::error('Product creation failed', [
                     'error' => $e->getMessage(),
@@ -190,6 +212,8 @@ class ProductController extends Controller
             }
         });
     }
+    
+
     public function show($identifier)
     {
         $product = Product::with([
@@ -197,7 +221,8 @@ class ProductController extends Controller
             'subCategory',
             'productType',
             'tags',
-            'variants.images'
+            'variants.images',
+            'creator'
         ])
         ->where('id', $identifier)
         ->orWhere('slug', $identifier)
@@ -209,15 +234,27 @@ class ProductController extends Controller
             ->where('id', '!=', $product->id)
             ->take(4)
             ->get();
+    
+        $productData = $product->toArray();
+        $productData['creator'] = array_merge(
+            $product->creator->toArray(),
+            [
+                'filter_links' => [
+                    'products' => "/api/products?creator=" . $product->creator->slug,
+                    'blogs' => "/api/blogs?creator=" . $product->creator->slug
+                ]
+            ]
+        );
         
         return response()->json([
             'status' => 'success',
             'data' => [
-                'product' => $product,
+                'product' => $productData,
                 'related_products' => $relatedProducts
             ]
         ]);
     }
+    
 
     public function update(Request $request, $id)
     {
@@ -225,7 +262,7 @@ class ProductController extends Controller
             try {
                 $validator = Validator::make($request->all(), [
                     'name' => 'sometimes|string|max:255',
-                    'creator' => 'sometimes|string|max:255',
+                    'creator_id' => 'sometimes|exists:creators,id',
                     'description' => 'sometimes|nullable|string',
                     'price' => 'sometimes|numeric|min:0',
                     'category_id' => 'sometimes|exists:categories,id',
@@ -251,7 +288,6 @@ class ProductController extends Controller
                 if ($request->has('variants')) {
                     foreach ($request->variants as $variantData) {
                         if (isset($variantData['id'])) {
-                            // Update existing variant
                             $variant = $product->variants()->findOrFail($variantData['id']);
                             $variant->update([
                                 'color' => $variantData['color'],
@@ -259,7 +295,6 @@ class ProductController extends Controller
                                 'stock' => $variantData['stock']
                             ]);
                         } else {
-                            // Create new variant
                             $variant = $product->variants()->create([
                                 'color' => $variantData['color'],
                                 'sizes' => $variantData['sizes'],
@@ -267,18 +302,15 @@ class ProductController extends Controller
                                 'sku' => Str::uuid()
                             ]);
                         }
-                
-                        // Handle images for both new and existing variants
+    
                         if (isset($variantData['images'])) {
                             if (isset($variantData['id'])) {
-                                // Delete old images for existing variant
                                 foreach ($variant->images as $oldImage) {
                                     Storage::disk('public')->delete($oldImage->image_path);
                                     $oldImage->delete();
                                 }
                             }
-                
-                            // Add new images
+    
                             foreach ($variantData['images'] as $index => $image) {
                                 $path = $image->store("products/{$product->id}/variants/{$variant->id}", 'public');
                                 $variant->images()->create([
@@ -288,16 +320,28 @@ class ProductController extends Controller
                             }
                         }
                     }
-                }                
+                }
     
                 $updateData = $request->except(['variants', 'featured_image']);
                 if (!empty($updateData)) {
                     $product->update($updateData);
                 }
     
+                $product->load(['category', 'subCategory', 'productType', 'tags', 'variants.images', 'creator']);
+                $productData = $product->toArray();
+                $productData['creator'] = array_merge(
+                    $product->creator->toArray(),
+                    [
+                        'filter_links' => [
+                            'products' => "/api/products?creator=" . $product->creator->slug,
+                            'blogs' => "/api/blogs?creator=" . $product->creator->slug
+                        ]
+                    ]
+                );
+    
                 return response()->json([
                     'message' => 'Product updated successfully',
-                    'product' => $product->load(['variants.images'])
+                    'product' => $productData
                 ]);
     
             } catch (\Exception $e) {
@@ -309,6 +353,7 @@ class ProductController extends Controller
             }
         });
     }
+    
     
     public function deleteImage($id)
     {

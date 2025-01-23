@@ -22,6 +22,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\CreatorController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -55,6 +56,10 @@ Route::get('tags/{id}', [TagController::class, 'show']);
 
 Route::get('/banners', [BannerController::class, 'index']);
 Route::get('/banners/{id}', [BannerController::class, 'show']);
+
+// creators
+Route::get('/creators', [CreatorController::class, 'index']);
+Route::get('/creators/{identifier}', [CreatorController::class, 'show']);
 
 //others
 Route::get('shipping-policy', [PolicyController::class, 'getShippingPolicy']);
@@ -189,5 +194,9 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::get('return-policy/inactive', [PolicyController::class, 'getInactiveReturnPolicies']);
     Route::get('faqs/inactive', [PolicyController::class, 'getInactiveFaqs']);
 
+    // Creators
+    Route::post('/creators', [CreatorController::class, 'store']);
+    Route::put('/creators/{identifier}', [CreatorController::class, 'update']);
+    Route::delete('/creators/{identifier}', [CreatorController::class, 'destroy']);
 
 });

@@ -11,10 +11,10 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'creator', 'description', 'sizes', 'colors', 
-        'qty', 'price', 'category_id', 'sub_category_id', 
-        'product_type_id', 'featured_image', 'rank', 'status','slug','view_count','composition',
-        'shipping_details'
+        'name', 'creator_id', 'description', 'composition', 
+        'shipping_details', 'price', 'category_id', 'sub_category_id', 
+        'product_type_id', 'featured_image', 'rank', 'status', 'slug',
+        'view_count'
     ];
 
     protected $casts = [
@@ -111,5 +111,10 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
-        
+
+    public function creator()
+    {
+        return $this->belongsTo(Creator::class);
+    }
+
 }

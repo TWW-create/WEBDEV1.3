@@ -110,10 +110,18 @@ class BlogController extends Controller
         $blog = Blog::with(['media', 'products'])->findOrFail($id);
         return response()->json($blog);
     }
-
-    public function index()
+    public function index(Request $request)
     {
-        $blogs = Blog::with(['media', 'products'])->latest()->paginate(10);
+        $query = Blog::with(['media', 'products', 'creator']);
+        
+        if ($request->creator) {
+            $query->whereHas('creator', function($q) use ($request) {
+                $q->where('id', $request->creator)
+                  ->orWhere('slug', $request->creator);
+            });
+        }
+        
+        $blogs = $query->latest()->paginate(10);
         return response()->json($blogs);
     }
 }

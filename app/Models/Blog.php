@@ -25,5 +25,10 @@ class Blog extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(Creator::class);
+    }
     
 }
