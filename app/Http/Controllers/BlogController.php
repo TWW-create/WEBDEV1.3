@@ -112,16 +112,13 @@ class BlogController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Blog::with(['media', 'products', 'creator']);
+        $query = Blog::with(['media', 'products']);
         
         if ($request->creator) {
-            $query->whereHas('creator', function($q) use ($request) {
-                $q->where('id', $request->creator)
-                  ->orWhere('slug', $request->creator);
-            });
+            $query->where('title', 'like', "%{$request->creator}%");
         }
         
         $blogs = $query->latest()->paginate(10);
         return response()->json($blogs);
-    }
+    }    
 }

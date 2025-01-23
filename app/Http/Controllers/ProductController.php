@@ -193,7 +193,7 @@ class ProductController extends Controller
                     [
                         'filter_links' => [
                             'products' => "/api/products?creator=" . $product->creator->slug,
-                            'blogs' => "/api/blogs?creator=" . $product->creator->slug
+                            'blogs' => "/api/blogs?creator=" . $product->creator->name
                         ]
                     ]
                 );
@@ -241,7 +241,7 @@ class ProductController extends Controller
             [
                 'filter_links' => [
                     'products' => "/api/products?creator=" . $product->creator->slug,
-                    'blogs' => "/api/blogs?creator=" . $product->creator->slug
+                    'blogs' => "/api/blogs?creator=" . $product->creator->name
                 ]
             ]
         );
@@ -334,7 +334,7 @@ class ProductController extends Controller
                     [
                         'filter_links' => [
                             'products' => "/api/products?creator=" . $product->creator->slug,
-                            'blogs' => "/api/blogs?creator=" . $product->creator->slug
+                            'blogs' => "/api/blogs?creator=" . $product->creator->name
                         ]
                     ]
                 );
