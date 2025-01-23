@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -17,29 +18,39 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Modify products table to reference creators
+        // Create default creator
+        DB::table('creators')->insert([
+            'name' => 'Default Creator',
+            'slug' => 'default-creator',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // Add creator_id to products table
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('creator'); // Remove old creator string column
-            $table->foreignId('creator_id')->after('name')->constrained()->onDelete('restrict');
+            $table->foreignId('creator_id')->after('name')->nullable()->constrained();
         });
 
-        // Add creator_id to blogs table
-        Schema::table('blogs', function (Blueprint $table) {
-            $table->foreignId('creator_id')->after('user_id')->nullable()->constrained()->onDelete('set null');
+        // Link existing products to default creator
+        DB::table('products')->update(['creator_id' => 1]);
+
+        // Make creator_id required
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreignId('creator_id')->nullable(false)->change();
+        });
+
+        // Remove old creator column
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('creator');
         });
     }
 
     public function down()
     {
-        Schema::table('blogs', function (Blueprint $table) {
-            $table->dropForeign(['creator_id']);
-            $table->dropColumn('creator_id');
-        });
-
         Schema::table('products', function (Blueprint $table) {
+            $table->string('creator')->after('name');
             $table->dropForeign(['creator_id']);
             $table->dropColumn('creator_id');
-            $table->string('creator')->after('name'); // Restore old creator column
         });
 
         Schema::dropIfExists('creators');
