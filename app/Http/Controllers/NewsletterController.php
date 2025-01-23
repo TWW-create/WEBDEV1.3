@@ -57,13 +57,12 @@ class NewsletterController extends Controller
 
     public function index()
     {
-        $subscribers = Newsletter::where('is_subscribed', true)
-            ->get()
-            ->groupBy('fashion_preference');
+        $subscribers = Newsletter::where('is_subscribed', true)->get();
             
         return response()->json([
             'data' => $subscribers, 
-            'total_count' => $subscribers->flatten()->count()
+            'total_count' => $subscribers->count()
         ], 200);
     }
+    
 }
