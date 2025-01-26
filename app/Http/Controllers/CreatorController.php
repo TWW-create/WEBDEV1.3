@@ -11,9 +11,17 @@ class CreatorController extends Controller
 {
     public function index()
     {
-        $creators = Creator::withCount(['products', 'blogs'])->get();
+        $creators = Creator::withCount(['products'])->get();
+        
+        $creators->each(function ($creator) {
+            $creator->filter_links = [
+                'products' => "/api/products?creator=" . $creator->slug,
+                'blogs' => "/api/blogs?creator=" . $creator->name
+            ];
+        });
+    
         return response()->json(['data' => $creators]);
-    }
+    }    
 
     public function store(Request $request)
     {
