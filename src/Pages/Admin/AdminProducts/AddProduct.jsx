@@ -322,6 +322,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCreateProductMutation } from '../../../redux/slice/productApiSlice';
 import { useGetCategoriesQuery, useGetCategoryDetailsQuery, useGetSubCategoryDetailsQuery } from '../../../redux/slice/categoryApiSlice';
 import { errorCheck } from '../../../utils/utils';
+import { useGetCreatorsQuery } from '../../../redux/slice/creatorApiSlice';
 
 const AddProduct = () => {
   const [form] = Form.useForm();
@@ -335,14 +336,12 @@ const AddProduct = () => {
   const { data: cat } = useGetCategoriesQuery();
   const { data: subCat } = useGetCategoryDetailsQuery(selectedCat);
   const { data: productType } = useGetSubCategoryDetailsQuery(selectedSubCat);
+  const { data: creator } = useGetCreatorsQuery()
 
   const [createProduct, { isLoading }] = useCreateProductMutation();
 
   const onFinish = async (values) => {    
-    let formData = new FormData();
-
-    console.log(values);
-    
+    let formData = new FormData();   
 
     // Handle featured image
     if (!featuredFileList.length) {
@@ -462,26 +461,16 @@ const AddProduct = () => {
                 <InputNumber placeholder='Enter product base price' type='number' style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item
-                name="creator"
+                name="creator_id"
                 label="Creator"
                 rules={[{ required: true, message: 'Please add the creator' }]}
               >
                 <Select
                   placeholder="Please select the creator"
-                  options={[
-                    {
-                      value: 'Dior',
-                      label: 'Dior',
-                    },
-                    {
-                      value: 'Loius Vuitton',
-                      label: 'Loius Vuitton',
-                    },
-                    {
-                      value: 'Versace',
-                      label: 'Versace',
-                    },
-                  ]}
+                  options={creator?.data?.map((item) => ({
+                    label: item.name,
+                    value: item.id,
+                  }))}
                 />
               </Form.Item>
             </div>

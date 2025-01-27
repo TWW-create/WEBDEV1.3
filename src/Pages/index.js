@@ -30,6 +30,8 @@ import Favorites from "./Favorites.jsx";
 import ProfileInfo from "./Profile/ProfileInfo.jsx";
 import AdminSettings from "./Admin/AdminSettings";
 import Checkout from "./Checkout";
+import AdminCreator from "./Admin/AdminCreator";
+import AddCreator from "./Admin/AdminCreator/AddCreator.jsx";
 
 
-export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings, Checkout}
+export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings, Checkout, AdminCreator, AddCreator}

@@ -1,20 +1,14 @@
 import { NavLink } from "react-router-dom";
-import { IoBarChartOutline, IoPricetagOutline, IoRibbonOutline } from "react-icons/io5";
+import { IoPricetagOutline } from "react-icons/io5";
 import { HiOutlineHome, } from "react-icons/hi";
-import { MdOutlineChat, MdOutlineMenu, MdOutlineSettings } from "react-icons/md";
-import { FaRegFolder, FaRegStar, FaRegUser } from "react-icons/fa";
-import { PiUsersBold } from "react-icons/pi";
-import { FaRegCircleQuestion } from "react-icons/fa6";
+import { FaRegFolder } from "react-icons/fa";
+
 
 const Sidenav = ({ open, toggleSidebar }) => {
-//   const { user } = useSelector((state) => state.user)
-
-//   const ref1 = useRef(null);
 
 
     const handleNavLinkClick = () => {
         if (window.innerWidth <= 912) {
-        // Check if screen width is less than or equal to 768px (adjust as needed)
         toggleSidebar();
         }
     };
@@ -25,11 +19,6 @@ const Sidenav = ({ open, toggleSidebar }) => {
           path: "/admin/dashboard",
           icon: <HiOutlineHome size={20} />,
       },
-      // {
-      //     name: "Orders",
-      //     path: "/orders",
-      //     icon: <MdOutlineMenu size={20} />,
-      // },
       {
           name: "Products",
           path: "/admin/products",
@@ -40,21 +29,6 @@ const Sidenav = ({ open, toggleSidebar }) => {
           path: "/admin/categories",
           icon: <FaRegFolder size={20} />,
       },
-    //   {
-    //       name: "Brands",
-    //       path: "/brands",
-    //       icon: <FaRegFolder size={20} />,
-    //   },
-    //   {
-    //       name: "Specifications",
-    //       path: "/specifications",
-    //       icon: <FaRegFolder size={20} />,
-    //   },
-    //   {
-    //       name: "Product Attributes",
-    //       path: "/attributes",
-    //       icon: <FaRegFolder size={20} />,
-    //   },
       {
           name: "Slide Banner",
           path: "/admin/banners",
@@ -71,6 +45,11 @@ const Sidenav = ({ open, toggleSidebar }) => {
           icon: <FaRegFolder size={20} />,
       },
       {
+          name: "Creator",
+          path: "/admin/creators",
+          icon: <FaRegFolder size={20} />,
+      },
+      {
           name: "Settings",
           path: "/admin/settings",
           icon: <FaRegFolder size={20} />,
@@ -80,59 +59,8 @@ const Sidenav = ({ open, toggleSidebar }) => {
           path: "/",
           icon: <FaRegFolder size={20} />,
       },
-    //   {
-    //       name: "Customers",
-    //       path: "/customers",
-    //       icon: <PiUsersBold size={20} />,
-    //   },
-      // {
-      //     name: "Reports",
-      //     path: "/reports",
-      //     icon: <IoBarChartOutline size={20} />,
-      // },
-    //   {
-    //       name: "Discounts",
-    //       path: "/discounts",
-    //       icon: <IoPricetagOutline size={20} />,
-    //   },
-    //   {
-    //       name: "Coupons",
-    //       path: "/coupons",
-    //       icon: <FaRegStar size={20} />,
-    //   },
-      // {
-      //     name: "Inbox",
-      //     path: "/inbox",
-      //     icon: <MdOutlineChat size={20} />,
-      // },
     ]
 
-
-    // const others = [
-    //   {
-    //     name: "Blog",
-    //     path: "/blog",
-    //     icon: <FaRegCircleQuestion size={20} />,
-    //   },
-    // //   {
-    // //       name: "Product Updates",
-    // //       path: "/product-updates",
-    // //       icon: <IoRibbonOutline size={20} />,
-    // //   },
-    // ]
-    
-    // const settings = [
-    //   {
-    //     name: "Personal Settings",
-    //     path: "/personal-settings",
-    //     icon: <FaRegUser size={20} />,
-    //   },
-    //   {
-    //       name: "Global Settings",
-    //       path: "/global-settings",
-    //       icon: <MdOutlineSettings size={20} />,
-    //   },
-    // ]
   return (
     <div
       className={`!h-screen ease-in-out ${

@@ -14,6 +14,11 @@ const Newsletter = () => {
       dataIndex: 'email',
       key: 'email',
     },
+    {
+      title: 'Preference',
+      dataIndex: 'fashion_preference',
+      key: 'fashion_preference',
+    },
   ];
 
   // console.log(data);

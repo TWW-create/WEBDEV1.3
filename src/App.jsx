@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Accessories, AddBanner, AddProduct, Admin, AdminBlog, AdminDashboard, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, Checkout, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
+import { Accessories, AddBanner, AddCreator, AddProduct, Admin, AdminBlog, AdminCreator, AdminDashboard, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, Checkout, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ScrollToTop from "./Components/ScrollToTop";
 import { useSelector } from "react-redux";
@@ -56,6 +56,8 @@ function App() {
             <Route path="/admin/banners" element={<SlideBanner />} />
             <Route path="/admin/banners/:id" element={<UpdateBanner />} />
             <Route path="/admin/banners/add" element={<AddBanner />} />
+            <Route path="/admin/creators" element={<AdminCreator />} />
+            <Route path="/admin/creators/add" element={<AddCreator />} />
           </Route>
         </Routes>
         </ScrollToTop>

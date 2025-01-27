@@ -16,4 +16,5 @@ export const ADMIN_DASHBOARD = "/admin/dashboard";
 export const FAVORITES = "/favorites";
 export const SHIPPING_POLICY = "/shipping-policy";
 export const RETURN_POLICY = "/return-policy";
+export const CREATOR = "/creators";
 export const GET_COUNTRY = 'https://countriesnow.space/api/v0.1/countries/states'

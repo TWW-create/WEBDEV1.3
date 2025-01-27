@@ -185,6 +185,12 @@ const ProductInfo = ({ product, shipping, returns }) => {
             ))}
           </div>
         </div>
+        <div className="mb-4">
+          <p>
+            <span className="text-sm font-medium text-gray-700">Creator:</span>
+            <span className="capitalize ml-2 cursor-pointer hover:font-bold">{product?.creator?.name}</span>
+          </p>
+        </div>
 
         <Divider />
          <div className="mb-4">

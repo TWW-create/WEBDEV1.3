@@ -7,6 +7,7 @@ import { useGetCategoriesQuery, useGetCategoryDetailsQuery, useGetSubCategoryDet
 import { errorCheck } from '../../../utils/utils';
 import { FiTrash2 } from 'react-icons/fi';
 import { MinusCircleOutlined } from '@ant-design/icons';
+import { useGetCreatorsQuery } from '../../../redux/slice/creatorApiSlice';
 
 
 const EditProduct = () => {
@@ -23,10 +24,9 @@ const EditProduct = () => {
   const {data: cat, isLoading: catLoading} = useGetCategoriesQuery()
   const {data: subCat, isLoading: subCatLoading } = useGetCategoryDetailsQuery(selectedCat)
   const {data: productType, isLoading: productLoading} = useGetSubCategoryDetailsQuery(selectedSubCat)
+  const { data: creator } = useGetCreatorsQuery()
 
-  const {data, isLoading} = useGetSingleProductQuery(params.id)
-  console.log(subCat);
-  
+  const {data, isLoading} = useGetSingleProductQuery(params.id)  
 
   const [ updateProduct, {isLoading: updateLoading} ] = useUpdateProductMutation()
 
@@ -92,7 +92,7 @@ const EditProduct = () => {
           name: product.name,
           description: product.description,
           price: product.price,
-          creator: product.creator,
+          creator_id: product.creator_id,
           composition: product.composition,
           shipping_details: product.shipping_details,
           category_id: product.category_id,
@@ -295,20 +295,10 @@ const EditProduct = () => {
               >
                 <Select
                   placeholder="Please select the creator"
-                  options={[
-                    {
-                      value: 'Dior',
-                      label: 'Dior',
-                    },
-                    {
-                      value: 'Loius Vuitton',
-                      label: 'Loius Vuitton',
-                    },
-                    {
-                      value: 'Versace',
-                      label: 'Versace',
-                    },
-                  ]}
+                  options={creator?.data?.map((item) => ({
+                    label: item.name,
+                    value: item.id,
+                  }))}
                 />
               </Form.Item>
             </div>
