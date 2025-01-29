@@ -14,16 +14,20 @@ class Order extends Model
 
     public $incrementing = false;
 
-protected $fillable = [
-    'id', 'subtotal', 'shipping_cost', 'total', 'user_id', 'status',
-    'stripe_session_id', 'payment_status',
-    'paystack_reference',
-    'order_status',
-    'shipping_address',
-    'email',
-    'phone', 
-    'order_number'
-];
+    protected $fillable = [
+        'id', 'subtotal', 'shipping_cost', 'total', 'user_id', 'status',
+        'stripe_session_id', 'payment_status',
+        'paystack_reference',
+        'order_status',
+        'shipping_address',
+        'email',
+        'phone', 
+        'order_number'
+    ];
+
+    protected $casts = [
+        'shipping_address' => 'array'
+    ];
 
 
     // Automatically generate a UUID for the 'id' field when creating a new Order

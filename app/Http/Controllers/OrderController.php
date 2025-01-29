@@ -194,6 +194,7 @@ class OrderController extends Controller
             Transaction::create([
                 'order_id' => $order->id,
                 'payment_ref' => $request->payment_reference,
+                'payment_method' => 'paystack',  // Added payment_method
                 'amount' => $order->total,
                 'status' => 'success'
             ]);
@@ -203,7 +204,7 @@ class OrderController extends Controller
                 'order' => $order->load('orderItems', 'transactions')
             ]);
         });
-    }
+    }    
     
     public function paystackCallback(Request $request)
     {
