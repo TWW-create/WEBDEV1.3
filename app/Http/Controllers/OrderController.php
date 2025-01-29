@@ -193,7 +193,7 @@ class OrderController extends Controller
     
             Transaction::create([
                 'order_id' => $order->id,
-                'user_id' => $order->user_id,  // Get user_id from order
+                'user_id' => $order->user_id,  // Get user_id from the order
                 'payment_ref' => $request->payment_reference,
                 'payment_method' => 'paystack',
                 'amount' => $order->total,
@@ -205,7 +205,7 @@ class OrderController extends Controller
                 'order' => $order->load('orderItems', 'transactions')
             ]);
         });
-    }         
+    }            
     
     public function paystackCallback(Request $request)
     {
