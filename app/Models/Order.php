@@ -21,7 +21,8 @@ protected $fillable = [
     'order_status',
     'shipping_address',
     'email',
-    'phone'
+    'phone', 
+    'order_number'
 ];
 
 
@@ -34,6 +35,7 @@ protected $fillable = [
             if (empty($model->id)) {
                 $model->id = (string) Str::uuid();
             }
+            $model->order_number = 'BAR-' . date('Y') . '-' . str_pad(Order::count() + 1, 6, '0', STR_PAD_LEFT);  
         });
     }
 

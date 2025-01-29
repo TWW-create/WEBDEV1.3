@@ -118,6 +118,7 @@ class OrderController extends Controller
             'items.*.variant_id' => 'required|exists:product_variants,id',
             'items.*.quantity' => 'required|integer|min:1',
             'shipping_address' => 'required|array',
+            'shipping_cost' => 'required|numeric|min:0',
             'email' => 'required|email',
             'phone' => 'required'
         ]);
@@ -129,13 +130,12 @@ class OrderController extends Controller
                 $subtotal += $product->price * $item['quantity'];
             }
     
-            $shipping_cost = 1000;
-            $total = $subtotal + $shipping_cost;
+            $total = $subtotal + $request->shipping_cost;
     
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'subtotal' => $subtotal,
-                'shipping_cost' => $shipping_cost,
+                'shipping_cost' => $request->shipping_cost,
                 'total' => $total,
                 'shipping_address' => json_encode($request->shipping_address),
                 'email' => $request->email,
@@ -156,13 +156,54 @@ class OrderController extends Controller
     
             return response()->json([
                 'message' => 'Order created successfully',
-                'order' => $order->load('orderItems'),
-                'total_amount' => $total
+                'data' => [
+                    'order_number' => $order->order_number,
+                    'order_date' => $order->created_at->format('Y-m-d H:i:s'),
+                    'total_amount' => $total,
+                    'shipping_details' => $request->shipping_address,
+                    'items' => $order->orderItems->map(function($item) {
+                        return [
+                            'product_name' => $item->product->name,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                            'total' => $item->total_amount
+                        ];
+                    }),
+                    'payment_status' => $order->payment_status,
+                    'order_status' => $order->status
+                ]
+            ]);
+        });
+    }    
+    
+    public function verifyPayment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'order_id' => 'required|uuid|exists:orders,id',
+            'payment_reference' => 'required|string'
+        ]);
+    
+        return DB::transaction(function() use ($request) {
+            $order = Order::findOrFail($request->order_id);
+            $order->update([
+                'payment_status' => 'paid',
+                'order_status' => 'processing',
+                'paystack_reference' => $request->payment_reference
+            ]);
+    
+            Transaction::create([
+                'order_id' => $order->id,
+                'payment_ref' => $request->payment_reference,
+                'amount' => $order->total,
+                'status' => 'success'
+            ]);
+    
+            return response()->json([
+                'message' => 'Payment verified successfully',
+                'order' => $order->load('orderItems', 'transactions')
             ]);
         });
     }
-    
-    
     
     public function paystackCallback(Request $request)
     {

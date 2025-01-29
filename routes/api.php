@@ -109,7 +109,7 @@ Route::middleware('auth:api')->group(function () {
     // paystack order
     Route::post('/orders/create', [OrderController::class, 'createOrder']);
     Route::get('/orders/callback', [OrderController::class, 'paystackCallback'])->name('paystack.callback');
-
+    Route::post('/orders/verify-payment', [OrderController::class, 'verifyPayment']);
 
     Route::get('views', [ViewController::class, 'index']);
     Route::post('views', [ViewController::class, 'store']);
