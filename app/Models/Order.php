@@ -16,7 +16,12 @@ class Order extends Model
 
 protected $fillable = [
     'id', 'subtotal', 'shipping_cost', 'total', 'user_id', 'status',
-    'stripe_session_id', 'payment_status'
+    'stripe_session_id', 'payment_status',
+    'paystack_reference',
+    'order_status',
+    'shipping_address',
+    'email',
+    'phone'
 ];
 
 

@@ -104,4 +104,90 @@ class OrderController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function createOrder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.variant_id' => 'required|exists:product_variants,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'shipping_address' => 'required|array',
+            'email' => 'required|email',
+            'phone' => 'required'
+        ]);
+    
+        return DB::transaction(function() use ($request) {
+            // Calculate totals
+            $subtotal = 0;
+            foreach($request->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $subtotal += $product->price * $item['quantity'];
+            }
+    
+            $shipping_cost = 1000; // Calculate based on your logic
+            $total = $subtotal + $shipping_cost;
+    
+            // Create order
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'subtotal' => $subtotal,
+                'shipping_cost' => $shipping_cost,
+                'total' => $total,
+                'shipping_address' => $request->shipping_address,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'status' => 'pending'
+            ]);
+    
+            // Create order items
+            foreach($request->items as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'variant_id' => $item['variant_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => Product::find($item['product_id'])->price
+                ]);
+            }
+    
+            // Initialize Paystack transaction
+            $paystack = new Paystack(config('services.paystack.secret_key'));
+            $response = $paystack->transaction->initialize([
+                'amount' => $total * 100, // Convert to kobo
+                'email' => $request->email,
+                'reference' => $order->id,
+                'callback_url' => route('paystack.callback')
+            ]);
+    
+            return response()->json([
+                'order' => $order,
+                'payment_url' => $response['data']['authorization_url']
+            ]);
+        });
+    }
+    
+    public function paystackCallback(Request $request)
+    {
+        $paystack = new Paystack(config('services.paystack.secret_key'));
+        $response = $paystack->transaction->verify($request->reference);
+    
+        if($response['data']['status'] === 'success') {
+            $order = Order::find($request->reference);
+            $order->update([
+                'payment_status' => 'paid',
+                'order_status' => 'processing'
+            ]);
+    
+            Transaction::create([
+                'order_id' => $order->id,
+                'payment_ref' => $response['data']['reference'],
+                'amount' => $response['data']['amount'] / 100,
+                'status' => 'success'
+            ]);
+        }
+    
+        return redirect()->to('/order-confirmation');
+    }
+    
 }

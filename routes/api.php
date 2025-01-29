@@ -106,6 +106,11 @@ Route::middleware('auth:api')->group(function () {
     Route::put('transactions/{id}', [TransactionController::class, 'update']);
     Route::delete('transactions/{id}', [TransactionController::class, 'destroy']);
 
+    // paystack order
+    Route::post('/orders/create', [OrderController::class, 'createOrder']);
+    Route::get('/orders/callback', [OrderController::class, 'paystackCallback'])->name('paystack.callback');
+
+
     Route::get('views', [ViewController::class, 'index']);
     Route::post('views', [ViewController::class, 'store']);
     Route::get('views/{id}', [ViewController::class, 'show']);
