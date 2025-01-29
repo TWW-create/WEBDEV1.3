@@ -137,7 +137,7 @@ class OrderController extends Controller
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shipping_cost,
                 'total' => $total,
-                'shipping_address' => json_encode($request->shipping_address), // Convert array to JSON string
+                'shipping_address' => json_encode($request->shipping_address),
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'status' => 'pending'
@@ -154,21 +154,14 @@ class OrderController extends Controller
                 ]);
             }
     
-            // Initialize Paystack transaction
-            $paystack = new Paystack(config('services.paystack.secret_key'));
-            $response = $paystack->transaction->initialize([
-                'amount' => $total * 100,
-                'email' => $request->email,
-                'reference' => $order->id,
-                'callback_url' => route('paystack.callback')
-            ]);
-    
             return response()->json([
-                'order' => $order,
-                'payment_url' => $response['data']['authorization_url']
+                'message' => 'Order created successfully',
+                'order' => $order->load('orderItems'),
+                'total_amount' => $total
             ]);
         });
     }
+    
     
     
     public function paystackCallback(Request $request)
