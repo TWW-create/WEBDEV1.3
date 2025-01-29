@@ -139,11 +139,11 @@ class OrderController extends Controller
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shipping_cost,
                 'total' => $total,
-                'shipping_address' => $request->shipping_address,
+                'shipping_address' => json_encode($request->shipping_address), // JSON encode the shipping address
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'status' => 'pending'
-            ]);
+            ]);            
     
             // Create order items
             foreach($request->items as $item) {
