@@ -123,43 +123,41 @@ class OrderController extends Controller
         ]);
     
         return DB::transaction(function() use ($request) {
-            // Calculate totals
             $subtotal = 0;
             foreach($request->items as $item) {
                 $product = Product::findOrFail($item['product_id']);
                 $subtotal += $product->price * $item['quantity'];
             }
     
-            $shipping_cost = 1000; // Calculate based on your logic
+            $shipping_cost = 1000;
             $total = $subtotal + $shipping_cost;
     
-            // Create order
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shipping_cost,
                 'total' => $total,
-                'shipping_address' => json_encode($request->shipping_address), // JSON encode the shipping address
+                'shipping_address' => json_encode($request->shipping_address), // Convert array to JSON string
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'status' => 'pending'
-            ]);            
+            ]);
     
-            // Create order items
             foreach($request->items as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
                     'variant_id' => $item['variant_id'],
                     'quantity' => $item['quantity'],
-                    'price' => Product::find($item['product_id'])->price
+                    'price' => Product::find($item['product_id'])->price,
+                    'total_amount' => Product::find($item['product_id'])->price * $item['quantity']
                 ]);
             }
     
             // Initialize Paystack transaction
             $paystack = new Paystack(config('services.paystack.secret_key'));
             $response = $paystack->transaction->initialize([
-                'amount' => $total * 100, // Convert to kobo
+                'amount' => $total * 100,
                 'email' => $request->email,
                 'reference' => $order->id,
                 'callback_url' => route('paystack.callback')
@@ -171,6 +169,7 @@ class OrderController extends Controller
             ]);
         });
     }
+    
     
     public function paystackCallback(Request $request)
     {
