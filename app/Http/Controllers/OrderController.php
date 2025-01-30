@@ -73,11 +73,36 @@ class OrderController extends Controller
     public function show($id)
     {
         try {
-            return Order::with('orderItems', 'transactions')->findOrFail($id);
+            $order = Order::with('orderItems.product', 'orderItems.variant', 'transactions')->findOrFail($id);
+            
+            return response()->json([
+                'message' => 'Order retrieved successfully',
+                'data' => [
+                    'id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'order_date' => $order->created_at->format('Y-m-d H:i:s'),
+                    'subtotal' => $order->subtotal,
+                    'shipping_cost' => $order->shipping_cost,
+                    'total_amount' => $order->total,
+                    'shipping_details' => json_decode($order->shipping_address, true),
+                    'items' => $order->orderItems->map(function($item) {
+                        return [
+                            'product_name' => $item->product->name,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                            'total' => $item->total_amount,
+                            'color' => $item->variant->color,
+                            'size' => $item->size
+                        ];
+                    }),
+                    'payment_status' => $order->payment_status,
+                    'order_status' => $order->status
+                ]
+            ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Order not found'], 404);
         }
-    }
+    }    
 
     public function update(Request $request, $id)
     {
