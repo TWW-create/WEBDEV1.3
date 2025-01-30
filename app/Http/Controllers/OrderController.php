@@ -170,6 +170,7 @@ class OrderController extends Controller
             return response()->json([
                 'message' => 'Order created successfully',
                 'data' => [
+                    'id' => $order->id,
                     'order_number' => $order->order_number,
                     'order_date' => $order->created_at->format('Y-m-d H:i:s'),
                     'subtotal' => $subtotal,
