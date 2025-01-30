@@ -151,10 +151,13 @@ class OrderController extends Controller
                     'product_id' => $item['product_id'],
                     'variant_id' => $item['variant_id'],
                     'quantity' => $item['quantity'],
+                    'size' => $item['size'],
                     'price' => Product::find($item['product_id'])->price,
                     'total_amount' => Product::find($item['product_id'])->price * $item['quantity']
                 ]);
             }
+    
+            $order->load('orderItems.product', 'orderItems.variant');
     
             return response()->json([
                 'message' => 'Order created successfully',
@@ -164,13 +167,12 @@ class OrderController extends Controller
                     'total_amount' => $total,
                     'shipping_details' => $request->shipping_address,
                     'items' => $order->orderItems->map(function($item) {
-                        $variant = ProductVariant::find($item->variant_id);
                         return [
                             'product_name' => $item->product->name,
                             'quantity' => $item->quantity,
                             'price' => $item->price,
                             'total' => $item->total_amount,
-                            'color' => $variant->color,
+                            'color' => $item->variant->color,
                             'size' => $item->size
                         ];
                     }),
@@ -179,7 +181,8 @@ class OrderController extends Controller
                 ]
             ]);            
         });
-    }    
+    }
+        
     
     public function verifyPayment(Request $request)
     {
