@@ -120,10 +120,18 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.size' => 'required|string',
             'shipping_address' => 'required|array',
+            'shipping_address.first_name' => 'required|string',
+            'shipping_address.last_name' => 'required|string',
+            'shipping_address.street' => 'required|string',
+            'shipping_address.optional' => 'nullable|string',
+            'shipping_address.city' => 'required|string',
+            'shipping_address.state' => 'required|string',
+            'shipping_address.country' => 'required|string',
+            'shipping_address.postal_code' => 'required|string',
             'shipping_cost' => 'required|numeric|min:0',
             'email' => 'required|email',
-            'phone' => 'required'
-        ]);
+            'phone' => 'required|string'
+        ]);        
     
         return DB::transaction(function() use ($request) {
             $subtotal = 0;
@@ -164,8 +172,20 @@ class OrderController extends Controller
                 'data' => [
                     'order_number' => $order->order_number,
                     'order_date' => $order->created_at->format('Y-m-d H:i:s'),
+                    'subtotal' => $subtotal,
+                    'shipping_cost' => $request->shipping_cost,
                     'total_amount' => $total,
-                    'shipping_details' => $request->shipping_address,
+                    'shipping_details' => [
+                        'first_name' => $request->shipping_address['first_name'],
+                        'last_name' => $request->shipping_address['last_name'],
+                        'street' => $request->shipping_address['street'],
+                        'optional_address' => $request->shipping_address['optional'] ?? '',
+                        'city' => $request->shipping_address['city'],
+                        'state' => $request->shipping_address['state'],
+                        'country' => $request->shipping_address['country'],
+                        'postal_code' => $request->shipping_address['postal_code'],
+                        'phone' => $request->phone
+                    ],
                     'items' => $order->orderItems->map(function($item) {
                         return [
                             'product_name' => $item->product->name,
@@ -179,7 +199,7 @@ class OrderController extends Controller
                     'payment_status' => $order->payment_status,
                     'order_status' => $order->status
                 ]
-            ]);            
+            ]);                      
         });
     }
         
