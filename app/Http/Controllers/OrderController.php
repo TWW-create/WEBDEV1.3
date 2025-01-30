@@ -117,6 +117,7 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.variant_id' => 'required|exists:product_variants,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'items.*.size' => 'required|string',
             'shipping_address' => 'required|array',
             'shipping_cost' => 'required|numeric|min:0',
             'email' => 'required|email',
@@ -162,17 +163,20 @@ class OrderController extends Controller
                     'total_amount' => $total,
                     'shipping_details' => $request->shipping_address,
                     'items' => $order->orderItems->map(function($item) {
+                        $variant = ProductVariant::find($item->variant_id);
                         return [
                             'product_name' => $item->product->name,
                             'quantity' => $item->quantity,
                             'price' => $item->price,
-                            'total' => $item->total_amount
+                            'total' => $item->total_amount,
+                            'color' => $variant->color,
+                            'size' => $item->size
                         ];
                     }),
                     'payment_status' => $order->payment_status,
                     'order_status' => $order->status
                 ]
-            ]);
+            ]);            
         });
     }    
     
