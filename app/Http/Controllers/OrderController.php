@@ -145,18 +145,18 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.size' => 'required|string',
             'shipping_address' => 'required|array',
-            'shipping_address.first_name' => 'nullable|string',
-            'shipping_address.last_name' => 'nullable|string',
-            'shipping_address.street' => 'nullable|string',
+            'shipping_address.first_name' => 'required|string',
+            'shipping_address.last_name' => 'required|string',
+            'shipping_address.street' => 'required|string',
             'shipping_address.optional' => 'nullable|string',
-            'shipping_address.city' => 'nullable|string',
-            'shipping_address.state' => 'nullable|string',
-            'shipping_address.country' => 'nullable|string',
-            'shipping_address.postal_code' => 'nullable|string',
+            'shipping_address.city' => 'required|string',
+            'shipping_address.state' => 'required|string',
+            'shipping_address.country' => 'required|string',
+            'shipping_address.postal_code' => 'required|string',
             'shipping_cost' => 'required|numeric|min:0',
             'email' => 'required|email',
             'phone' => 'required|string'
-        ]);        
+        ]);
     
         return DB::transaction(function() use ($request) {
             $subtotal = 0;
@@ -168,7 +168,7 @@ class OrderController extends Controller
             $total = $subtotal + $request->shipping_cost;
     
             $order = Order::create([
-                'user_id' => Auth::id(),
+                'user_id' => Auth::check() ? Auth::id() : null,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $request->shipping_cost,
                 'total' => $total,
@@ -225,9 +225,9 @@ class OrderController extends Controller
                     'payment_status' => $order->payment_status,
                     'order_status' => $order->status
                 ]
-            ]);                      
+            ]);
         });
-    }
+    }    
         
     
     public function verifyPayment(Request $request)
