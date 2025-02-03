@@ -30,28 +30,28 @@ class OrderController extends Controller
     
     public function index()
     {
-        // Get the authenticated user's ID
         $userId = Auth::id();
-
-    // Retrieve orders for the current user, including related orderItems and transactions
-    $orders = Order::with(['orderItems.product', 'orderItems.variant', 'transactions'])
-        ->where('user_id', $userId)
-        ->get()
-        ->map(function ($order) {
-            $order->orderItems->transform(function ($item) {
-                $item['product_name'] = $item->product->name;
-                $item['color'] = $item->variant->color;
-                return $item;
+    
+        $orders = Order::with(['orderItems.product:id,name', 'orderItems.variant:id,color', 'transactions'])
+            ->where('user_id', $userId)
+            ->get()
+            ->map(function ($order) {
+                $order->orderItems->transform(function ($item) {
+                    $item['product_name'] = $item->product->name;
+                    $item['color'] = $item->variant->color;
+                    unset($item->product);
+                    unset($item->variant);
+                    return $item;
+                });
+                return $order;
             });
-            return $order;
-        });
-
+    
         return response()->json([
             'message' => 'Orders retrieved successfully',
             'data' => $orders,
             'count' => $orders->count(),
         ], 200);
-    }
+    }    
 
     public function store(Request $request)
     {
