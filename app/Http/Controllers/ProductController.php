@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\Blog;
 
 class ProductController extends Controller
 {
@@ -241,10 +242,10 @@ class ProductController extends Controller
             [
                 'filter_links' => [
                     'products' => "/api/products?creator=" . $product->creator->slug,
-                    'blogs' => "/api/blogs?creator=" . $product->creator->name
+                    'blogs' => "/api/blogs/" . Blog::where('title', $product->creator->name)->first()->id
                 ]
             ]
-        );
+        );        
         
         return response()->json([
             'status' => 'success',
