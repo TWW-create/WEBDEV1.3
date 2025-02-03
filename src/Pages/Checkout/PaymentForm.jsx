@@ -3,8 +3,7 @@ import { IoIosArrowBack } from "react-icons/io"
 import { PaystackButton } from "react-paystack"
 import { useSelector } from "react-redux";
 
-
-const PaymentForm = ({ setIsPayment, formData }) => {
+const PaymentForm = ({ setIsPayment, formData, handlePaySuccess }) => {
 
     const cart = useSelector((state) => state.cart.cart);
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -19,15 +18,10 @@ const PaymentForm = ({ setIsPayment, formData }) => {
         },
         publicKey: 'pk_test_78a2b26de2b71280b29ab79a478ca3105f32dd55',
         // text: "Pay Now",
-        onSuccess: () => handlePaySuccess(),
+        onSuccess: (response) => handlePaySuccess(response),
         // onClose: () => alert("Wait! Don't leave :("),
     }
-
-    const handlePaySuccess = () => {
-        // Handle successful payment
-        console.log("Payment Reference:");
-        // Add your success logic here
-    }
+    
 
 
     return (

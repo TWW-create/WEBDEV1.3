@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Accessories, AddBanner, AddCreator, AddProduct, Admin, AdminBlog, AdminCreator, AdminDashboard, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, Checkout, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, Women } from "./Pages";
+import { Accessories, AddBanner, AddCreator, AddProduct, Admin, AdminBlog, AdminCreator, AdminDashboard, AdminOrders, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, Checkout, CreatorDetail, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, OrderHistory, PaymentSuccessful, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, ViewOrder, Women } from "./Pages";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ScrollToTop from "./Components/ScrollToTop";
 import { useSelector } from "react-redux";
@@ -26,6 +26,7 @@ function App() {
             <Route path='/sales/:subCat/:tab' element={<Sales />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/checkout' element={<Checkout />} />
+            <Route path='/checkout/success' element={<PaymentSuccessful />} />
             {user && <Route path='/favorites' element={<Favorites />} />}
             <Route path='/products/:id' element={<ProductDetail />} />
             <Route path='profile' element={
@@ -35,9 +36,11 @@ function App() {
             }>
               <Route index element={<ProfileInfo />} />
               <Route path='favorites' element={<Favorites />} />
+              <Route path='order-history' element={<OrderHistory />} />
             </Route>
             <Route path="/blog" element={<MainBlog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/creator/:slug" element={<CreatorDetail />} />
           </Route>
           <Route path="/admin" element={<Admin />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -58,6 +61,8 @@ function App() {
             <Route path="/admin/banners/add" element={<AddBanner />} />
             <Route path="/admin/creators" element={<AdminCreator />} />
             <Route path="/admin/creators/add" element={<AddCreator />} />
+            <Route path='/admin/orders' element={<AdminOrders />} />
+            <Route path='/admin/orders/:id' element={<ViewOrder />} />
           </Route>
         </Routes>
         </ScrollToTop>

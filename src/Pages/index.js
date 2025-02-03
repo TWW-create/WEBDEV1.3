@@ -32,6 +32,11 @@ import AdminSettings from "./Admin/AdminSettings";
 import Checkout from "./Checkout";
 import AdminCreator from "./Admin/AdminCreator";
 import AddCreator from "./Admin/AdminCreator/AddCreator.jsx";
+import PaymentSuccessful from "./Checkout/PaymentSuccessful.jsx";
+import CreatorDetail from "./CreatorDetail/index.jsx";
+import OrderHistory from "./Profile/OrderHistory.jsx";
+import AdminOrders from "./Admin/AdminOrders/index.jsx";
+import ViewOrder from "./Admin/AdminOrders/ViewOrder.jsx";
 
 
-export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings, Checkout, AdminCreator, AddCreator}
+export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings, Checkout, AdminCreator, AddCreator, PaymentSuccessful, CreatorDetail, OrderHistory, AdminOrders, ViewOrder}

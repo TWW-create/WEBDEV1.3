@@ -17,12 +17,12 @@ const Sidenav = () => {
         },
         {
           title: "Order History",
-          href: "/profile/favorites",
+          href: "/profile/order-history",
         },
-        {
-          title: "Addresses",
-          href: "/profile/favorites",
-        },
+        // {
+        //   title: "Addresses",
+        //   href: "/profile/favorites",
+        // },
     ];
 
     const logoutHandler = async () => {

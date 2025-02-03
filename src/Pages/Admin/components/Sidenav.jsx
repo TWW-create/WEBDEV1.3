@@ -50,6 +50,11 @@ const Sidenav = ({ open, toggleSidebar }) => {
           icon: <FaRegFolder size={20} />,
       },
       {
+          name: "Orders",
+          path: "/admin/orders",
+          icon: <FaRegFolder size={20} />,
+      },
+      {
           name: "Settings",
           path: "/admin/settings",
           icon: <FaRegFolder size={20} />,

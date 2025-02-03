@@ -25,21 +25,17 @@ import women3 from '../assets/images/women3.png'
 
 
 const MegaMenu = ({ categoryName }) => {
-    // const [selectedKey, setSelectedKey] = useState();
     const { data, isLoading } = useGetCategoriesQuery();
 
     const navigate = useNavigate();
   
-    // Finding the category based on the dynamic `categoryName`
     const category = data?.data?.find((cat) => cat.name === categoryName);
   
     const onMenuItemClick = (item) => {
-      // setSelectedKey([item.key]);
       const clickedSubCategory = category?.sub_categories.find(subCat =>
         subCat.product_types.some(type => type.id === parseInt(item.key))
       );
       
-      // Find the type by key and navigate if it's a product type (not the group header)
       const clickedType = category?.sub_categories
         .flatMap(subCat => subCat.product_types)
         .find(type => type.id === parseInt(item.key));        
@@ -48,57 +44,119 @@ const MegaMenu = ({ categoryName }) => {
         navigate(`/${categoryName}/${clickedSubCategory.id}/${clickedType.name.toLowerCase()}`);
       }
     };    
-  
-    if (!category || isLoading) return null;
-  
+    
+    if (!category || isLoading || !category.sub_categories) return null;
+
+    const [firstSubCategory, secondSubCategory] = category.sub_categories || [];
+    
     return (
-      <div className="bg-white px-5 py-5 grid grid-cols-6 max-w-6xl gap-8 min-h-[422px]">
-        {/* Displaying the main category label with vertical rotation */}
-        <div className="flex items-center col-span-1">
-          <img src={
-            (categoryName === 'men' && MenB) || (categoryName === 'women' && WomenB) || (categoryName === 'accessories' && AccesoriesB) || (categoryName === 'sales' && SalesB)
-          } alt="" className='max-w-36 object-contain' />
-        </div>
-  
-        {/* Displaying subcategories and their product types */}
-        <Space direction="horizontal" className="flex items-start col-span-2">
-          {category.sub_categories.map((subCategory) => (
-            <Menu
-              key={subCategory.id}
-              onClick={onMenuItemClick}
-              selectedKeys={[]}
-              items={[
-                {
-                  label: <span className="text-gray-500">{subCategory.name.toUpperCase()}</span>,
-                  key: subCategory.id,
-                  type: 'group',
-                },
-                ...subCategory.product_types.map((type) => ({
-                  label: type.name,
-                  key: type.id,
-                })),
-              ]}
-              style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
-            />
-          ))}
-        </Space>
-  
-        {/* Sample image content */}
-        <div className="h-[350px] max-w-xl col-span-3">
-          <p className="text-center mb-4 text-gray-600">Best of Seasons</p>
-          <div className="grid grid-cols-5 gap-5 h-full">
-            {/* First image container */}
-            <div className="w-full h-[350px] col-span-2">
-              <img src={(categoryName === 'men' && men1) || (categoryName === 'women' && women1) || IMAGE} alt="best season" className="w-full h-[350px] object-cover object-center" />
-            </div>
-            {/* Remaining two images */}
-            <div className="col-span-3 space-y-4">
-              <img src={(categoryName === 'men' && men2) || (categoryName === 'women' && women2) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
-              <img src={(categoryName === 'men' && men3) || (categoryName === 'women' && women3) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
+      <>
+      {categoryName === 'accessories' || categoryName === 'sales' ? 
+         <div className="bg-white px-5 py-5 grid grid-cols-7 max-w-6xl gap-8 min-h-[422px]">
+         {/* First column: Category image */}
+         <div className="flex items-center col-span-1">
+             <img src={
+                 (categoryName === 'men' && MenB) || (categoryName === 'women' && WomenB) || (categoryName === 'accessories' && AccesoriesB) || (categoryName === 'sales' && SalesB)
+             } alt="" className='max-w-[20vh] object-contain' />
+         </div>
+
+         {/* Second column: First subcategory */}
+         <div className="col-span-1">
+             <Menu
+                 key={firstSubCategory.id}
+                 onClick={onMenuItemClick}
+                 selectedKeys={[]}
+                 items={[
+                     {
+                         label: <span className="text-gray-500">{firstSubCategory.name.toUpperCase()}</span>,
+                         key: firstSubCategory.id,
+                         type: 'group',
+                     },
+                     ...firstSubCategory.product_types.map((type) => ({
+                         label: type.name,
+                         key: type.id,
+                     })),
+                 ]}
+                 style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
+             />
+         </div>
+
+         {/* Third column: First image */}
+         <div className="col-span-2">
+             <img src={IMAGE} alt="first subcategory" className="w-full h-[350px] object-cover object-center" />
+         </div>
+
+         {/* Fourth column: Second subcategory */}
+         <div className="col-span-1">
+             <Menu
+                 key={secondSubCategory.id}
+                 onClick={onMenuItemClick}
+                 selectedKeys={[]}
+                 items={[
+                     {
+                         label: <span className="text-gray-500">{secondSubCategory.name.toUpperCase()}</span>,
+                         key: secondSubCategory.id,
+                         type: 'group',
+                     },
+                     ...secondSubCategory.product_types.map((type) => ({
+                         label: type.name,
+                         key: type.id,
+                     })),
+                 ]}
+                 style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
+             />
+         </div>
+
+         {/* Fifth column: Second image */}
+         <div className="col-span-2">
+             <img src={IMAGE} alt="second subcategory" className="w-full h-[350px] object-cover object-center" />
+         </div>
+     </div> :
+        <div className="bg-white px-5 py-5 grid grid-cols-6 max-w-6xl gap-8 min-h-[422px]">
+          <div className="flex items-center col-span-1">
+            <img src={
+              (categoryName === 'men' && MenB) || (categoryName === 'women' && WomenB) || (categoryName === 'accessories' && AccesoriesB) || (categoryName === 'sales' && SalesB)
+            } alt="" className='max-w-[20vh] object-contain' />
+          </div>
+          <Space direction="horizontal" className="flex items-start col-span-2">
+            {category.sub_categories.map((subCategory) => (
+              <Menu
+                key={subCategory.id}
+                onClick={onMenuItemClick}
+                selectedKeys={[]}
+                items={[
+                  {
+                    label: <span className="text-gray-500">{subCategory.name.toUpperCase()}</span>,
+                    key: subCategory.id,
+                    type: 'group',
+                  },
+                  ...subCategory.product_types.map((type) => ({
+                    label: type.name,
+                    key: type.id,
+                  })),
+                ]}
+                style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
+              />
+            ))}
+          </Space>
+    
+          {/* Sample image content */}
+          <div className="h-[350px] max-w-xl col-span-3">
+            <p className="text-center mb-4 text-gray-600">Best of Seasons</p>
+            <div className="grid grid-cols-5 gap-5 h-full">
+              {/* First image container */}
+              <div className="w-full h-[350px] col-span-2">
+                <img src={(categoryName === 'men' && men1) || (categoryName === 'women' && women1) || IMAGE} alt="best season" className="w-full h-[350px] object-cover object-center" />
+              </div>
+              {/* Remaining two images */}
+              <div className="col-span-3 space-y-4">
+                <img src={(categoryName === 'men' && men2) || (categoryName === 'women' && women2) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
+                <img src={(categoryName === 'men' && men3) || (categoryName === 'women' && women3) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </div>}
+      </>
     );
   };
 

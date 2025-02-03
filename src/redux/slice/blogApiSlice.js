@@ -12,6 +12,12 @@ export const blogApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["blog_posts"],
         }),
+        getCreator: builder.query({
+            query: (creator) => ({
+                url: `${BLOGS}`,
+                params: {creator}
+            }),
+        }),
         getBlogPost: builder.query({
             query: (id) => ({
                 url: `${BLOGS}/${id}`,
@@ -59,4 +65,5 @@ export const {
     useGetBlogPostQuery,
     useUpdateBlogPostMutation,
     useDeleteBlogMediaMutation,
+    useGetCreatorQuery,
 } = blogApiSlice

@@ -7,6 +7,7 @@ import { addToCart } from "../../redux/slice/cartSlice";
 import { RiHeartLine } from "react-icons/ri";
 import { FaHeart } from "react-icons/fa";
 import { useAddUserFavoriteMutation, useGetUserFavoritesQuery, useRemoveUserFavoriteMutation } from "../../redux/slice/profileApiSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProductInfo = ({ product, shipping, returns }) => {
   const { user } = useSelector((state) => state.user);
@@ -24,9 +25,7 @@ const ProductInfo = ({ product, shipping, returns }) => {
   const productSectionRef = useRef(null);
 
   const dispatch = useDispatch();
-
-  console.log(product);
-  
+  const navigate = useNavigate();
 
   const handleAddToCart = () => {
     if (!activeVariant || !selectedSize) {
@@ -42,6 +41,7 @@ const ProductInfo = ({ product, shipping, returns }) => {
         selectedSize: selectedSize,
         quantity: 1,
         image: activeVariant.images[0]?.image_path,
+        variant_id: activeVariant.id,
       })
     );
     message.success(`${product?.name} added to cart successfully!`);
@@ -188,7 +188,7 @@ const ProductInfo = ({ product, shipping, returns }) => {
         <div className="mb-4">
           <p>
             <span className="text-sm font-medium text-gray-700">Creator:</span>
-            <span className="capitalize ml-2 cursor-pointer hover:font-bold">{product?.creator?.name}</span>
+            <span className="capitalize ml-2 cursor-pointer hover:font-bold" onClick={() => navigate(`/creator/${product?.creator?.slug}`)}>{product?.creator?.name}</span>
           </p>
         </div>
 

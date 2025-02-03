@@ -1,5 +1,5 @@
 import { Select } from 'antd';
-
+import { useGetCreatorsQuery } from '../redux/slice/creatorApiSlice'
 const { Option } = Select;
 
 const colorOptions = ['Beige', 'Black', 'Blue', 'Brown', 'Green', 'Grey', 'Multi']
@@ -18,20 +18,7 @@ const statusOptions = [
     label: 'Available',
   }
 ]
-const creatorOptions = [
-  {
-    value: 'Dior',
-    label: 'Dior',
-  },
-  {
-    value: 'Loius Vuitton',
-    label: 'Loius Vuitton',
-  },
-  {
-    value: 'Versace',
-    label: 'Versace',
-  },
-]
+
 const sortOptions = [
   { label: 'Newest arrival', value: 'newest' },
   { label: 'Price: High to Low', value: 'price_high' },
@@ -40,6 +27,8 @@ const sortOptions = [
 ];
 
 const NewFilters = ({ filters, setFilters }) => {
+
+  const { data: creator } = useGetCreatorsQuery()
 
   
   return (
@@ -102,11 +91,11 @@ const NewFilters = ({ filters, setFilters }) => {
           placeholder="Creators"
           value={filters?.creator ? filters?.creator : undefined}
           onChange={(value) => setFilters((prevFilters) => ({ ...prevFilters, creator:value }))}
-        >
-          {creatorOptions.map((creator, index) => (
-            <Option key={index} value={creator.value}>{creator.label}</Option>
-          ))}
-        </Select>
+          options={creator?.data?.map((item) => ({
+            label: item.name,
+            value: item.id,
+          }))}
+        />
       </div>
 
       {/* Sort Filter (including Price Sorting) */}
