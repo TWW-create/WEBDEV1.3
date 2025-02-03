@@ -33,10 +33,18 @@ class OrderController extends Controller
         // Get the authenticated user's ID
         $userId = Auth::id();
 
-        // Retrieve orders for the current user, including related orderItems and transactions
-        $orders = Order::with('orderItems', 'transactions')
-            ->where('user_id', $userId)
-            ->get();
+    // Retrieve orders for the current user, including related orderItems and transactions
+    $orders = Order::with(['orderItems.product', 'orderItems.variant', 'transactions'])
+        ->where('user_id', $userId)
+        ->get()
+        ->map(function ($order) {
+            $order->orderItems->transform(function ($item) {
+                $item['product_name'] = $item->product->name;
+                $item['color'] = $item->variant->color;
+                return $item;
+            });
+            return $order;
+        });
 
         return response()->json([
             'message' => 'Orders retrieved successfully',
@@ -212,12 +220,12 @@ class OrderController extends Controller
                         'postal_code' => $request->shipping_address['postal_code'],
                         'phone' => $request->phone
                     ],
-                    'items' => $order->orderItems->map(function($item) {
+                    'order_items' => $order->orderItems->map(function($item) {
                         return [
                             'product_name' => $item->product->name,
                             'quantity' => $item->quantity,
                             'price' => $item->price,
-                            'total' => $item->total_amount,
+                            'total_amount' => $item->total_amount,
                             'color' => $item->variant->color,
                             'size' => $item->size
                         ];
