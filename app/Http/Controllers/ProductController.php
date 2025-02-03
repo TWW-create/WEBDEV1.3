@@ -242,7 +242,7 @@ class ProductController extends Controller
             [
                 'filter_links' => [
                     'products' => "/api/products?creator=" . $product->creator->slug,
-                    'blogs' => "/api/blogs/" . Blog::where('title', $product->creator->name)->first()->id
+                    'blogs' => Blog::where('title', $product->creator->name)->first()->id
                 ]
             ]
         );        

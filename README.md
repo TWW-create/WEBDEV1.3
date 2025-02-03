@@ -60,3 +60,4 @@ php artisan config:clear
 banner update not working
 blog update not working
 
+10.120.120.200 - 300 
