@@ -95,7 +95,7 @@ class OrderController extends Controller
                     'shipping_details' => array_merge(
                         json_decode($order->shipping_address, true),
                         [
-                            'phone' => $order->phone,
+                            'phone_no' => $order->phone,
                             'email' => $order->email
                         ]
                     ),
