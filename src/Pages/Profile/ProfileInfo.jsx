@@ -78,7 +78,7 @@ const ProfileInfo = () => {
                     <p>{address.address_1}</p>
                   </div>
                   <div className="mb-3">
-                    <p className="text-sm font-medium text-black/80">Optional:</p>
+                    <p className="text-sm font-medium text-black/80">Note:</p>
                     <p>{address.address_2}</p>
                   </div>
                   <div className="mb-3">

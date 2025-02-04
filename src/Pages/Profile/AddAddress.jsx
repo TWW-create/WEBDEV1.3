@@ -72,7 +72,7 @@ const AddAddress = ({visible, onCancel, data}) => {
                 </Form.Item>
                 <Form.Item
                     name="address_2"
-                    label="Optional"
+                    label="Note"
                 >
                     <Input className="p-2" />
                 </Form.Item>

@@ -33,7 +33,8 @@ const Sales = () => {
 
   const { data: products, isLoading } = useGetAllProductsQuery({
     page: 1, 
-    category_id: 4, 
+    // category_id: 4, 
+    category_slug: 'sales',
     sub_category_id: defaultKey !== 'all' ? subCat : undefined, 
     product_type: defaultKey === 'all' ? undefined : defaultKey,
     size: filter.size,

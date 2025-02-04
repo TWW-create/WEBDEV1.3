@@ -43,7 +43,7 @@ const columns = (navigate) => [
     key: 'actions',
     render: (text, record) => (
       <span>
-        <Button type="link" onClick={() => navigate(`/admin/orders/${record.order_id}`)}>View</Button>
+        <Button type="link" onClick={() => navigate(`/admin/orders/${record.id}`)}>View</Button>
       </span>
     ),
   },
@@ -53,6 +53,7 @@ const AdminOrders = () => {
   const navigate = useNavigate();
 
   const {data, isLoading} = useGetAdminOrdersQuery()
+
 
   return (
     <div className='pt-3'>

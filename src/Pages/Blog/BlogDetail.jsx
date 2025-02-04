@@ -90,9 +90,9 @@ const BlogDetail = () => {
                     </p>
                 </div>
                 <div className="mb-5">
-                    <div className="flex justify-between items-center mb-4">
+                    {products.length > 0 && <div className="flex justify-between items-center mb-4">
                         <h2 className="text-center text-lg font-semibold">Products</h2>
-                    </div>
+                    </div>}
                     <div
                         className="overflow-product-scroll px-4 ml-2 md:ml-1 scrollbar-hide"
                     >

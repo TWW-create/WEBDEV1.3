@@ -47,7 +47,7 @@ const PaymentForm = ({ setIsPayment, formData, handlePaySuccess }) => {
                 </div>
                 <Divider />
                 <div className="flex items-center gap-6">
-                    <p className="text-[#737373] w-20">Optional</p>
+                    <p className="text-[#737373] w-20">Note</p>
                     <p>{formData?.address_2 || '-'}</p>
                 </div>
                 <Divider />

@@ -33,7 +33,8 @@ const Women = () => {
 
   const { data: products, isLoading } = useGetAllProductsQuery({
     page: 1, 
-    category_id: 2, 
+    // category_id: 1, 
+    category_slug: 'women',
     sub_category_id: defaultKey !== 'all' ? subCat : undefined, 
     product_type: defaultKey === 'all' ? undefined : defaultKey,
     size: filter.size,

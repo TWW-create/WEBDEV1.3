@@ -188,7 +188,7 @@ const ProductInfo = ({ product, shipping, returns }) => {
         <div className="mb-4">
           <p>
             <span className="text-sm font-medium text-gray-700">Creator:</span>
-            <span className="capitalize ml-2 cursor-pointer hover:font-bold" onClick={() => navigate(`/creator/${product?.creator?.slug}`)}>{product?.creator?.name}</span>
+            <span className="capitalize ml-2 cursor-pointer hover:font-bold" onClick={() => navigate(`/blog/${product?.creator?.filter_links?.blogs}`)}>{product?.creator?.name}</span>
           </p>
         </div>
 

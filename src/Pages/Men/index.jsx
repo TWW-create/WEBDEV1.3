@@ -34,7 +34,8 @@ const Men = () => {
   
   const { data: products, isLoading } = useGetAllProductsQuery({
     page: 1, 
-    category_id: 1, 
+    // category_id: 2, 
+    category_slug: 'men', 
     sub_category_id: defaultKey !== 'all' ? subCat : undefined, 
     product_type: defaultKey === 'all' ? undefined : defaultKey,
     size: filter.size,
@@ -56,6 +57,9 @@ const Men = () => {
       children: <ProductsContainer products={products?.data} isLoading={isLoading} setFilter={setFilter} filter={filter} />, // Filtered products could go here based on `type.id`
     })),
   ];
+
+  console.log(defaultKey);
+  
   
   useEffect(() => {
     setDefaultKey(tab || 'all')

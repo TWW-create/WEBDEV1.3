@@ -2,13 +2,10 @@ import { Modal, Table } from "antd"
 
 const ViewOrder = ({visible, setVisible, data}) => {
 
-  console.log(data);
-  
-
     const columns = [
         {
           title: "Product Name",
-          dataIndex: "name",
+          dataIndex: "product_name",
           key: "name",
         },
         {
@@ -66,6 +63,10 @@ const ViewOrder = ({visible, setVisible, data}) => {
             <div className="mb-2">
                 <p className="text-sm">Order Status</p>
                 <p className="font-semibold">{data?.status}</p>
+            </div>
+            <div className="mb-2">
+                <p className="text-sm">Order Status</p>
+                <p className="font-semibold capitalize text-green-700">{data?.payment_status}</p>
             </div>
         </div>
         <Table
