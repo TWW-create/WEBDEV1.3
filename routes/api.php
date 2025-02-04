@@ -203,4 +203,6 @@ Route::middleware(['auth:api', 'admin'])->prefix('admin')->group(function () {
     Route::put('/creators/{identifier}', [CreatorController::class, 'update']);
     Route::delete('/creators/{identifier}', [CreatorController::class, 'destroy']);
 
+    /// Orders
+    Route::put('/orders/{id}/status', [OrderController::class, 'updateOrderStatus']);
 });

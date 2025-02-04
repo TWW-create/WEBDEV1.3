@@ -297,5 +297,27 @@ class OrderController extends Controller
     
         return redirect()->to('/order-confirmation');
     }
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'order_status' => 'required|string|in:pending,processing,in_route,delivered,cancelled'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        $order = Order::findOrFail($id);
+        $order->update([
+            'status' => $request->order_status
+        ]);
+    
+        return response()->json([
+            'message' => 'Order status updated successfully',
+            'data' => $order
+        ], 200);
+    }
+    
     
 }
