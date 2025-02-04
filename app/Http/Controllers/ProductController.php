@@ -60,9 +60,9 @@ class ProductController extends Controller
             $query->where('sub_category_id', $request->sub_category_id);
         }
         if ($request->product_type) {
-            if ($request->product_type === 'new_in') {
+            if ($request->product_type === 'new+in') {
                 $query->where('created_at', '>=', now()->subDays(30));
-            } elseif ($request->product_type !== 'view_all') {
+            } elseif ($request->product_type !== 'view+all') {
                 $query->whereHas('productType', function($q) use ($request) {
                     $q->where('name', 'like', "%{$request->product_type}%");
                 });
