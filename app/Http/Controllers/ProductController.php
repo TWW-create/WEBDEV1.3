@@ -241,18 +241,16 @@ class ProductController extends Controller
             ->take(4)
             ->get();
     
-            if ($product->creator) {
-                $blog = Blog::where('title', $product->creator->name)->first();
-                $productData['creator'] = array_merge(
-                    $product->creator->toArray(),
-                    [
-                        'filter_links' => [
-                            'products' => "/api/products?creator=" . $product->creator->slug,
-                            'blogs' => $blog ? $blog->id : null
-                        ]
-                    ]
-                );
-            }      
+        $productData = $product->toArray();
+        $productData['creator'] = array_merge(
+            $product->creator->toArray(),
+            [
+                'filter_links' => [
+                    'products' => "/api/products?creator=" . $product->creator->slug,
+                    'blogs' => Blog::where('title', $product->creator->name)->first()->id
+                ]
+            ]
+        );        
         
         return response()->json([
             'status' => 'success',
