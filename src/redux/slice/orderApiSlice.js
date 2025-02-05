@@ -33,13 +33,23 @@ export const orderApiSlice = apiSlice.injectEndpoints({
             query: (id) => ({
                 url: ORDERS +   `/${id}`,
             }),
+            providesTags: ["single_order"],
             transformResponse: (response) => response.data,
         }),
         getAdminOrders: builder.query({
             query: () => ({
                 url: ADMIN_ORDERS,
             }),
+            providesTags: ["admin_orders"],
             transformResponse: (response) => response.data,
+        }),
+        updateOrderStatus: builder.mutation({
+            query: ({id, data}) => ({
+                url: `/admin/orders/${id}/status`,
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: ["single_order", "admin_orders"],
         }),
     })
 })
@@ -51,4 +61,5 @@ export const {
     useGetOrdersQuery,
     useGetAdminOrdersQuery,
     useGetOrderQuery,
+    useUpdateOrderStatusMutation,
 } = orderApiSlice

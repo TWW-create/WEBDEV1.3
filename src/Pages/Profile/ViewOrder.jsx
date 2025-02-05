@@ -62,7 +62,9 @@ const ViewOrder = ({visible, setVisible, data}) => {
             </div>
             <div className="mb-2">
                 <p className="text-sm">Order Status</p>
-                <p className="font-semibold">{data?.status}</p>
+                <p className={`text-${data?.status === 'pending'? 'yellow-500' : data?.status === 'processing'? 'blue-500' : data?.status === 'in_route' ? 'green-500' :data?.status === 'delivered' ? 'green-500' : 'red-500'} text-sm font-medium`}>
+                    {data?.status === "pending" ? "Pending" : data?.status === "processing" ? "Processing" : data?.status === "in_route" ? "Shipped" : data?.status === "delivered" ? "Delivered" : "Cancelled"}
+                </p>
             </div>
             <div className="mb-2">
                 <p className="text-sm">Order Status</p>

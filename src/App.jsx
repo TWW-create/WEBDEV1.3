@@ -41,8 +41,9 @@ function App() {
             <Route path="/blog" element={<MainBlog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/creator/:slug" element={<CreatorDetail />} />
+            <Route path='*' element={<Home />} />
           </Route>
-          <Route path="/admin" element={<Admin />}>
+          {user?.is_admin === 1 && <Route path="/admin" element={<Admin />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="/admin/products" element={<AdminProducts/>} />
@@ -63,7 +64,8 @@ function App() {
             <Route path="/admin/creators/add" element={<AddCreator />} />
             <Route path='/admin/orders' element={<AdminOrders />} />
             <Route path='/admin/orders/:id' element={<ViewOrder />} />
-          </Route>
+          </Route>}
+            
         </Routes>
         </ScrollToTop>
       </BrowserRouter>

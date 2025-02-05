@@ -1,40 +1,29 @@
-import { useState, useEffect } from "react";
-import { Button, Card, Form, Input, List, message, Spin, Table } from "antd";
+import { Button, Card, Form, message, Select, Spin, Table } from "antd";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate, useParams } from "react-router-dom";
 import { errorCheck } from "../../../utils/utils";
-import { useGetOrderQuery } from "../../../redux/slice/orderApiSlice";
+import { useGetOrderQuery, useUpdateOrderStatusMutation } from "../../../redux/slice/orderApiSlice";
+import { useEffect } from "react";
 
 const ViewOrder = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
-  const [statusList, setStatusList] = useState([]);
 
   const { data, isLoading } = useGetOrderQuery(id);
-
-  console.log(data);
   
-  // // const { data: historyData } = useGetOrderHistoryQuery(id);
-  // const [ updateHistory, { isLoading: historyLoading } ] = useUpdateOrderMutation();
+  const [ updateStatus, { isLoading: updateLoading } ] = useUpdateOrderStatusMutation();
 
-  // useEffect(() => {
-  //   if (historyData?.status) {
-  //     const statusArray = historyData.status.map(statusObj => statusObj.status);
-  //     setStatusList(statusArray);
-  //   }
-  // }, [historyData]);
-
-  // const handleStatusUpdate = async (values) => {
-  //   const payload ={...values, order_id: id}
-  //   try {
-  //     const res = await updateHistory(payload).unwrap();
-  //     message.success(res.message);
-  //     form.resetFields();
-  //   } catch (error) {
-  //     errorCheck(error)
-  //   }
-  // };
+  const handleStatusUpdate = async (values) => {
+   
+    try {
+      const res = await updateStatus({data: values, id}).unwrap();
+      message.success(res.message);
+      form.setFieldValue("order_status", values.order_status);
+    } catch (error) {
+      errorCheck(error)
+    }
+  };
 
   const columns = [
     {
@@ -58,6 +47,13 @@ const ViewOrder = () => {
       key: "Qty",
     },
   ];
+
+  useEffect(() => {
+    form.setFieldValue({
+      order_status: data?.order_status
+    })
+  }, [data?.order_status, form])
+  
 
   if (isLoading) {
     return (
@@ -89,7 +85,7 @@ const ViewOrder = () => {
             <p><strong>Order Date:</strong> {new Date(data?.order_date).toLocaleString('en-US', { dateStyle:'medium', timeStyle:'short' })}</p>
           </div>
           <div className="grid md:grid-cols-3 gap-2 mb-5">
-            <p><strong>Order Status:</strong> {data?.order_status}</p>
+            <p><strong>Order Status:</strong> {data?.order_status === "pending" ? "Pending" : data?.order_status === "processing" ? "Processing" : data?.order_status === "in_route" ? "Shipped" : data?.order_status === "delivered" ? "Delivered" : "Cancelled" }</p>
             
           </div>
           <div className="mb-8">
@@ -101,26 +97,26 @@ const ViewOrder = () => {
               pagination={false}
             />
           </div>
-          {/* <List
-            header={<strong>Order History</strong>}
-            bordered
-            dataSource={statusList}
-            renderItem={(item) => <List.Item className="">{item}</List.Item>}
-            className="mt-3"
-          /> */}
         </Card>
-        {/* <Card title="Update Order Status" className="mt-3">
+        <Card title="Update Order Status" className="mt-3">
           <Form onFinish={handleStatusUpdate} form={form}>
-            <Form.Item name={'status'}>
-              <Input
-                placeholder="Enter new status"
+            <Form.Item name={'order_status'} initialValue={data?.order_status}>
+              <Select 
+                options={[
+                  { label: 'Pending', value: 'pending' },
+                  { label: 'Processing', value: 'processing' },
+                  { label: 'Shipped', value: 'in_route' },
+                  { label: 'Delivered', value: 'delivered' },
+                  { label: 'Cancelled', value: 'cancelled' },
+                  // { label: 'Returned', value: 'Returned' },
+                ]}
               />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={historyLoading}>Update Status</Button>
+              <Button type="primary" htmlType="submit" loading={updateLoading}>Update Status</Button>
             </Form.Item>
           </Form>
-        </Card> */}
+        </Card>
         <Card title="Shipping Details" className="mt-3">
           <div className="grid md:grid-cols-2 gap-2 mb-2">
             <p><strong>Phone Number:</strong> {data?.shipping_details?.phone_no}</p>
