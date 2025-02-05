@@ -171,7 +171,7 @@ const ProductInfo = ({ product, shipping, returns }) => {
               <div
                 key={variant.id}
                 className={`cursor-pointer text-center ${
-                  activeVariant.id === variant.id ? "font-bold" : ""
+                  activeVariant?.id === variant?.id ? "font-bold" : ""
                 }`}
                 onClick={() => handleColorChange(variant)}
               >
