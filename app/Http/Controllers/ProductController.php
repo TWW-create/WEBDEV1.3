@@ -199,12 +199,10 @@ class ProductController extends Controller
                     [
                         'filter_links' => [
                             'products' => "/api/products?creator=" . $product->creator->slug,
-                            'blogs' => "/api/blogs?creator=" . $product->creator->name,
-                            // Add a default blog ID if none exists
-                            'blog_id' => Blog::where('title', $product->creator->name)->first()?->id ?? null
+                            'blogs' => "/api/blogs?creator=" . $product->creator->name
                         ]
                     ]
-                );                
+                );
     
                 return response()->json([
                     'message' => 'Product created successfully',
@@ -243,18 +241,18 @@ class ProductController extends Controller
             ->take(4)
             ->get();
     
-            $productData = $product->toArray();
-            $productData['creator'] = array_merge(
-                $product->creator->toArray(),
-                [
-                    'filter_links' => [
-                        'products' => "/api/products?creator=" . $product->creator->slug,
-                        'blogs' => "/api/blogs?creator=" . $product->creator->name,
-                        // Add a default blog ID if none exists
-                        'blog_id' => Blog::where('title', $product->creator->name)->first()?->id ?? null
+            if ($product->creator) {
+                $blog = Blog::where('title', $product->creator->name)->first();
+                $productData['creator'] = array_merge(
+                    $product->creator->toArray(),
+                    [
+                        'filter_links' => [
+                            'products' => "/api/products?creator=" . $product->creator->slug,
+                            'blogs' => $blog ? $blog->id : null
+                        ]
                     ]
-                ]
-            );                    
+                );
+            }      
         
         return response()->json([
             'status' => 'success',
@@ -344,12 +342,10 @@ class ProductController extends Controller
                     [
                         'filter_links' => [
                             'products' => "/api/products?creator=" . $product->creator->slug,
-                            'blogs' => "/api/blogs?creator=" . $product->creator->name,
-                            // Add a default blog ID if none exists
-                            'blog_id' => Blog::where('title', $product->creator->name)->first()?->id ?? null
+                            'blogs' => "/api/blogs?creator=" . $product->creator->name
                         ]
                     ]
-                );                
+                );
     
                 return response()->json([
                     'message' => 'Product updated successfully',
