@@ -23,7 +23,7 @@ class Creator extends Model
             Blog::create([
                 'title' => $creator->name,
                 'content' => $creator->description ?? 'Welcome to ' . $creator->name . '\'s blog',
-                'creator_id' => $creator->id
+                'user_id' => auth()->id()
             ]);
         });
 
