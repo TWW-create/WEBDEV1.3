@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Http\Controllers\BlogController;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Http\Request;
 
 class Creator extends Model
 {
