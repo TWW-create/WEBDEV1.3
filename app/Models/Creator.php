@@ -18,6 +18,15 @@ class Creator extends Model
         static::creating(function ($creator) {
             $creator->slug = Str::slug($creator->name);
         });
+
+        static::created(function ($creator) {
+            Blog::create([
+                'title' => $creator->name,
+                'content' => $creator->description ?? 'Welcome to ' . $creator->name . '\'s blog',
+                'creator_id' => $creator->id
+            ]);
+        });
+
         static::updating(function ($creator) {
             if ($creator->isDirty('name')) {
                 $creator->slug = Str::slug($creator->name);
