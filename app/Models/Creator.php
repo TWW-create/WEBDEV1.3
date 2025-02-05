@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Http\Controllers\BlogController;
+use Illuminate\Http\UploadedFile;
 
 class Creator extends Model
 {
@@ -20,11 +22,22 @@ class Creator extends Model
         });
 
         static::created(function ($creator) {
-            Blog::create([
+            $blogController = new BlogController();
+            
+            $request = new Request([
                 'title' => $creator->name,
                 'content' => $creator->description ?? 'Welcome to ' . $creator->name . '\'s blog',
-                'user_id' => auth()->id()
             ]);
+    
+            if ($creator->image) {
+                $request->files->add([
+                    'media' => [
+                        UploadedFile::createFromPath(storage_path('app/public/' . $creator->image))
+                    ]
+                ]);
+            }
+    
+            $blogController->store($request);
         });
 
         static::updating(function ($creator) {
