@@ -36,7 +36,7 @@ const Sales = () => {
     // category_id: 4, 
     category_slug: 'sales',
     sub_category_id: defaultKey !== 'all' ? subCat : undefined, 
-    product_type: defaultKey === 'all' ? undefined : defaultKey,
+    product_type: defaultKey === 'all' ? undefined : defaultKey === "new in" ? "new_in" : defaultKey === "view_all" ? "view_all" : defaultKey,
     size: filter.size,
     sort_by: filter.sort_by,
     creator: filter.creator,
