@@ -23,9 +23,12 @@ class OrderStatusUpdate extends Notification
 
     public function toMail($notifiable)
     {
+        if ($this->status === 'in_route') {
+            return (new OrderShipped($this->order))->toMail($notifiable);
+        }
+
         $statusMessages = [
             'processing' => 'Your order is being processed',
-            'in_route' => 'Your order is out for delivery',
             'delivered' => 'Your order has been delivered',
             'cancelled' => 'Your order has been cancelled'
         ];
