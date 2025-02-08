@@ -57,8 +57,7 @@ class OrderController extends Controller
             'data' => $orders,
             'count' => $orders->count(),
         ], 200);
-    }
-       
+    }       
 
     public function store(Request $request)
     {

@@ -17,28 +17,60 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        // Basic Metrics
         $totalUsers = User::count();
         $totalProducts = Product::count();
         $totalOrders = Order::count();
-        $totalRevenue = Order::where('status', 'completed')->sum('total');
+        $totalRevenue = Order::where('payment_status', 'paid')->sum('total');
         
-        $recentOrders = Order::with('user')
+        // Order Statistics
+        $recentOrders = Order::with(['user', 'orderItems.product', 'orderItems.variant'])
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get();
     
-        $topSellingProducts = Product::withCount('orders')
-            ->orderBy('orders_count', 'desc')
-            ->take(5)
+        // Product Performance
+        $topSellingProducts = Product::withCount(['orders as total_orders', 'reviews'])
+            ->withAvg('reviews', 'rating')
+            ->orderBy('total_orders', 'desc')
+            ->take(10)
             ->get();
     
-        $monthlySales = Order::where('status', 'completed')
+        // Sales Analytics
+        $monthlySales = Order::where('payment_status', 'paid')
             ->whereYear('created_at', now()->year)
-            ->selectRaw('MONTH(created_at) as month, sum(total) as revenue')
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as order_count, SUM(total) as revenue')
             ->groupBy('month')
             ->get();
     
-        $stockAlerts = Product::where('qty', '<=', 10)->get();
+        // Inventory Management
+        $lowStockProducts = Product::whereHas('variants', function($query) {
+            $query->where('stock', '<=', 10);
+        })->with('variants')->get();
+    
+        // Customer Analytics
+        $topCustomers = User::withCount('orders')
+            ->withSum('orders', 'total')
+            ->orderBy('orders_sum_total', 'desc')
+            ->take(10)
+            ->get();
+    
+        // Order Status Distribution
+        $orderStatusDistribution = Order::selectRaw('order_status, COUNT(*) as count')
+            ->groupBy('order_status')
+            ->get();
+    
+        // Payment Method Analytics
+        $paymentMethodStats = Transaction::selectRaw('payment_method, COUNT(*) as count, SUM(amount) as total')
+            ->groupBy('payment_method')
+            ->get();
+    
+        // Daily Revenue Trend
+        $dailyRevenue = Order::where('payment_status', 'paid')
+            ->whereBetween('created_at', [now()->subDays(30), now()])
+            ->selectRaw('DATE(created_at) as date, SUM(total) as revenue')
+            ->groupBy('date')
+            ->get();
     
         return response()->json([
             'status' => 'success',
@@ -52,10 +84,15 @@ class AdminController extends Controller
                 'recent_orders' => $recentOrders,
                 'top_selling_products' => $topSellingProducts,
                 'monthly_sales' => $monthlySales,
-                'stock_alerts' => $stockAlerts
+                'low_stock_alerts' => $lowStockProducts,
+                'top_customers' => $topCustomers,
+                'order_status_distribution' => $orderStatusDistribution,
+                'payment_method_stats' => $paymentMethodStats,
+                'daily_revenue_trend' => $dailyRevenue
             ]
-        ]);
+        ], 200);
     }
+    
     
 
     public function getAllUsers()
