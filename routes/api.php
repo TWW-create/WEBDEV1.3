@@ -34,6 +34,10 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
+
+Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe']);
 Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe']);
 Route::get('/blogs', [BlogController::class, 'index']);
@@ -82,6 +86,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])
         ->middleware('throttle:6,1')
         ->name('verification.resend');
+    Route::post('change-password', [AuthController::class, 'changePassword']);
 
     // Protected address route
     Route::get('/addresses', [AddressInfoController::class, 'index']);
