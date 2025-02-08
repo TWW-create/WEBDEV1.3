@@ -260,7 +260,6 @@ class OrderController extends Controller
         });
     }    
         
-    
     public function verifyPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -299,7 +298,7 @@ class OrderController extends Controller
                 'paystack_reference' => $request->payment_reference
             ]);
     
-            Transaction::create([
+            $transaction = Transaction::create([
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
                 'payment_ref' => $request->payment_reference,
@@ -308,16 +307,16 @@ class OrderController extends Controller
                 'status' => 'success'
             ]);
     
-             // Send payment confirmation
+            // Send payment confirmation with transaction details
             $order->user->notify(new PaymentConfirmation($order, $transaction));
-
+    
             return response()->json([
                 'message' => 'Payment verified successfully',
                 'order' => $order->load('orderItems', 'transactions')
             ]);
         });
-    }   
-    
+    }
+        
     public function paystackCallback(Request $request)
     {
         $paystack = new Paystack(config('services.paystack.secret_key'));
