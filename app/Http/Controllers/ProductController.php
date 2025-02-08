@@ -203,7 +203,9 @@ class ProductController extends Controller
                         ]
                     ]
                 );
-    
+
+                $this->updateProductStockStatus($product->id);
+                
                 return response()->json([
                     'message' => 'Product created successfully',
                     'product' => $productData
@@ -219,7 +221,16 @@ class ProductController extends Controller
         });
     }
     
-
+    private function updateProductStockStatus($productId)
+    {
+        $product = Product::find($productId);
+        $hasStock = $product->variants()->where('stock', '>', 0)->exists();
+        
+        $product->update([
+            'status' => $hasStock ? 'available' : 'out_of_stock'
+        ]);
+    }
+    
     public function show($identifier)
     {
         $product = Product::with([
@@ -326,6 +337,7 @@ class ProductController extends Controller
                             }
                         }
                     }
+                    $this->updateProductStockStatus($id);
                 }
     
                 $updateData = $request->except(['variants', 'featured_image']);

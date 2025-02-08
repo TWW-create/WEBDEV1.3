@@ -261,11 +261,26 @@ class OrderController extends Controller
         return DB::transaction(function() use ($request) {
             $order = Order::with('orderItems.variant')->findOrFail($request->order_id);
             
+            // Track products that need stock check
+            $productsToCheck = [];
+            
             // Reduce stock for each ordered item
             foreach($order->orderItems as $item) {
                 $variant = $item->variant;
                 $variant->stock -= $item->quantity;
                 $variant->save();
+                
+                $productsToCheck[$item->product_id] = true;
+            }
+            
+            // Check and update product status if all variants are out of stock
+            foreach(array_keys($productsToCheck) as $productId) {
+                $product = Product::find($productId);
+                $hasStock = $product->variants()->where('stock', '>', 0)->exists();
+                
+                if (!$hasStock) {
+                    $product->update(['status' => 'out_of_stock']);
+                }
             }
     
             $order->update([
@@ -288,8 +303,7 @@ class OrderController extends Controller
                 'order' => $order->load('orderItems', 'transactions')
             ]);
         });
-    }
-                   
+    }   
     
     public function paystackCallback(Request $request)
     {

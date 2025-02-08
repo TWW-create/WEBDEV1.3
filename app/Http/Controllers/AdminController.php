@@ -22,7 +22,7 @@ class AdminController extends Controller
         $totalUsers = User::count();
         $totalProducts = Product::count();
         $totalOrders = Order::count();
-        $totalRevenue = Order::where('payment_status', 'paid')->sum('total');
+        $totalRevenue = Order::where('payment_status', 'paid')->sum('subtotal');
         
         // Order Statistics
         $recentOrders = Order::with(['user', 'orderItems.product', 'orderItems.variant.images'])
