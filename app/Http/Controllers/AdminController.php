@@ -80,16 +80,24 @@ class AdminController extends Controller
             ->get();
 
             // Send notifications for low stock items
-        foreach ($lowStockProducts as $product) {
-            foreach ($product->variants as $variant) {
-                if ($variant->stock <= 5) {
-                    $admins = User::where('is_admin', true)->get();
-                    foreach ($admins as $admin) {
-                        $admin->notify(new LowStockAlert($product, $variant));
+            $lowStockItems = [];
+            foreach ($lowStockProducts as $product) {
+                foreach ($product->variants as $variant) {
+                    if ($variant->stock <= 10) {
+                        $lowStockItems[] = [
+                            'product' => $product,
+                            'variant' => $variant
+                        ];
                     }
                 }
             }
-        }
+
+            if (!empty($lowStockItems)) {
+                $admins = User::where('is_admin', true)->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new LowStockAlert($lowStockItems));
+                }
+            }
         return response()->json([
             'status' => 'success',
             'data' => [

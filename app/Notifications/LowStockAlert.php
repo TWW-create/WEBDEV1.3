@@ -7,13 +7,11 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class LowStockAlert extends Notification
 {
-    protected $product;
-    protected $variant;
+    protected $lowStockItems;
 
-    public function __construct($product, $variant)
+    public function __construct($lowStockItems)
     {
-        $this->product = $product;
-        $this->variant = $variant;
+        $this->lowStockItems = $lowStockItems;
     }
 
     public function via($notifiable)
@@ -23,14 +21,20 @@ class LowStockAlert extends Notification
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->subject('Low Stock Alert - ' . $this->product->name)
-            ->line('Product stock is running low!')
-            ->line('Product: ' . $this->product->name)
-            ->line('Variant: ' . $this->variant->color)
-            ->line('Current Stock: ' . $this->variant->stock)
-            ->line('KINDLY LOGIN TO VIEW')
-            ->action('Manage Product', 'https://baraweb.waltanforte.com/admin/products/' . $this->product->id)
+        $mailMessage = (new MailMessage)
+            ->subject('Low Stock Alert - Multiple Products')
+            ->line('The following products are running low on stock:')
+            ->line('-------------------------------------------');
+
+        foreach ($this->lowStockItems as $item) {
+            $mailMessage->line('Product: ' . $item['product']->name)
+                       ->line('Variant: ' . $item['variant']->color)
+                       ->line('Current Stock: ' . $item['variant']->stock)
+                       ->line('-------------------------------------------');
+        }
+
+        return $mailMessage
+            ->action('Manage Products', 'https://baraweb.waltanforte.com/admin/products')
             ->line('Please restock soon to avoid stockouts.');
     }
 }
