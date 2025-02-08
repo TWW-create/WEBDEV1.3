@@ -259,7 +259,15 @@ class OrderController extends Controller
         ]);
     
         return DB::transaction(function() use ($request) {
-            $order = Order::findOrFail($request->order_id);
+            $order = Order::with('orderItems.variant')->findOrFail($request->order_id);
+            
+            // Reduce stock for each ordered item
+            foreach($order->orderItems as $item) {
+                $variant = $item->variant;
+                $variant->stock -= $item->quantity;
+                $variant->save();
+            }
+    
             $order->update([
                 'payment_status' => 'paid',
                 'order_status' => 'processing',
@@ -268,7 +276,7 @@ class OrderController extends Controller
     
             Transaction::create([
                 'order_id' => $order->id,
-                'user_id' => $order->user_id,  // Get user_id from the order
+                'user_id' => $order->user_id,
                 'payment_ref' => $request->payment_reference,
                 'payment_method' => 'paystack',
                 'amount' => $order->total,
@@ -280,7 +288,7 @@ class OrderController extends Controller
                 'order' => $order->load('orderItems', 'transactions')
             ]);
         });
-    }            
+    }               
     
     public function paystackCallback(Request $request)
     {
