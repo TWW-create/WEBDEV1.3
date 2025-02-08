@@ -288,7 +288,8 @@ class OrderController extends Controller
                 'order' => $order->load('orderItems', 'transactions')
             ]);
         });
-    }               
+    }
+                   
     
     public function paystackCallback(Request $request)
     {
