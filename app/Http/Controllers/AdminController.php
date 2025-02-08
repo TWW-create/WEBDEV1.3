@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\LowStockAlert;
+use App\Notifications\NewAdminNotification;
 
 class AdminController extends Controller
 {

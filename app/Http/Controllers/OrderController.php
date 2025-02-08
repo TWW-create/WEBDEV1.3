@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\PaymentConfirmation;
+use App\Notifications\OrderStatusUpdate;
 
 
 class OrderController extends Controller
