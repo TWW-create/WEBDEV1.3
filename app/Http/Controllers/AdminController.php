@@ -77,6 +77,17 @@ class AdminController extends Controller
             ->groupBy('date')
             ->get();
 
+            // Send notifications for low stock items
+        foreach ($lowStockProducts as $product) {
+            foreach ($product->variants as $variant) {
+                if ($variant->stock <= 5) {
+                    $admins = User::where('is_admin', true)->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new LowStockAlert($product, $variant));
+                    }
+                }
+            }
+        }
         return response()->json([
             'status' => 'success',
             'data' => [
