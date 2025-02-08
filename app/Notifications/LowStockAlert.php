@@ -34,6 +34,7 @@ class LowStockAlert extends Notification
         }
 
         return $mailMessage
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('Manage Products', 'https://baraweb.waltanforte.com/admin/products')
             ->line('Please restock soon to avoid stockouts.');
     }
