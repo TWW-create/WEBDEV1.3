@@ -29,6 +29,7 @@ class LowStockAlert extends Notification
             ->line('Product: ' . $this->product->name)
             ->line('Variant: ' . $this->variant->color)
             ->line('Current Stock: ' . $this->variant->stock)
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('Manage Product', 'https://baraweb.waltanforte.com/admin/products/' . $this->product->id)
             ->line('Please restock soon to avoid stockouts.');
     }

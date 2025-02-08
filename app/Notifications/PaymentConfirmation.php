@@ -30,6 +30,7 @@ class PaymentConfirmation extends Notification
             ->line('Order Number: ' . $this->order->order_number)
             ->line('Amount Paid: $' . number_format($this->transaction->amount, 2))
             ->line('Payment Reference: ' . $this->transaction->payment_ref)
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('View Order', 'https://baraweb.waltanforte.com/orders/' . $this->order->id)
             ->line('Thank you for shopping with Bara!');
     }

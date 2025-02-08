@@ -37,6 +37,7 @@ class OrderStatusUpdate extends Notification
             ->subject('Order Status Update - #' . $this->order->order_number)
             ->line($statusMessages[$this->status] ?? 'Your order status has been updated')
             ->line('Order Number: ' . $this->order->order_number)
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('View Order Details', 'https://baraweb.waltanforte.com/orders/' . $this->order->id)
             ->line('Thank you for shopping with Bara!');
     }

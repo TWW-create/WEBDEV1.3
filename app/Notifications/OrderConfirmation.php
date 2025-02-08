@@ -27,6 +27,7 @@ class OrderConfirmation extends Notification
             ->line('Order Details:')
             ->line('Order Number: ' . $this->order->order_number)
             ->line('Total Amount: $' . number_format($this->order->total, 2))
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('View Order', 'https://baraweb.waltanforte.com/orders/' . $this->order->id)
             ->line('We will notify you when your order ships.');
     }

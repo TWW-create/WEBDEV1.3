@@ -24,6 +24,7 @@ class PasswordReset extends Notification
         return (new MailMessage)
             ->subject('Reset Your Password')
             ->line('You are receiving this email because we received a password reset request for your account.')
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('Reset Password', 
                 "https://baraweb.waltanforte.com/reset-password?token={$this->token}&email={$notifiable->email}")
             ->line('If you did not request a password reset, no further action is required.');

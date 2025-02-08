@@ -27,6 +27,7 @@ class VerifyEmail extends Notification
         return (new MailMessage)
             ->subject('Verify Your Email Address')
             ->line('Welcome to Bara! Please verify your email address.')
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('Verify Email Address', $verificationUrl)
             ->line('If you did not create an account, no further action is required.');
     }

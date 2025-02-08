@@ -18,6 +18,7 @@ class NewAdminNotification extends Notification
             ->subject('Administrator Access Granted')
             ->line('You have been granted administrator access to Bara.')
             ->line('You now have access to the admin dashboard and additional management features.')
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('Access Admin Dashboard', 'https://baraweb.waltanforte.com/admin/dashboard')
             ->line('With great power comes great responsibility!');
     }

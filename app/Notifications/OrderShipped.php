@@ -25,6 +25,7 @@ class OrderShipped extends Notification
             ->subject('Your Order Has Shipped - #' . $this->order->order_number)
             ->line('Great news! Your order has been shipped.')
             ->line('Order Number: ' . $this->order->order_number)
+            ->line('KINDLY LOGIN TO VIEW')
             ->action('View Order', 'https://baraweb.waltanforte.com/orders/' . $this->order->id)
             ->line('Thank you for shopping with Bara!');
     }
