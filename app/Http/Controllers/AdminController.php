@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -24,54 +25,57 @@ class AdminController extends Controller
         $totalRevenue = Order::where('payment_status', 'paid')->sum('total');
         
         // Order Statistics
-        $recentOrders = Order::with(['user', 'orderItems.product', 'orderItems.variant'])
+        $recentOrders = Order::with(['user', 'orderItems.product', 'orderItems.variant.images'])
             ->latest()
             ->take(10)
             ->get();
-    
+
         // Product Performance
         $topSellingProducts = Product::withCount(['orders as total_orders', 'reviews'])
             ->withAvg('reviews', 'rating')
             ->orderBy('total_orders', 'desc')
             ->take(10)
             ->get();
-    
+
         // Sales Analytics
         $monthlySales = Order::where('payment_status', 'paid')
             ->whereYear('created_at', now()->year)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as order_count, SUM(total) as revenue')
             ->groupBy('month')
             ->get();
-    
+
         // Inventory Management
         $lowStockProducts = Product::whereHas('variants', function($query) {
             $query->where('stock', '<=', 10);
-        })->with('variants')->get();
-    
+        })->with(['variants', 'variants.images'])->get();
+
         // Customer Analytics
         $topCustomers = User::withCount('orders')
-            ->withSum('orders', 'total')
+            ->withSum(['orders' => function($query) {
+                $query->where('payment_status', 'paid');
+            }], 'total')
             ->orderBy('orders_sum_total', 'desc')
             ->take(10)
             ->get();
-    
+
         // Order Status Distribution
-        $orderStatusDistribution = Order::selectRaw('order_status, COUNT(*) as count')
-            ->groupBy('order_status')
+        $orderStatusDistribution = Order::selectRaw('status as order_status, COUNT(*) as count')
+            ->groupBy('status')
             ->get();
-    
+
         // Payment Method Analytics
         $paymentMethodStats = Transaction::selectRaw('payment_method, COUNT(*) as count, SUM(amount) as total')
+            ->where('status', 'success')
             ->groupBy('payment_method')
             ->get();
-    
+
         // Daily Revenue Trend
         $dailyRevenue = Order::where('payment_status', 'paid')
             ->whereBetween('created_at', [now()->subDays(30), now()])
             ->selectRaw('DATE(created_at) as date, SUM(total) as revenue')
             ->groupBy('date')
             ->get();
-    
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -92,8 +96,6 @@ class AdminController extends Controller
             ]
         ], 200);
     }
-    
-    
 
     public function getAllUsers()
     {
