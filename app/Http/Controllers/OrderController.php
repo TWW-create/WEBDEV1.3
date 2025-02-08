@@ -19,14 +19,16 @@ class OrderController extends Controller
     // TODO: for Admin only
     public function adminAllOrders()
     {
-        $orders = Order::with('orderItems', 'transactions')->get();
-
+        $orders = Order::with('orderItems', 'transactions')
+            ->latest('created_at')
+            ->get();
+    
         return response()->json([
             'message' => 'All orders retrieved',
             'data' => $orders,
             'count' => $orders->count(),
         ], 200);
-    }
+    }    
     
     public function index()
     {
@@ -39,6 +41,7 @@ class OrderController extends Controller
             'transactions'
         ])
             ->where('user_id', $userId)
+            ->latest('created_at') 
             ->get()
             ->map(function ($order) {
                 $order->orderItems->transform(function ($item) {
