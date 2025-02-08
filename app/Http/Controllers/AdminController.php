@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Order;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
 
 class AdminController extends Controller
 {
@@ -48,6 +49,18 @@ class AdminController extends Controller
         $lowStockProducts = Product::whereHas('variants', function($query) {
             $query->where('stock', '<=', 10);
         })->with(['variants', 'variants.images'])->get();
+
+        // Send notifications for low stock items
+        foreach ($lowStockProducts as $product) {
+            foreach ($product->variants as $variant) {
+                if ($variant->stock <= 5) {
+                    $admins = User::where('is_admin', true)->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new LowStockAlert($product, $variant));
+                    }
+                }
+            }
+        }
 
         // Customer Analytics
         $topCustomers = User::withCount('orders')
@@ -112,6 +125,9 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->is_admin = true;
         $user->save();
+
+        $user->notify(new NewAdminNotification());
+        
         return response()->json(['message' => 'User is now an admin']);
     }
 }

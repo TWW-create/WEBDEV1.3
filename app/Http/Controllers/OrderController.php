@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Notifications\Notifiable;
 
 
 class OrderController extends Controller
@@ -301,6 +302,9 @@ class OrderController extends Controller
                 'status' => 'success'
             ]);
     
+             // Send payment confirmation
+            $order->user->notify(new PaymentConfirmation($order, $transaction));
+
             return response()->json([
                 'message' => 'Payment verified successfully',
                 'order' => $order->load('orderItems', 'transactions')
@@ -346,6 +350,8 @@ class OrderController extends Controller
             'status' => $request->order_status
         ]);
     
+        $order->user->notify(new OrderStatusUpdate($order, $request->order_status));
+
         return response()->json([
             'message' => 'Order status updated successfully',
             'data' => $order

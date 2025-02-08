@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Blog;
+use Illuminate\Notifications\Notifiable;
 
 class ProductController extends Controller
 {
@@ -205,7 +206,7 @@ class ProductController extends Controller
                 );
 
                 $this->updateProductStockStatus($product->id);
-                
+
                 return response()->json([
                     'message' => 'Product created successfully',
                     'product' => $productData
@@ -474,7 +475,6 @@ class ProductController extends Controller
         });
     }
     
-
     public function getTrendingProducts()
     {
         $trendingProducts = Product::with(['category', 'subCategory', 'variants.images'])
@@ -513,5 +513,6 @@ class ProductController extends Controller
             'data' => $trendingProducts
         ]);
     }
+        
 }
 
