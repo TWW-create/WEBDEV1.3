@@ -344,7 +344,7 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'order_status' => 'required|string|in:pending,processing,in_route,delivered,cancelled'
+            'order_status' => 'required|string|in:pending,processing,in_route,delivered,cancelled,shipped'
         ]);
     
         if ($validator->fails()) {
@@ -356,13 +356,16 @@ class OrderController extends Controller
             'status' => $request->order_status
         ]);
     
-        $order->user->notify(new OrderStatusUpdate($order, $request->order_status));
-
-        // Send shipping notification when status changes to shipped
-        if ($request->order_status === 'shipped') {
-            $order->user->notify(new OrderShipped($order));
+        // Send appropriate notification based on status
+        switch ($request->order_status) {
+            case 'shipped':
+                $order->user->notify(new OrderShipped($order));
+                break;
+            default:
+                $order->user->notify(new OrderStatusUpdate($order, $request->order_status));
+                break;
         }
-
+    
         return response()->json([
             'message' => 'Order status updated successfully',
             'data' => $order
