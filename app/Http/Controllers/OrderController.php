@@ -32,14 +32,14 @@ class OrderController extends Controller
     {
         $userId = Auth::id();
     
-        $orders = Order::with(['orderItems.product:id,name', 'orderItems.variant:id,color,images', 'transactions'])
+        $orders = Order::with(['orderItems.product:id,name', 'orderItems.variant', 'transactions'])
             ->where('user_id', $userId)
             ->get()
             ->map(function ($order) {
                 $order->orderItems->transform(function ($item) {
                     $item['product_name'] = $item->product->name;
                     $item['color'] = $item->variant->color;
-                    $item['variant_image'] = $item->variant->images;
+                    $item['variant_image'] = $item->variant->image;
                     unset($item->product);
                     unset($item->variant);
                     return $item;
