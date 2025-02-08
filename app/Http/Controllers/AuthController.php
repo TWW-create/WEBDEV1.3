@@ -11,6 +11,7 @@ use App\Notifications\VerifyEmail;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Events\PasswordReset;
 
 class AuthController extends Controller
@@ -200,7 +201,9 @@ class AuthController extends Controller
         $status = Password::sendResetLink(
             $request->only('email')
         );
-    
+
+        $user->notify(new PasswordReset($token));
+
         return $status === Password::RESET_LINK_SENT
             ? response()->json(['message' => 'Reset password link sent to your email'])
             : response()->json(['message' => 'Unable to send reset link'], 400);

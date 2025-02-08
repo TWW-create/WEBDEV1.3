@@ -15,6 +15,8 @@ use Validator;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\PaymentConfirmation;
 use App\Notifications\OrderStatusUpdate;
+use App\Notifications\OrderConfirmation;
+use App\Notifications\OrderShipped;
 
 
 class OrderController extends Controller
@@ -218,7 +220,9 @@ class OrderController extends Controller
             }
     
             $order->load('orderItems.product', 'orderItems.variant');
-    
+
+            $order->user->notify(new OrderConfirmation($order));
+            
             return response()->json([
                 'message' => 'Order created successfully',
                 'data' => [
@@ -353,6 +357,11 @@ class OrderController extends Controller
         ]);
     
         $order->user->notify(new OrderStatusUpdate($order, $request->order_status));
+
+        // Send shipping notification when status changes to shipped
+        if ($request->order_status === 'shipped') {
+            $order->user->notify(new OrderShipped($order));
+        }
 
         return response()->json([
             'message' => 'Order status updated successfully',
