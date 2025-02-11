@@ -117,4 +117,10 @@ class Product extends Model
         return $this->belongsTo(Creator::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+    
+
 }
