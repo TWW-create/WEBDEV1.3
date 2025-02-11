@@ -95,7 +95,7 @@ class AdminController extends Controller
             if (!empty($lowStockItems)) {
                 $admins = User::where('is_admin', true)->get();
                 foreach ($admins as $admin) {
-                    $admin->notify(new LowStockAlert($lowStockItems));
+                    // $admin->notify(new LowStockAlert($lowStockItems));
                 }
             }
         return response()->json([
