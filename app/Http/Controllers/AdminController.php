@@ -35,10 +35,11 @@ class AdminController extends Controller
 
         // Product Performance
         $topSellingProducts = Product::withCount(['orders as total_orders', 'reviews'])
-            ->withAvg('reviews', 'rating')
-            ->orderBy('total_orders', 'desc')
-            ->take(10)
-            ->get();
+        ->withSum('orderItems as totalQuantitySold', 'quantity')
+        ->withAvg('reviews', 'rating')
+        ->orderBy('total_orders', 'desc')
+        ->take(10)
+        ->get();
 
         // Sales Analytics
         $monthlySales = Order::where('payment_status', 'paid')
