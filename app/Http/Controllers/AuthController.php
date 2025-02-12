@@ -12,7 +12,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Notifications\PasswordReset;
 
 class AuthController extends Controller
 {
