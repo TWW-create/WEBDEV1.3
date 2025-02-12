@@ -202,8 +202,6 @@ class AuthController extends Controller
             $request->only('email')
         );
 
-        $user->notify(new PasswordReset($token));
-
         return $status === Password::RESET_LINK_SENT
             ? response()->json(['message' => 'Reset password link sent to your email'])
             : response()->json(['message' => 'Unable to send reset link'], 400);
