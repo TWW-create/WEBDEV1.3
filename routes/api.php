@@ -36,8 +36,8 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->name('verification.verify');
 
 Route::get('reset-password/{token}', function (string $token) {
-    return ['token' => $token];
-})->name('password.reset');
+    return redirect('https://baraweb.waltanforte.com/reset-password?token=' . $token);
+})->name('password.reset');    
 
 Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
 Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
