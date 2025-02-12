@@ -190,22 +190,42 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users,email'
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|exists:users,email'
+            ]);
     
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+    
+            // Get user by email
+            $user = User::where('email', $request->email)->first();
+            
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+    
+            // Generate reset token
+            $token = Password::createToken($user);
+            
+            // Send the custom notification
+            $user->notify(new PasswordReset($token));
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Reset password link sent to your email'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            Log::error('Password reset error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to process password reset request'
+            ], 500);
         }
-    
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Reset password link sent to your email'])
-            : response()->json(['message' => 'Unable to send reset link'], 400);
     }
+    
     
     public function resetPassword(Request $request)
     {
