@@ -1,4 +1,4 @@
-import { ADDRESSES, FAVORITES, GET_COUNTRY, PROFILE } from "../../utils/apiConstants";
+import { ADDRESSES, CHANGE_PASSWORD, FAVORITES, GET_COUNTRY, PROFILE } from "../../utils/apiConstants";
 import { apiSlice } from "./apiSlice";
 
 
@@ -68,6 +68,13 @@ export const profileApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["profile"],
         }),
+        changePassword: builder.mutation({
+            query: (data) => ({
+                url: CHANGE_PASSWORD,
+                method: "POST",
+                body: data
+            }),
+        }),
         getCountries: builder.query({
             query: () => ({
               url: GET_COUNTRY,
@@ -88,4 +95,5 @@ export const {
     useAddUserFavoriteMutation,
     useRemoveUserFavoriteMutation,
     useSetDeliveryAddressMutation,
+    useChangePasswordMutation,
 } = profileApiSlice;

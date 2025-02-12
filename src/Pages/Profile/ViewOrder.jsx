@@ -1,4 +1,5 @@
 import { Modal, Table } from "antd"
+import { IMAGE_BASE_URL } from "../../utils/apiConstants";
 
 const ViewOrder = ({visible, setVisible, data}) => {
 
@@ -7,6 +8,19 @@ const ViewOrder = ({visible, setVisible, data}) => {
           title: "Product Name",
           dataIndex: "product_name",
           key: "name",
+          render: (_,record) => {
+            return(
+                <div className="flex items-center gap-1">
+                    <img src={IMAGE_BASE_URL + "/" + record?.variant_images[0]?.image_path} alt="product" className="w-10 h-10 object-cover" />
+                    <p>{record?.product_name}</p>
+                </div>
+            )
+          }
+        },
+        {
+          title: "Color",
+          dataIndex: "color",
+          key: "color",
         },
         {
           title: "Size",

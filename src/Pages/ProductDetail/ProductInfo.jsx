@@ -111,6 +111,9 @@ const ProductInfo = ({ product, shipping, returns }) => {
     setSelectedImageIndex(0);
   }, [product]);
 
+  console.log(activeVariant);
+  
+
   return (
     <div
       className="px-6 lg:px-10 xl:px-20 pt-12 flex gap-9 flex-col lg:flex-row lg:h-[90vh] overflow-y-scroll scrollbar-hide"
@@ -208,16 +211,17 @@ const ProductInfo = ({ product, shipping, returns }) => {
                 </div>
               ))}
             </div>
+            {activeVariant.stock === 0 && <p className="py-2 text-red-500 italic">Note: This product is out of stock</p>}
             <Divider className="!mb-2" />
           </div>
         <div className="flex gap-4 items-center mb-4">
           <button 
             className={`w-full py-3 rounded-3xl ${
-              !activeVariant || !selectedSize
+              !activeVariant || !selectedSize || activeVariant.stock === 0
                 ? "bg-gray-600 text-white/80 cursor-not-allowed"
                 : "bg-black text-white"
             }`}
-            disabled={!activeVariant || !selectedSize}
+            disabled={!activeVariant || !selectedSize || activeVariant.stock === 0}
             onClick={handleAddToCart}
           >
             Add to cart

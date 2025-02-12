@@ -20,4 +20,7 @@ export const CREATOR = "/creators";
 export const ORDERS = "/orders";
 export const ADMIN_ORDERS = "/admin/all-orders";
 export const TRANSACTIONS = "/transactions";
+export const CHANGE_PASSWORD = "/change-password";
+export const RESET_PASSWORD = "/reset-password";
+export const FORGOT_PASSWORD = "/forgot-password";
 export const GET_COUNTRY = 'https://countriesnow.space/api/v0.1/countries/states'

@@ -46,7 +46,7 @@ const columns = (navigate) => [
     ],
     onFilter: (value, record) => record.status === value,
     render: (text) => (
-      <p className={`text-${text === 'pending'? 'yellow-500' : text === 'processing'? 'blue-500' : text === 'in_route' ? 'green-500' :text === 'delivered' ? 'green-500' : 'red-500'} text-sm font-medium`}>
+      <p className={`${text === 'pending'? 'text-yellow-500' : text === 'processing'? 'text-blue-500' : text === 'in_route' ? 'text-green-500' :text === 'delivered' ? 'green-500' : 'text-red-500'} text-sm font-medium`}>
         {text === "pending" ? "Pending" : text === "processing" ? "Processing" : text === "in_route" ? "Shipped" : text === "delivered" ? "Delivered" : "Cancelled"}
       </p>
     )

@@ -26,6 +26,7 @@ const EditProduct = () => {
   const {data: productType, isLoading: productLoading} = useGetSubCategoryDetailsQuery(selectedSubCat)
   const { data: creator } = useGetCreatorsQuery()
 
+
   const {data, isLoading} = useGetSingleProductQuery(params.id)  
 
   const [ updateProduct, {isLoading: updateLoading} ] = useUpdateProductMutation()
@@ -87,12 +88,13 @@ const EditProduct = () => {
     useEffect(() => {
       if (data?.data?.product) {
         const product = data.data.product;
-    
+        console.log(product.creator_id);
+        
         form.setFieldsValue({
           name: product.name,
           description: product.description,
           price: product.price,
-          creator_id: product.creator_id,
+          creator: product.creator_id,
           composition: product.composition,
           shipping_details: product.shipping_details,
           category_id: product.category_id,
@@ -110,9 +112,6 @@ const EditProduct = () => {
         setSelectedSubCat(product.sub_category_id);
       }
     }, [data, form]);
-    
-
-    
     
     if (isLoading && catLoading && subCatLoading && productLoading) {
       return(

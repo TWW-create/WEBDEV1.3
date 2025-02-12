@@ -19,6 +19,10 @@ const Sidenav = () => {
           title: "Order History",
           href: "/profile/order-history",
         },
+        {
+          title: "Change Password",
+          href: "/profile/change-password",
+        },
         // {
         //   title: "Addresses",
         //   href: "/profile/favorites",

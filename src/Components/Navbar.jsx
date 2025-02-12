@@ -3,25 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoSearch } from 'react-icons/go';
 import { LuUser2 } from 'react-icons/lu';
 import { RiShoppingBag3Line } from 'react-icons/ri';
-import { Dropdown, Menu, Space } from 'antd';
+import { Dropdown } from 'antd';
 import logo from '../assets/images/logo.png';
 import Authentication from '../Pages/Authentication';
-import IMAGE from '../assets/images/shopm.png'
 import { FaRegHeart } from 'react-icons/fa';
 import { useGetCategoriesQuery } from '../redux/slice/categoryApiSlice';
-import MenB from "../assets/images/men.png";
-import WomenB from "../assets/images/women.png";
-import AccesoriesB from "../assets/images/accessories.png";
-import SalesB from "../assets/images/sales.png";
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie'
 import { useSelector } from 'react-redux';
-import men1 from '../assets/images/men1.png';
-import men2 from '../assets/images/men2.png'
-import men3 from '../assets/images/men3.png'
-import women1 from '../assets/images/women1.png'
-import women2 from '../assets/images/women2.png'
-import women3 from '../assets/images/women3.png'
+import MenMenu from './MenMenu';
+import AccessoriesSalesMenu from './AccessoriesSalesMenu';
 
 
 const MegaMenu = ({ categoryName }) => {
@@ -46,116 +37,22 @@ const MegaMenu = ({ categoryName }) => {
     };    
     
     if (!category || isLoading || !category.sub_categories) return null;
-
-    const [firstSubCategory, secondSubCategory] = category.sub_categories || [];
     
     return (
       <>
       {categoryName === 'accessories' || categoryName === 'sales' ? 
-         <div className="bg-white px-5 py-5 grid grid-cols-7 max-w-6xl gap-8 min-h-[422px]">
-         {/* First column: Category image */}
-         <div className="flex items-center col-span-1">
-             <img src={
-                 (categoryName === 'men' && MenB) || (categoryName === 'women' && WomenB) || (categoryName === 'accessories' && AccesoriesB) || (categoryName === 'sales' && SalesB)
-             } alt="" className='max-w-[20vh] object-contain' />
-         </div>
-
-         {/* Second column: First subcategory */}
-         <div className="col-span-1">
-             <Menu
-                 key={firstSubCategory.id}
-                 onClick={onMenuItemClick}
-                 selectedKeys={[]}
-                 items={[
-                     {
-                         label: <span className="text-gray-500">{firstSubCategory.name.toUpperCase()}</span>,
-                         key: firstSubCategory.id,
-                         type: 'group',
-                     },
-                     ...firstSubCategory.product_types.map((type) => ({
-                         label: type.name,
-                         key: type.id,
-                     })),
-                 ]}
-                 style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
-             />
-         </div>
-
-         {/* Third column: First image */}
-         <div className="col-span-2">
-             <img src={IMAGE} alt="first subcategory" className="w-full h-[350px] object-cover object-center" />
-         </div>
-
-         {/* Fourth column: Second subcategory */}
-         <div className="col-span-1">
-             <Menu
-                 key={secondSubCategory.id}
-                 onClick={onMenuItemClick}
-                 selectedKeys={[]}
-                 items={[
-                     {
-                         label: <span className="text-gray-500">{secondSubCategory.name.toUpperCase()}</span>,
-                         key: secondSubCategory.id,
-                         type: 'group',
-                     },
-                     ...secondSubCategory.product_types.map((type) => ({
-                         label: type.name,
-                         key: type.id,
-                     })),
-                 ]}
-                 style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
-             />
-         </div>
-
-         {/* Fifth column: Second image */}
-         <div className="col-span-2">
-             <img src={IMAGE} alt="second subcategory" className="w-full h-[350px] object-cover object-center" />
-         </div>
-     </div> :
-        <div className="bg-white px-5 py-5 grid grid-cols-6 max-w-6xl gap-8 min-h-[422px]">
-          <div className="flex items-center col-span-1">
-            <img src={
-              (categoryName === 'men' && MenB) || (categoryName === 'women' && WomenB) || (categoryName === 'accessories' && AccesoriesB) || (categoryName === 'sales' && SalesB)
-            } alt="" className='max-w-[20vh] object-contain' />
-          </div>
-          <Space direction="horizontal" className="flex items-start col-span-2">
-            {category.sub_categories.map((subCategory) => (
-              <Menu
-                key={subCategory.id}
-                onClick={onMenuItemClick}
-                selectedKeys={[]}
-                items={[
-                  {
-                    label: <span className="text-gray-500">{subCategory.name.toUpperCase()}</span>,
-                    key: subCategory.id,
-                    type: 'group',
-                  },
-                  ...subCategory.product_types.map((type) => ({
-                    label: type.name,
-                    key: type.id,
-                  })),
-                ]}
-                style={{ boxShadow: 'none', border: 'none', textTransform: 'capitalize' }}
-              />
-            ))}
-          </Space>
-    
-          {/* Sample image content */}
-          <div className="h-[350px] max-w-xl col-span-3">
-            <p className="text-center mb-4 text-gray-600">Best of Seasons</p>
-            <div className="grid grid-cols-5 gap-5 h-full">
-              {/* First image container */}
-              <div className="w-full h-[350px] col-span-2">
-                <img src={(categoryName === 'men' && men1) || (categoryName === 'women' && women1) || IMAGE} alt="best season" className="w-full h-[350px] object-cover object-center" />
-              </div>
-              {/* Remaining two images */}
-              <div className="col-span-3 space-y-4">
-                <img src={(categoryName === 'men' && men2) || (categoryName === 'women' && women2) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
-                <img src={(categoryName === 'men' && men3) || (categoryName === 'women' && women3) || IMAGE} alt="best season" className="w-full h-[165px] object-cover object-center" />
-              </div>
-            </div>
-          </div>
-        </div>}
+          <AccessoriesSalesMenu 
+            categoryName={categoryName}
+            onMenuItemClick={onMenuItemClick}
+            category={category}
+          />
+        :
+        <MenMenu 
+          categoryName={categoryName}
+          onMenuItemClick={onMenuItemClick}
+          category={category}
+        />
+      }
       </>
     );
   };
@@ -223,12 +120,6 @@ const MegaMenu = ({ categoryName }) => {
                                 <Link to={'/women'}>Women</Link>
                             </Dropdown>
                         </li>
-                        {/* <li>
-                            <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('men')} placement='
-                            bottom'>
-                                <Link to={'/men'}>Men</Link>
-                            </Dropdown>
-                        </li> */}
                         <li>
                             <Dropdown menu={{ items }} trigger={['hover']} onMouseEnter={() => setHoveredCategory('men')} placement='bottom' >
                                 <Link to={'/men'}>Men</Link>

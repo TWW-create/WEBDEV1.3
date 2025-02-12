@@ -1,4 +1,4 @@
-import { LOGIN, REGISTER, } from "../../utils/apiConstants";
+import { FORGOT_PASSWORD, LOGIN, REGISTER, RESET_PASSWORD, } from "../../utils/apiConstants";
 import { apiSlice } from "./apiSlice";
 
 
@@ -33,13 +33,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         //         body: data,
         //     })
         // }),
-        // forgotPassword: builder.mutation({
-        //     query: (data) => ({
-        //         url: FORGET_PASSWORD,
-        //         method: 'POST',
-        //         body: data,
-        //     })
-        // }),
+        forgotPassword: builder.mutation({
+            query: (data) => ({
+                url: FORGOT_PASSWORD,
+                method: 'POST',
+                body: data,
+            })
+        }),
         // verifyResetPass: builder.mutation({
         //     query: (data) => ({
         //         url: VERIFY_RESET_PASS,
@@ -47,13 +47,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         //         body: data,
         //     })
         // }),
-        // resetPass: builder.mutation({
-        //     query: (data) => ({
-        //         url: RESET_PASS,
-        //         method: 'POST',
-        //         body: data,
-        //     })
-        // }),
+        resetPass: builder.mutation({
+            query: (data) => ({
+                url: RESET_PASSWORD,
+                method: 'POST',
+                body: data,
+            })
+        }),
         // resendCode: builder.mutation({
         //     query: (data) => ({
         //         url: RESEND_VERIFY_CODE,
@@ -74,9 +74,9 @@ export const {
     useCreateAccountMutation,
     // useVerifyEmailMutation,
     useSignInMutation,
-    // useForgotPasswordMutation,
+    useForgotPasswordMutation,
+    useResetPassMutation,
     // useVerifyResetPassMutation,
-    // useResetPassMutation,
     // useResendCodeMutation,
     // useVerifyPartEmailQuery,
     // useGoogleLoginMutation,

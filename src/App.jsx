@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Accessories, AddBanner, AddCreator, AddProduct, Admin, AdminBlog, AdminCreator, AdminDashboard, AdminOrders, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, Checkout, CreatorDetail, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, OrderHistory, PaymentSuccessful, PostForm, ProductDetail, Profile, ProfileInfo, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, ViewOrder, Women } from "./Pages";
+import { Accessories, AddBanner, AddCreator, AddProduct, Admin, AdminBlog, AdminCreator, AdminDashboard, AdminOrders, AdminProducts, AdminSettings, BlogDetail, Cart, Categories, CategoryInfo, Checkout, CreatorDetail, EditPost, EditProduct, Favorites, Home, HomeWrapper, MainBlog, Men, Newsletter, OrderHistory, PaymentSuccessful, PostForm, ProductDetail, Profile, ProfileInfo, ResetPassword, Sales, SlideBanner, SubCategoryInfo, UpdateBanner, ViewBlog, ViewOrder, Women } from "./Pages";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import ScrollToTop from "./Components/ScrollToTop";
 import { useSelector } from "react-redux";
+import ChangePassword from "./Pages/Profile/ChangePassword";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <BrowserRouter>
         <ScrollToTop>
         <Routes>
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
           <Route element={<HomeWrapper />}>
             <Route path='/' element={<Home />} />
             <Route path='/men' element={<Men />} />
@@ -37,6 +39,7 @@ function App() {
               <Route index element={<ProfileInfo />} />
               <Route path='favorites' element={<Favorites />} />
               <Route path='order-history' element={<OrderHistory />} />
+              <Route path='change-password' element={<ChangePassword />} />
             </Route>
             <Route path="/blog" element={<MainBlog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />

@@ -37,6 +37,7 @@ import CreatorDetail from "./CreatorDetail/index.jsx";
 import OrderHistory from "./Profile/OrderHistory.jsx";
 import AdminOrders from "./Admin/AdminOrders/index.jsx";
 import ViewOrder from "./Admin/AdminOrders/ViewOrder.jsx";
+import ResetPassword from "./ResetPassword/index.jsx";
 
 
-export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings, Checkout, AdminCreator, AddCreator, PaymentSuccessful, CreatorDetail, OrderHistory, AdminOrders, ViewOrder}
+export {Home, HomeWrapper, Men, Women, Accessories, Sales, Cart, Blog, MainBlog, Favorites, ProductDetail, Profile, Admin, AdminDashboard, SlideBanner, AddBanner, UpdateBanner, AdminBlog, PostForm, ViewBlog, EditPost, Newsletter, Categories, CategoryInfo, SubCategoryInfo, AdminProducts, AddProduct, EditProduct, BlogDetail, ProfileInfo, AdminSettings, Checkout, AdminCreator, AddCreator, PaymentSuccessful, CreatorDetail, OrderHistory, AdminOrders, ViewOrder, ResetPassword}
