@@ -34,8 +34,14 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
-Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+Route::get('reset-password/{token}', function (string $token) {
+    return ['token' => $token];
+})->name('password.reset');
+
+Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
+Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe']);
 Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe']);
