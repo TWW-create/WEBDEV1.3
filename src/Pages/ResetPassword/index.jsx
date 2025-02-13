@@ -6,9 +6,9 @@ import { errorCheck } from '../../utils/utils';
 
 const ResetPassword = () => {
 
-  const {token} = useParams();
+  const {token, email} = useParams();
   const navigate = useNavigate();
-
+  
   const [ resetPassword, {isLoading}] = useResetPassMutation()
   
 
@@ -50,8 +50,9 @@ const ResetPassword = () => {
                 message: 'The input is not valid E-mail!',
               },
             ]}
+            initialValue={email}
           >
-            <Input className='p-2' />
+            <Input className='p-2' disabled />
           </Form.Item>
           
           <Form.Item

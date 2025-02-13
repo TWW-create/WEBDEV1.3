@@ -15,7 +15,7 @@ function App() {
       <BrowserRouter>
         <ScrollToTop>
         <Routes>
-          <Route path='/reset-password/:token' element={<ResetPassword />} />
+          <Route path='/reset-password/:token/:email' element={<ResetPassword />} />
           <Route element={<HomeWrapper />}>
             <Route path='/' element={<Home />} />
             <Route path='/men' element={<Men />} />

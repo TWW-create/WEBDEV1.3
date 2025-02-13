@@ -1,7 +1,10 @@
 import { Modal, Table } from "antd"
 import { IMAGE_BASE_URL } from "../../utils/apiConstants";
+import { useNavigate } from "react-router-dom";
 
 const ViewOrder = ({visible, setVisible, data}) => {
+
+  const navigate = useNavigate()
 
     const columns = [
         {
@@ -10,8 +13,8 @@ const ViewOrder = ({visible, setVisible, data}) => {
           key: "name",
           render: (_,record) => {
             return(
-                <div className="flex items-center gap-1">
-                    <img src={IMAGE_BASE_URL + "/" + record?.variant_images[0]?.image_path} alt="product" className="w-10 h-10 object-cover" />
+                <div className="flex items-center gap-1 cursor-pointer" onClick={() => navigate(`/products/${record.product_id}`)}>
+                    <img src={IMAGE_BASE_URL + "/" + record?.variant_images[0]?.image_path} alt="product" className="w-16 h-16 object-cover" />
                     <p>{record?.product_name}</p>
                 </div>
             )
@@ -39,14 +42,9 @@ const ViewOrder = ({visible, setVisible, data}) => {
         },
     ];
 
-    // Parse the products array
-    const products = JSON.parse(data?.products || "[]");
 
-    // Calculate the total price of items
-    const totalItemPrices = products.reduce(
-        (sum, product) => sum + parseFloat(product.price || 0) * (product.Qty || 1),
-        0
-    );
+    console.log(data);
+    
 
     const date = new Date(data?.created_at).toLocaleString('en-US', { dateStyle:'medium', timeStyle:'short' })
     

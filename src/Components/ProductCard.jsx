@@ -35,13 +35,18 @@ const ProductCard = ({ product }) => {
     } catch {
       setIsLiked(true); // Revert if the API call fails
     }
-  };
+  };  
 
   return (
     <div
       className="relative w-full product-card cursor-pointer"
       onClick={() => navigate(`/products/${product.id}`)}
     >
+      {product.status === 'out_of_stock' && (
+        <div className="absolute top-2 left-2 bg-red-600 text-white text-sm px-2 py-1 rounded-md z-10">
+          Out of Stock
+        </div>
+      )}
       {product.label && (
         <div className="absolute top-2 left-2 bg-white text-sm px-2 py-1 rounded-md z-10">
           {product.label}
